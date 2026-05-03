@@ -3,93 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DepEd Teacher's OS v2.0</title>
+    <title>DepEd Teacher's OS v2.5</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
+    
     <style>
+        /* --- Color Palette --- */
         :root {
             --primary-blue: #0A2540;
             --accent-orange: #FF6B00;
             --bg-white: #F4F7F9;
             --card-white: #FFFFFF;
             --text-main: #333333;
+            --border-color: #ced4da;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg-white); overflow: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg-white); color: var(--text-main); overflow: hidden; }
 
-        /* Sidebar */
-        .sidebar { width: 280px; background: var(--primary-blue); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+        /* Sidebar Navigation */
+        .sidebar { width: 280px; background: var(--primary-blue); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
         .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-header h2 { margin: 0; color: var(--accent-orange); font-weight: 800; }
+        .sidebar-header h2 { margin: 0; color: var(--accent-orange); font-weight: 800; letter-spacing: 1px; }
         .sidebar-menu { flex: 1; padding: 20px 15px; }
         .menu-item {
             padding: 14px 20px; margin-bottom: 8px; border-radius: 8px; cursor: pointer;
-            transition: 0.3s; display: flex; align-items: center; gap: 12px; font-weight: 600;
+            transition: all 0.3s ease; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 0.95rem;
         }
         .menu-item:hover { background: rgba(255, 107, 0, 0.1); color: var(--accent-orange); }
-        .menu-item.active { background: var(--accent-orange); color: white; }
+        .menu-item.active { background: var(--accent-orange); color: white; box-shadow: 0 4px 10px rgba(255, 107, 0, 0.3); }
 
         /* Main Workspace */
         .main-content { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; }
         .card { background: var(--card-white); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border-top: 4px solid var(--accent-orange); }
         
-        .tab-content { display: none; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
         .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Layout Grids */
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-        label { font-weight: 700; display: block; margin-bottom: 5px; color: var(--primary-blue); font-size: 0.8rem; text-transform: uppercase; }
+        /* Forms & Inputs */
+        label { font-weight: 700; display: block; margin-bottom: 6px; color: var(--primary-blue); font-size: 0.85rem; text-transform: uppercase; }
         select, input, textarea {
-            width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 6px;
-            margin-bottom: 12px; box-sizing: border-box; font-family: inherit;
+            width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
+            margin-bottom: 15px; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: 0.3s;
         }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1); }
 
+        .tos-config { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .perc-box { background: var(--bg-white); padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
+        .perc-box input { width: 80px; text-align: center; margin-bottom: 0; font-weight: bold; font-size: 1.1rem; color: var(--primary-blue); }
+
+        /* Buttons */
         .btn {
-            padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer;
-            font-weight: bold; transition: 0.3s; background: var(--accent-orange); color: white; width: 100%;
+            padding: 14px 28px; border: none; border-radius: 8px; cursor: pointer;
+            font-weight: bold; transition: all 0.3s; background: var(--accent-orange); color: white; font-size: 1rem; width: 100%;
         }
-        .btn:hover { background: #e65c00; transform: translateY(-1px); }
-        .btn-blue { background: var(--primary-blue); margin-top: 10px; }
+        .btn:hover { background: #e65c00; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 107, 0, 0.3); }
+        .btn-blue { background: var(--primary-blue); margin-top: 20px; }
+        .btn-blue:hover { background: #071a2e; }
 
-        /* Preview Area */
-        #word-preview {
-            background: white; border: 1px solid #ddd; padding: 40px; margin-top: 20px;
-            min-height: 500px; font-family: "Times New Roman", serif; overflow-x: auto;
-        }
-
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-orange); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
+        /* Loading & Output */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-orange); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #word-preview {
+            background: white; border: 1px solid #ddd; padding: 50px; margin-top: 20px;
+            min-height: 500px; font-family: "Times New Roman", serif; overflow-x: auto; line-height: 1.5; color: black;
+        }
+        
+        .file-drop { border: 2px dashed var(--primary-blue); padding: 30px; text-align: center; border-radius: 12px; background: rgba(10, 37, 64, 0.03); cursor: pointer; margin-bottom: 10px; }
+        .file-status-box { padding: 15px; border-radius: 8px; background: #e2e8f0; font-weight: bold; text-align: center; font-size: 0.95rem; }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <div class="sidebar-header"><h2>DEPED OS</h2></div>
+    <div class="sidebar-header">
+        <h2>DEPED OS</h2>
+        <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 5px;">Teacher Productivity Suite</div>
+    </div>
     <div class="sidebar-menu">
         <div class="menu-item active" onclick="showTab('planner')">📝 Lesson Planner</div>
-        <div class="menu-item" onclick="showTab('tos')">📊 TOS & Quiz</div>
+        <div class="menu-item" onclick="showTab('tos')">📊 TOS & Quiz Maker</div>
+        <div class="menu-item" onclick="showTab('references')">📂 Reference Library</div>
         <div class="menu-item" onclick="showTab('profile')">🏫 School Profile</div>
-        <div class="menu-item" onclick="resetApiKey()" style="margin-top: 50px; opacity: 0.6;">⚙️ Reset API Key</div>
+        <div style="margin-top: auto; padding-top: 20px;">
+            <div class="menu-item" onclick="resetApiKey()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); opacity: 0.7;">⚙️ Reset API Key</div>
+        </div>
     </div>
 </div>
 
 <div class="main-content">
+    
     <div class="card" style="border-top-color: var(--primary-blue);">
         <div class="grid-3">
             <div>
                 <label>Grade Level</label>
                 <select id="grade-level" onchange="toggleSemester()">
-                    <option>Grade 1</option><option>Grade 6</option><option>Grade 10</option>
-                    <option value="SHS">Grade 11</option><option value="SHS">Grade 12</option>
+                    <option>Grade 1</option><option>Grade 2</option><option>Grade 3</option>
+                    <option>Grade 4</option><option>Grade 5</option><option>Grade 6</option>
+                    <option>Grade 7</option><option>Grade 8</option><option>Grade 9</option>
+                    <option>Grade 10</option><option value="SHS">Grade 11 (SHS)</option><option value="SHS">Grade 12 (SHS)</option>
                 </select>
             </div>
             <div>
                 <label id="term-label">Quarter</label>
                 <select id="term-select">
                     <option>1st Quarter</option><option>2nd Quarter</option>
+                    <option>3rd Quarter</option><option>4th Quarter</option>
                 </select>
             </div>
             <div>
-                <label>Subject</label>
+                <label>Subject / Learning Area</label>
                 <input type="text" id="subject" placeholder="e.g. Practical Research 2">
             </div>
         </div>
@@ -97,50 +126,96 @@
 
     <div id="planner" class="tab-content active">
         <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">Smart Lesson Planner</h3>
             <div class="grid-2">
                 <div>
-                    <label>Format Type</label>
+                    <label>Document Format</label>
                     <select id="doc-type" onchange="togglePPST()">
-                        <option value="DLL">4-Day DLL (Landscape)</option>
-                        <option value="SDLP">Semi-Detailed w/ PPST (Portrait)</option>
+                        <option value="DLL">4-Day DLL (Landscape Grid)</option>
+                        <option value="SDLP">Semi-Detailed w/ PPST Annotations (Portrait)</option>
                     </select>
                 </div>
                 <div id="ppst-box" style="display:none;">
-                    <label>Teaching Position (for PPST)</label>
+                    <label>Teaching Position (For PPST Indicators)</label>
                     <select id="position">
-                        <option value="Proficient">Teacher I - III</option>
-                        <option value="Highly Proficient">Master Teacher I - IV</option>
+                        <option value="Proficient">Teacher I - III (Proficient)</option>
+                        <option value="Highly Proficient">Master Teacher I - IV (Highly Proficient)</option>
                     </select>
                 </div>
             </div>
-            <label>Learning Competency (LC)</label>
-            <textarea id="lc-input" rows="3" placeholder="Paste LC here..."></textarea>
-            <button class="btn" onclick="generateAI('lesson')">✨ Generate Document</button>
+            <label>Learning Competency (LC) & Code</label>
+            <textarea id="lc-input" rows="3" placeholder="Paste the specific Learning Competency here..."></textarea>
+            <button class="btn" onclick="generateAI('lesson')">✨ Generate Lesson Plan</button>
+        </div>
+    </div>
+
+    <div id="tos" class="tab-content">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">TOS & Assessment Generator</h3>
+            <label>Cognitive Weightage Distribution (%)</label>
+            <div class="tos-config">
+                <div class="perc-box"><label>Easy</label><input type="number" id="perc-easy" value="40"></div>
+                <div class="perc-box"><label>Average</label><input type="number" id="perc-avg" value="40"></div>
+                <div class="perc-box"><label>Difficult</label><input type="number" id="perc-diff" value="20"></div>
+            </div>
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div><label>Total Test Items</label><input type="number" id="total-items" value="30"></div>
+                <div><label>Assessment Format</label><select id="quiz-type"><option>Multiple Choice</option><option>Mixed (MCQ & Essay)</option></select></div>
+            </div>
+            <button class="btn" onclick="generateAI('tos')">📊 Calculate TOS & Generate Quiz</button>
+        </div>
+    </div>
+
+    <div id="references" class="tab-content">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">Upload Context Library</h3>
+            <p style="font-size: 0.9rem; color: #666;">Upload your Budget of Work, MATATAG guides, or Lesson Notes. The AI will read this to ensure your output is perfectly aligned.</p>
+            
+            <div class="file-drop" onclick="document.getElementById('file-upload').click()">
+                <div style="font-size: 2rem; margin-bottom: 10px;">📂</div>
+                <b>Click to browse or drop files here</b><br>
+                <span style="font-size: 0.8rem;">Supports .PDF, .DOCX, .TXT</span>
+                <input type="file" id="file-upload" accept=".txt,.pdf,.docx" hidden onchange="handleFileUpload()">
+            </div>
+            <div id="file-status" class="file-status-box" style="color: var(--text-main);">No context uploaded yet.</div>
         </div>
     </div>
 
     <div id="profile" class="tab-content">
         <div class="card">
-            <label>School Name</label><input type="text" id="prof-school" oninput="saveProfile()">
+            <h3 style="margin-top:0; color: var(--primary-blue);">Institutional Signatories</h3>
+            <p style="font-size: 0.9rem; color: #666;">These will automatically appear at the bottom of your exported documents.</p>
+            <label>Complete School Name</label><input type="text" id="prof-school" placeholder="e.g. San Jose National High School" oninput="saveProfile()">
             <div class="grid-2">
-                <div><label>Teacher (Prepared by)</label><input type="text" id="prof-teacher" oninput="saveProfile()"></div>
-                <div><label>Checked by</label><input type="text" id="prof-checker" oninput="saveProfile()"></div>
+                <div><label>Prepared by (Your Name)</label><input type="text" id="prof-teacher" placeholder="Juan Dela Cruz" oninput="saveProfile()"></div>
+                <div><label>Checked by (Head/Coordinator)</label><input type="text" id="prof-checker" placeholder="Maria Clara" oninput="saveProfile()"></div>
             </div>
-            <label>Approved by</label><input type="text" id="prof-approver" oninput="saveProfile()">
+            <label>Approved by (Principal)</label><input type="text" id="prof-approver" placeholder="Dr. Jose Rizal" oninput="saveProfile()">
         </div>
     </div>
 
-    <div id="loading" style="display:none;"><div class="loader"></div></div>
+    <div id="loading" style="display:none; text-align:center; padding: 40px;">
+        <div class="loader"></div>
+        <h3 style="color: var(--primary-blue); margin: 10px 0;">AI is analyzing pedagogy and drafting document...</h3>
+        <p style="color: #666;">This usually takes 10-20 seconds.</p>
+    </div>
 
     <div id="output-section" style="display:none;">
-        <div class="card">
+        <div class="card" style="border-top-color: #38a169;">
+            <h3 style="margin-top:0; color: #38a169;">✅ Document Ready</h3>
             <div id="word-preview"></div>
-            <button class="btn btn-blue" onclick="exportToWord()">💾 Download as Word (.doc)</button>
+            <button class="btn btn-blue" onclick="exportToWord()">💾 Download as MS Word (.doc) — Ready to Print</button>
         </div>
     </div>
 </div>
 
 <script>
+    // --- Initialize Workers ---
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+    let uploadedContext = "";
+
+    // --- UI Logic ---
     function showTab(id) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
@@ -161,6 +236,62 @@
         document.getElementById('ppst-box').style.display = (type === "SDLP") ? "block" : "none";
     }
 
+    // --- File Reading Logic (PDF, DOCX, TXT) ---
+    async function handleFileUpload() {
+        const fileInput = document.getElementById('file-upload');
+        const file = fileInput.files[0];
+        const statusDiv = document.getElementById('file-status');
+        
+        if (!file) return;
+        
+        // Notify user reading has started
+        statusDiv.innerHTML = "⏳ Reading file... please wait.";
+        statusDiv.style.color = "var(--accent-orange)";
+        statusDiv.style.backgroundColor = "#fff3cd";
+
+        try {
+            const ext = file.name.split('.').pop().toLowerCase();
+            
+            if (ext === 'txt') {
+                const reader = new FileReader();
+                reader.onload = (e) => finishUpload(e.target.result, file.name);
+                reader.readAsText(file);
+            } 
+            else if (ext === 'docx') {
+                const arrayBuffer = await file.arrayBuffer();
+                const result = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
+                finishUpload(result.value, file.name);
+            } 
+            else if (ext === 'pdf') {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    text += content.items.map(item => item.str).join(' ') + '\n';
+                }
+                finishUpload(text, file.name);
+            } 
+            else {
+                throw new Error("Unsupported file format. Please use PDF, DOCX, or TXT.");
+            }
+        } catch (err) {
+            statusDiv.innerHTML = "❌ Error: " + err.message;
+            statusDiv.style.color = "#721c24";
+            statusDiv.style.backgroundColor = "#f8d7da";
+        }
+    }
+
+    function finishUpload(text, filename) {
+        uploadedContext = text;
+        const statusDiv = document.getElementById('file-status');
+        statusDiv.innerHTML = `✅ <b>${filename}</b> loaded successfully! Ready to generate.`;
+        statusDiv.style.color = "#155724";
+        statusDiv.style.backgroundColor = "#d4edda";
+    }
+
+    // --- Profile Save/Load ---
     function saveProfile() {
         const data = {
             school: document.getElementById('prof-school').value,
@@ -168,11 +299,11 @@
             checker: document.getElementById('prof-checker').value,
             approver: document.getElementById('prof-approver').value
         };
-        localStorage.setItem('deped_profile_v2', JSON.stringify(data));
+        localStorage.setItem('deped_profile_v3', JSON.stringify(data));
     }
 
     function loadProfile() {
-        const data = JSON.parse(localStorage.getItem('deped_profile_v2'));
+        const data = JSON.parse(localStorage.getItem('deped_profile_v3'));
         if(data) {
             document.getElementById('prof-school').value = data.school || '';
             document.getElementById('prof-teacher').value = data.teacher || '';
@@ -181,70 +312,145 @@
         }
     }
 
+    // --- Gemini AI Generation ---
     async function generateAI(mode) {
-        const apiKey = localStorage.getItem("gamai_key") || prompt("Enter Gemini API Key:");
-        if(apiKey) localStorage.setItem("gamai_key", apiKey); else return;
-
-        document.getElementById('loading').style.display = "block";
-        const docType = document.getElementById('doc-type').value;
-        const pos = document.getElementById('position').value;
-        const lc = document.getElementById('lc-input').value;
+        // Prevent generation if inputs are missing
+        const subject = document.getElementById('subject').value.trim();
+        if (!subject) { alert("Please enter a Subject/Learning Area at the top."); return; }
         
-        let prompt = `Act as a DepEd Master Teacher. Generate a ${docType} for ${document.getElementById('subject').value}. 
-        LC: ${lc}. 
-        ${docType === 'DLL' ? 'Format as a 4-day horizontal table (Day 1-4) following Sections I-VI (Objectives, Content, Resources, Procedures A-J, Remarks, Reflection).' : 
-        'Format as a vertical SDLP with 3 columns: Procedures, Teacher Activity, and PPST Annotations for a ' + pos + ' teacher stage.'}
-        Return strictly HTML code. No markdown formatting.`;
+        let apiKey = localStorage.getItem("gamai_key");
+        if (!apiKey) {
+            apiKey = prompt("Enter your Gemini API Key:");
+            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim());
+            else return;
+        }
+
+        // Show loading, hide output
+        document.getElementById('loading').style.display = "block";
+        document.getElementById('output-section').style.display = "none";
+
+        const grade = document.getElementById('grade-level').value;
+        const term = document.getElementById('term-select').value;
+        let promptText = "";
+
+        if (mode === 'lesson') {
+            const lc = document.getElementById('lc-input').value.trim();
+            if (!lc) { alert("Please enter a Learning Competency."); document.getElementById('loading').style.display = "none"; return; }
+            
+            const docType = document.getElementById('doc-type').value;
+            const pos = document.getElementById('position').value;
+            
+            promptText = `Act as an expert DepEd Philippines Master Teacher. Generate a ${docType} for ${subject}, ${grade}, ${term}. 
+            Learning Competency: ${lc}. 
+            ${docType === 'DLL' ? 'Format exactly as a standard DepEd 4-Day Daily Lesson Log (Day 1-4) in a wide horizontal table with columns for Objectives, Content, Learning Resources, Procedures (A-J), Remarks, and Reflection.' : 'Format as a vertical Semi-Detailed Lesson Plan with 3 columns: "Procedures", "Teacher/Student Activity", and "PPST Annotations" tailored for a ' + pos + ' level teacher.'}
+            Context Material provided by teacher (if any): ${uploadedContext}
+            Output strictly as professional HTML tags (tables, bolding, lists). No markdown code blocks.`;
+            
+        } else if (mode === 'tos') {
+            const lc = document.getElementById('lc-input').value || "Topics related to the context provided.";
+            const items = document.getElementById('total-items').value;
+            const qType = document.getElementById('quiz-type').value;
+            const e = document.getElementById('perc-easy').value;
+            const a = document.getElementById('perc-avg').value;
+            const d = document.getElementById('perc-diff').value;
+
+            if (parseInt(e) + parseInt(a) + parseInt(d) !== 100) {
+                alert("TOS percentages must total exactly 100%.");
+                document.getElementById('loading').style.display = "none"; return;
+            }
+
+            promptText = `Act as a DepEd Philippines Assessment Expert. Generate a Table of Specification (TOS) and a ${items}-item ${qType} quiz for ${subject}, ${grade}, ${term}.
+            Learning Competency/Topic: ${lc}.
+            Distribution: ${e}% Easy (Remember/Understand), ${a}% Average (Apply/Analyze), ${d}% Difficult (Evaluate/Create).
+            Context Material provided by teacher (if any): ${uploadedContext}
+            Output requirements: First, a standard HTML table for the TOS showing cognitive item placement. Below the table, provide the actual test questions and an answer key. Output strictly as HTML tags.`;
+        }
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                body: JSON.stringify({ 
+                    contents: [{ parts: [{ text: promptText }] }],
+                    generationConfig: { temperature: 0.2 }
+                })
             });
+            
             const resData = await response.json();
-            let aiHtml = resData.candidates[0].content.parts[0].text.replace(/```html|```/g, '');
+            if (resData.error) throw new Error(resData.error.message);
+            
+            let aiHtml = resData.candidates[0].content.parts[0].text;
+            // Clean up markdown block if the AI returns it
+            aiHtml = aiHtml.replace(/```html/g, '').replace(/```/g, '').trim();
+            
             document.getElementById('word-preview').innerHTML = aiHtml;
             document.getElementById('output-section').style.display = "block";
-        } catch (e) { alert("Error: " + e.message); }
-        document.getElementById('loading').style.display = "none";
+            document.getElementById('output-section').scrollIntoView({behavior: 'smooth'});
+            
+        } catch (e) { 
+            alert("Generation Failed: " + e.message + "\n\nPlease check your API key or internet connection."); 
+        } finally {
+            document.getElementById('loading').style.display = "none";
+        }
     }
 
+    // --- MS Word Export ---
     function exportToWord() {
-        const isLandscape = document.getElementById('doc-type').value === "DLL";
-        const p = JSON.parse(localStorage.getItem('deped_profile_v2')) || {};
+        const activeTab = document.querySelector('.tab-content.active').id;
+        let isLandscape = false;
+        if (activeTab === 'planner') {
+            isLandscape = document.getElementById('doc-type').value === "DLL";
+        }
+        
+        const p = JSON.parse(localStorage.getItem('deped_profile_v3')) || {};
         const content = document.getElementById('word-preview').innerHTML;
 
         const docHtml = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
         <head><meta charset='utf-8'>
         <style>
-            @page { size: 13in 8.5in; margin: 0.5in; mso-page-orientation: ${isLandscape ? 'landscape' : 'portrait'}; }
+            @page { size: 8.5in 13in; margin: 0.5in; mso-page-orientation: ${isLandscape ? 'landscape' : 'portrait'}; }
             body { font-family: "Times New Roman", serif; font-size: 10pt; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th, td { border: 1px solid black; padding: 4px; vertical-align: top; }
-            .header { text-align: center; font-weight: bold; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; }
+            th, td { border: 1px solid black; padding: 6px; vertical-align: top; }
+            th { background-color: #f2f2f2; text-align: center; }
+            .header { text-align: center; font-weight: bold; margin-bottom: 25px; line-height: 1.2; }
+            .sign-table { width: 100%; border: none; margin-top: 40px; }
+            .sign-table td { border: none; padding: 10px; text-align: left; }
         </style>
         </head><body>
-        <div class="header">Republic of the Philippines<br>Department of Education<br>${p.school || 'NAME OF SCHOOL'}</div>
+        <div class="header">Republic of the Philippines<br>Department of Education<br>${p.school ? p.school.toUpperCase() : 'NAME OF SCHOOL'}</div>
+        
         ${content}
-        <div style="margin-top:30px;">
-            <p>Prepared by: <b>${p.teacher}</b></p>
-            <p>Checked by: <b>${p.checker}</b></p>
-            <p>Approved by: <b>${p.approver}</b></p>
-        </div>
+        
+        <table class="sign-table">
+            <tr>
+                <td style="width: 33%;">Prepared by:<br><br><br><b><u>${p.teacher ? p.teacher.toUpperCase() : 'TEACHER NAME'}</u></b></td>
+                <td style="width: 33%;">Checked by:<br><br><br><b><u>${p.checker ? p.checker.toUpperCase() : 'CHECKER NAME'}</u></b></td>
+                <td style="width: 33%;">Approved by:<br><br><br><b><u>${p.approver ? p.approver.toUpperCase() : 'PRINCIPAL NAME'}</u></b></td>
+            </tr>
+        </table>
         </body></html>`;
 
         const blob = new Blob(['\ufeff', docHtml], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `DepEd_Doc_${Date.now()}.doc`;
+        const subj = document.getElementById('subject').value.replace(/[^a-z0-9]/gi, '_') || "Subject";
+        link.download = `DepEd_${activeTab}_${subj}.doc`;
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
     }
 
+    // Initialization
     window.onload = loadProfile;
-    function resetApiKey() { localStorage.removeItem("gamai_key"); alert("Cleared"); }
+    function resetApiKey() { 
+        if(confirm("Remove API Key?")) {
+            localStorage.removeItem("gamai_key"); 
+            alert("API Key Cleared."); 
+        }
+    }
 </script>
 </body>
 </html>
