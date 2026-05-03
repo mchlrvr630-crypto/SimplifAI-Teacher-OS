@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DepEd Teacher's OS v2.7</title>
+    <title>DepEd Teacher's OS v2.8</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
@@ -35,7 +35,7 @@
 
         .api-settings { margin-top: auto; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
         .api-settings label { color: rgba(255,255,255,0.7); font-size: 0.75rem; margin-bottom: 4px; }
-        .api-settings select { padding: 8px; font-size: 0.85rem; border: none; border-radius: 6px; width: 100%; margin-bottom: 15px; background: rgba(255,255,255,0.9); color: var(--primary-blue); }
+        .api-settings select { padding: 8px; font-size: 0.85rem; border: none; border-radius: 6px; width: 100%; margin-bottom: 10px; background: rgba(255,255,255,0.9); color: var(--primary-blue); }
 
         /* Main Workspace */
         .main-content { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; }
@@ -100,11 +100,11 @@
     <div class="api-settings">
         <label>AI Model Engine</label>
         <select id="ai-model">
-            <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Fast/Stable)</option>
-            <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (High Quality)</option>
-            <option value="gemini-pro">Gemini Pro (Legacy)</option>
-            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+            <option value="gemini-1.5-flash-002">Gemini 1.5 Flash 002 (Fast/Stable)</option>
+            <option value="gemini-flash-latest">Gemini Flash Latest</option>
+            <option value="gemini-1.5-pro-002">Gemini 1.5 Pro 002 (High Quality)</option>
         </select>
+        <div class="menu-item" onclick="fetchLiveModels(this)" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.2); padding: 10px; font-size: 0.8rem; justify-content: center; margin-bottom: 8px;">🔄 Auto-Fetch API Models</div>
         <div class="menu-item" onclick="resetApiKey()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); opacity: 0.7; padding: 10px; font-size: 0.8rem; justify-content: center;">⚙️ Reset API Key</div>
     </div>
 </div>
@@ -248,6 +248,49 @@
         document.getElementById('ppst-box').style.display = (type === "SDLP") ? "block" : "none";
     }
 
+    // --- Dynamic API Model Fetching ---
+    async function fetchLiveModels(btn) {
+        let apiKey = localStorage.getItem("gamai_key");
+        if (!apiKey) {
+            apiKey = prompt("Enter your Gemini API Key to fetch your allowed models:");
+            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim());
+            else return;
+        }
+
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "⏳ Fetching...";
+        btn.style.pointerEvents = "none";
+        
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+            const data = await response.json();
+            
+            if (data.error) throw new Error(data.error.message);
+            
+            const select = document.getElementById('ai-model');
+            select.innerHTML = ''; 
+            
+            let count = 0;
+            data.models.forEach(m => {
+                // Filter only models that support text generation and aren't purely embedding/vision tools
+                if (m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent") && !m.name.includes("embedding")) {
+                    const modelId = m.name.replace('models/', '');
+                    const option = document.createElement('option');
+                    option.value = modelId;
+                    option.textContent = `${m.displayName || modelId} (${modelId})`;
+                    select.appendChild(option);
+                    count++;
+                }
+            });
+            alert(`Success! Loaded ${count} accessible models directly from your API Key.`);
+        } catch (e) {
+            alert("Error fetching models: " + e.message + "\n\nYour API key might be invalid or lacking permissions.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.style.pointerEvents = "auto";
+        }
+    }
+
     // --- File Reading Logic (PDF, DOCX, TXT) ---
     async function handleFileUpload() {
         const fileInput = document.getElementById('file-upload');
@@ -380,7 +423,6 @@
         }
 
         try {
-            // Updated dynamically based on the dropdown selector
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -402,7 +444,7 @@
             document.getElementById('output-section').scrollIntoView({behavior: 'smooth'});
             
         } catch (e) { 
-            alert("Generation Failed: " + e.message + "\n\nTip: Try changing the AI Model Engine from the left sidebar."); 
+            alert("Generation Failed: " + e.message + "\n\nTip: Try clicking 'Auto-Fetch API Models' in the left sidebar to find a model your API key supports!"); 
         } finally {
             document.getElementById('loading').style.display = "none";
         }
