@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DepEd Teacher's OS v3.2</title>
+    <title>DepEd Teacher's OS v3.4</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
@@ -25,7 +25,7 @@
         .sidebar { width: 280px; background: var(--primary-blue); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
         .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-header h2 { margin: 0; color: var(--accent-orange); font-weight: 800; letter-spacing: 1px; }
-        .sidebar-menu { flex: 1; padding: 20px 15px; }
+        .sidebar-menu { flex: 1; padding: 20px 15px; overflow-y: auto; }
         .menu-item {
             padding: 14px 20px; margin-bottom: 8px; border-radius: 8px; cursor: pointer;
             transition: all 0.3s ease; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 0.95rem;
@@ -58,7 +58,7 @@
         select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1); }
 
         .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 15px; }
-        .checkbox-group label { text-transform: none; font-weight: 500; font-size: 0.95rem; color: var(--text-main); display: flex; align-items: center; gap: 5px; cursor: pointer; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .checkbox-group label { text-transform: none; font-weight: 500; font-size: 0.90rem; color: var(--text-main); display: flex; align-items: center; gap: 5px; cursor: pointer; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
 
         .tos-config { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .perc-box { background: var(--bg-white); padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
@@ -96,6 +96,7 @@
     <div class="sidebar-menu">
         <div class="menu-item active" onclick="showTab('planner')">📝 Lesson Planner</div>
         <div class="menu-item" onclick="showTab('tos')">📊 TOS & Quiz Maker</div>
+        <div class="menu-item" onclick="showTab('analysis')">📈 Item Analysis</div>
         <div class="menu-item" onclick="showTab('references')">📂 Reference Library</div>
         <div class="menu-item" onclick="showTab('profile')">🏫 School Profile</div>
     </div>
@@ -192,12 +193,14 @@
             <label style="margin-top: 15px;">Assessment Formats (Check all that apply)</label>
             <div class="checkbox-group">
                 <label><input type="checkbox" class="quiz-format" value="Multiple Choice" checked> Multiple Choice</label>
-                <label><input type="checkbox" class="quiz-format" value="Assertion-Reasoning (HOTS)"> Assertion-Reasoning (HOTS)</label>
-                <label><input type="checkbox" class="quiz-format" value="Data Interpretation/Analysis (HOTS)"> Data Analysis (HOTS)</label>
                 <label><input type="checkbox" class="quiz-format" value="True or False"> True or False</label>
                 <label><input type="checkbox" class="quiz-format" value="Matching Type"> Matching Type</label>
                 <label><input type="checkbox" class="quiz-format" value="Identification"> Identification</label>
-                <label><input type="checkbox" class="quiz-format" value="Scenario-Based"> Scenario-Based</label>
+                <label><input type="checkbox" class="quiz-format" value="Assertion-Reasoning (HOTS)"> Assertion-Reasoning (HOTS)</label>
+                <label><input type="checkbox" class="quiz-format" value="Data Interpretation (HOTS)"> Data Interpretation (HOTS)</label>
+                <label><input type="checkbox" class="quiz-format" value="Scenario-Based Multiple Choice"> Scenario-Based MCQ</label>
+                <label><input type="checkbox" class="quiz-format" value="Scenario-Based True or False"> Scenario-Based T/F</label>
+                <label><input type="checkbox" class="quiz-format" value="Scenario-Based Identification"> Scenario-Based Identification</label>
                 <label><input type="checkbox" class="quiz-format" value="Essay/Short Answer"> Essay</label>
             </div>
 
@@ -205,6 +208,7 @@
                 <h4 style="margin-top: 0; color: var(--primary-blue); margin-bottom: 15px;">TOS Competencies Encoder</h4>
                 
                 <div style="display:flex; gap:10px; font-size: 0.8rem; font-weight: bold; color: var(--primary-blue); margin-bottom: 5px;">
+                    <div style="flex:2;">Content Title</div>
                     <div style="flex:3;">Competency Description</div>
                     <div style="flex:1;">Code</div>
                     <div style="flex:1;">Days Taught</div>
@@ -213,6 +217,7 @@
                 
                 <div id="tos-competencies-container">
                     <div class="tos-row" style="display:flex; gap:10px; margin-bottom:10px;">
+                        <input type="text" class="tos-comp-title" placeholder="e.g. Nature of Inquiry" style="flex:2; margin-bottom:0;">
                         <input type="text" class="tos-comp-desc" placeholder="e.g. Defines research..." style="flex:3; margin-bottom:0;">
                         <input type="text" class="tos-comp-code" placeholder="CS_RS11-IIIa-1" style="flex:1; margin-bottom:0;">
                         <input type="number" class="tos-comp-days" placeholder="Days" style="flex:1; margin-bottom:0;" value="1">
@@ -225,16 +230,33 @@
         </div>
     </div>
 
+    <div id="analysis" class="tab-content">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">Item Analysis & Remediation Planner</h3>
+            <p style="font-size: 0.9rem; color: #666;">Paste your item results to automatically calculate the MPL, identify Least Learned Competencies, and generate targeted intervention strategies.</p>
+            
+            <div class="grid-2" style="margin-bottom: 15px;">
+                <div><label>Total Number of Takers (Learners)</label><input type="number" id="total-learners" value="40"></div>
+            </div>
+            
+            <label>Paste Item Results Data</label>
+            <p style="font-size: 0.8rem; color: var(--primary-blue); margin-top: 0;">Format: Item Number | Competency | Number of Correct Responses (You can copy-paste directly from Excel/Sheets)</p>
+            <textarea id="item-analysis-data" rows="8" placeholder="e.g.&#10;1 | Defines research | 35&#10;2 | Defines research | 30&#10;3 | Differentiates quantitative and qualitative | 15"></textarea>
+            
+            <button class="btn" onclick="generateAI('analysis')">📈 Generate Item Analysis & Interventions</button>
+        </div>
+    </div>
+
     <div id="references" class="tab-content">
         <div class="card">
-            <h3 style="margin-top:0; color: var(--primary-blue);">Upload Context Library</h3>
-            <p style="font-size: 0.9rem; color: #666;">Upload your Budget of Work, MATATAG guides, or Lesson Notes. The AI will read this to ensure your output is perfectly aligned.</p>
+            <h3 style="margin-top:0; color: var(--primary-blue);">Upload Context Library (Multi-File Supported)</h3>
+            <p style="font-size: 0.9rem; color: #666;">You can highlight and upload multiple files at once. The AI will read them all to ensure output alignment.</p>
             
             <div class="file-drop" onclick="document.getElementById('file-upload').click()">
                 <div style="font-size: 2rem; margin-bottom: 10px;">📂</div>
                 <b>Click to browse or drop files here</b><br>
-                <span style="font-size: 0.8rem;">Supports .PDF, .DOCX, .TXT</span>
-                <input type="file" id="file-upload" accept=".txt,.pdf,.docx" hidden onchange="handleFileUpload()">
+                <span style="font-size: 0.8rem;">Supports multiple .PDF, .DOCX, .TXT</span>
+                <input type="file" id="file-upload" accept=".txt,.pdf,.docx" multiple hidden onchange="handleFileUpload()">
             </div>
             <div id="file-status" class="file-status-box" style="color: var(--text-main);">No context uploaded yet.</div>
         </div>
@@ -300,6 +322,7 @@
         row.className = 'tos-row';
         row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
         row.innerHTML = `
+            <input type="text" class="tos-comp-title" placeholder="Content title..." style="flex:2; margin-bottom:0;">
             <input type="text" class="tos-comp-desc" placeholder="Next competency..." style="flex:3; margin-bottom:0;">
             <input type="text" class="tos-comp-code" placeholder="Code" style="flex:1; margin-bottom:0;">
             <input type="number" class="tos-comp-days" placeholder="Days" style="flex:1; margin-bottom:0;" value="1">
@@ -346,47 +369,56 @@
         }
     }
 
+    // --- Multi-File Upload Logic ---
     async function handleFileUpload() {
         const fileInput = document.getElementById('file-upload');
-        const file = fileInput.files[0];
+        const files = fileInput.files;
         const statusDiv = document.getElementById('file-status');
-        if (!file) return;
+        if (files.length === 0) return;
         
-        statusDiv.innerHTML = "⏳ Reading file... please wait.";
+        statusDiv.innerHTML = "⏳ Reading files... please wait.";
         statusDiv.style.color = "var(--accent-orange)";
         
+        uploadedContext = "";
+        let fileNames = [];
+
         try {
-            const ext = file.name.split('.').pop().toLowerCase();
-            if (ext === 'txt') {
-                const reader = new FileReader();
-                reader.onload = (e) => finishUpload(e.target.result, file.name);
-                reader.readAsText(file);
-            } else if (ext === 'docx') {
-                const arrayBuffer = await file.arrayBuffer();
-                const result = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
-                finishUpload(result.value, file.name);
-            } else if (ext === 'pdf') {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-                let text = '';
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const content = await page.getTextContent();
-                    text += content.items.map(item => item.str).join(' ') + '\n';
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                fileNames.push(file.name);
+                const ext = file.name.split('.').pop().toLowerCase();
+                let extractedText = "";
+
+                if (ext === 'txt') {
+                    extractedText = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = (e) => reject(e);
+                        reader.readAsText(file);
+                    });
+                } else if (ext === 'docx') {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const result = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
+                    extractedText = result.value;
+                } else if (ext === 'pdf') {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                    for (let j = 1; j <= pdf.numPages; j++) {
+                        const page = await pdf.getPage(j);
+                        const content = await page.getTextContent();
+                        extractedText += content.items.map(item => item.str).join(' ') + '\n';
+                    }
                 }
-                finishUpload(text, file.name);
+                
+                uploadedContext += `\n--- Context from Document: ${file.name} ---\n${extractedText}\n`;
             }
+            
+            statusDiv.innerHTML = `✅ <b>${files.length} file(s)</b> loaded successfully! (${fileNames.join(', ')})`;
+            statusDiv.style.color = "green";
         } catch (err) {
-            statusDiv.innerHTML = "❌ Error reading file.";
+            statusDiv.innerHTML = "❌ Error reading files.";
             statusDiv.style.color = "red";
         }
-    }
-
-    function finishUpload(text, filename) {
-        uploadedContext = text;
-        const statusDiv = document.getElementById('file-status');
-        statusDiv.innerHTML = `✅ <b>${filename}</b> loaded successfully!`;
-        statusDiv.style.color = "green";
     }
 
     function saveProfile() {
@@ -499,7 +531,7 @@
                 </table>
                 `;
             } else {
-                formatInstruction = `Format as a vertical Semi-Detailed Lesson Plan mapping the DepEd Parts I to VI. Create a 3-column table for the Procedures section: "Parts of LP", "Teacher/Student Activity", and "PPST Annotations (RPMS-COT)". Carefully align the PPST indicators for a ${pos} career stage. CRITICAL INSTRUCTION: In the PPST Annotations column, DO NOT just list the indicator code. You MUST explicitly explain HOW the corresponding teacher/student activity demonstrates that specific indicator. Additionally, integrate localized and contextualized teaching strategies appropriate to the learners' setting in the activities.`;
+                formatInstruction = `Format as a vertical Semi-Detailed Lesson Plan mapping the DepEd Parts I to VI. Create a 3-column table for the Procedures section: "Parts of LP", "Teacher/Student Activity", and "PPST Annotations (RPMS-COT)". Carefully align the PPST indicators for a ${pos} career stage. CRITICAL INSTRUCTION: In the PPST Annotations column, DO NOT just list the indicator code. You MUST explicitly explain HOW the corresponding teacher/student activity demonstrates that specific indicator. Additionally, integrate localized and contextualized teaching strategies appropriate to the learners' setting in the activities. Do not hallucinate; only use realistic pedagogy based on the provided topic/competencies.`;
             }
             
             promptText = `Act as an expert DepEd Philippines Master Teacher. Generate a ${docType} for ${subject}, ${grade}, ${term}. 
@@ -513,21 +545,20 @@
             const a = document.getElementById('perc-avg').value;
             const d = document.getElementById('perc-diff').value;
             
-            // Gather Assessment Formats
             const formatCheckboxes = document.querySelectorAll('.quiz-format:checked');
             let selectedFormats = Array.from(formatCheckboxes).map(cb => cb.value).join(", ");
             if(!selectedFormats) selectedFormats = "Multiple Choice";
 
-            // Gather TOS Encoded Competencies
             const tosRows = document.querySelectorAll('.tos-row');
             let tosDataList = [];
             let totalDays = 0;
             tosRows.forEach((row, index) => {
+                const title = row.querySelector('.tos-comp-title').value;
                 const desc = row.querySelector('.tos-comp-desc').value;
                 const code = row.querySelector('.tos-comp-code').value;
                 const days = parseInt(row.querySelector('.tos-comp-days').value) || 0;
-                if(desc) {
-                    tosDataList.push(`${index+1}. ${desc} (Code: ${code}) - ${days} Days`);
+                if(desc || title) {
+                    tosDataList.push(`${index+1}. Content Title: ${title} | Competency: ${desc} (Code: ${code}) - ${days} Days`);
                     totalDays += days;
                 }
             });
@@ -540,20 +571,47 @@
             Total Days Taught: ${totalDays}
             
             Instructions for TOS Table:
-            1. Include these exact columns: Competency, LC Code, No. of Days Taught, Percentage (%), Total Items, Item Placement (Remembering, Understanding, Applying, Analyzing, Evaluating, Creating).
-            2. Calculate Percentage per competency: (Days Taught / Total Days) * 100. Display this in the Percentage column.
-            3. Calculate Total Items per competency: (Days Taught / Total Days) * ${items}. (Round properly so they sum exactly to ${items}).
+            1. Include these EXACT columns in this order: Content Title, Competency, LC Code, No. of Days Taught, Percentage (%), No. of Items, Item Placement (Remembering, Understanding, Applying, Analyzing, Evaluating, Creating).
+            2. Calculate Percentage (%) per competency: (Days Taught / Total Days) * 100. CRITICAL: Output strictly as a WHOLE NUMBER (round appropriately). Do NOT swap this column with No. of Items.
+            3. Calculate No. of Items per competency: (Percentage / 100) * ${items}. CRITICAL: Output strictly as a WHOLE NUMBER. Make sure the total sum equals exactly ${items}. Do NOT swap this column with Percentage.
             4. Distribute the items across the Cognitive Spread: ${e}% Easy (Remember/Understand), ${a}% Average (Apply/Analyze), ${d}% Difficult (Evaluate/Create).
-            5. CRITICAL: In the Item Placement columns, provide the SPECIFIC ITEM NUMBERS (e.g., "1-3", "4, 6", "10-15"), not just the count of items. 
+            5. CRITICAL: In the Item Placement columns, provide the SPECIFIC ITEM NUMBERS (e.g., "1-3", "4", "5-7"), not just the count of items. Match the question's true cognitive complexity.
             6. Output the TOS as a professional HTML Table.
             
-            Instructions for the Assessment:
+            Instructions for the Generated Assessment:
             1. Provide the actual test questions directly below the TOS table.
-            2. Categorize the questions matching these exact Assessment Formats requested by the teacher: ${selectedFormats}. Ensure HOTS items are highly analytical but objective.
-            3. Include an Answer Key at the very bottom.
+            2. Number the test questions continuously from 1 to ${items}. 
+            3. CRITICAL: DO NOT place the cognitive domain or item distribution in parentheses next to the test questions. (e.g., WRONG: "1. (Remembering) What is...". RIGHT: "1. What is..."). The question numbers MUST align perfectly with the specific Item Placement numbers you generated in the TOS table.
+            4. Categorize the questions matching these exact Assessment Formats requested by the teacher: ${selectedFormats}. Ensure Scenario-Based questions are truly objective based on the selected formats.
+            5. Include an Answer Key at the very bottom.
             
             Context Material provided by teacher: ${uploadedContext}
-            Output strictly as HTML tags without markdown block wrappers. Do not hallucinate; use only the provided competencies.`;
+            Output strictly as HTML tags without markdown block wrappers. Do not hallucinate; use only the provided competencies and context.`;
+            
+        } else if (mode === 'analysis') {
+            const totalLearners = document.getElementById('total-learners').value;
+            const itemData = document.getElementById('item-analysis-data').value;
+            
+            if (!totalLearners || !itemData) {
+                alert("Please enter Total Learners and paste the raw item data.");
+                document.getElementById('loading').style.display = "none";
+                return;
+            }
+
+            promptText = `Act as an expert DepEd Philippines Master Teacher and Assessment Coordinator. Generate an Item Analysis and Least Learned Competency Remediation Report for ${subject}, ${grade}, ${term}.
+            
+            Total Number of Takers/Learners: ${totalLearners}
+            Raw Item Data (Item Number | Competency | Correct Responses):
+            ${itemData}
+            
+            Instructions:
+            1. Calculate the Mean Percentage Score (MPL/Mastery Level) per item using this strict formula: (Number of Correct Responses / Total Learners) * 100. Output this as a percentage.
+            2. Aggregate the data per Competency to find the Average MPL per Competency.
+            3. Create a professional HTML table summarizing the: Item No., Competency, No. of Correct Responses, Item MPL %, and Descriptive Equivalence (e.g., Mastered, Moving Towards Mastery, Least Learned/Needs Remediation).
+            4. Explicitly categorize and list the "Most Learned Competencies" (Highest MPLs) and "Least Learned Competencies" (Lowest MPLs).
+            5. For the Least Learned Competencies, act as a Master Teacher and provide detailed, actionable intervention, remediation, and reteaching strategies (e.g., localized materials, differentiated instruction, peer tutoring) complying with DepEd Order No. 8, s. 2015.
+            
+            Output strictly as professional HTML tags without markdown code blocks. Make it format like an official DepEd report. Do not hallucinate math results.`;
         }
 
         try {
@@ -562,7 +620,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     contents: [{ parts: [{ text: promptText }] }],
-                    generationConfig: { temperature: 0.2 }
+                    generationConfig: { temperature: 0.1 }
                 })
             });
             
@@ -607,7 +665,7 @@
         </style>
         </head><body>
         
-        ${activeTab === 'tos' || document.getElementById('doc-type').value === 'SDLP' ? 
+        ${activeTab !== 'planner' || document.getElementById('doc-type').value === 'SDLP' ? 
         `<div style="text-align: center; font-weight: bold; margin-bottom: 25px; line-height: 1.2;">
             Republic of the Philippines<br>Department of Education<br>${p.school ? p.school.toUpperCase() : 'NAME OF SCHOOL'}
         </div>` : ''}
