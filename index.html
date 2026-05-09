@@ -3,699 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DepEd Teacher's OS v3.4</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
-    
+    <title>ILAW Framework LP & TOS Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* --- Color Palette --- */
-        :root {
-            --primary-blue: #0A2540;
-            --accent-orange: #FF6B00;
-            --bg-white: #F4F7F9;
-            --card-white: #FFFFFF;
-            --text-main: #333333;
-            --border-color: #ced4da;
+        /* Simple loader for extraction simulation */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
         }
-
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg-white); color: var(--text-main); overflow: hidden; }
-
-        /* Sidebar Navigation */
-        .sidebar { width: 280px; background: var(--primary-blue); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
-        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-header h2 { margin: 0; color: var(--accent-orange); font-weight: 800; letter-spacing: 1px; }
-        .sidebar-menu { flex: 1; padding: 20px 15px; overflow-y: auto; }
-        .menu-item {
-            padding: 14px 20px; margin-bottom: 8px; border-radius: 8px; cursor: pointer;
-            transition: all 0.3s ease; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 0.95rem;
-        }
-        .menu-item:hover { background: rgba(255, 107, 0, 0.1); color: var(--accent-orange); }
-        .menu-item.active { background: var(--accent-orange); color: white; box-shadow: 0 4px 10px rgba(255, 107, 0, 0.3); }
-
-        .api-settings { margin-top: auto; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .api-settings label { color: rgba(255,255,255,0.7); font-size: 0.75rem; margin-bottom: 4px; }
-        .api-settings select { padding: 8px; font-size: 0.85rem; border: none; border-radius: 6px; width: 100%; margin-bottom: 10px; background: rgba(255,255,255,0.9); color: var(--primary-blue); }
-
-        /* Main Workspace */
-        .main-content { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; }
-        .card { background: var(--card-white); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border-top: 4px solid var(--accent-orange); }
-        
-        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Layout Grids */
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-        /* Forms & Inputs */
-        label { font-weight: 700; display: block; margin-bottom: 6px; color: var(--primary-blue); font-size: 0.85rem; text-transform: uppercase; }
-        select, input, textarea {
-            width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
-            margin-bottom: 15px; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: 0.3s;
-        }
-        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1); }
-
-        .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 15px; }
-        .checkbox-group label { text-transform: none; font-weight: 500; font-size: 0.90rem; color: var(--text-main); display: flex; align-items: center; gap: 5px; cursor: pointer; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
-
-        .tos-config { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .perc-box { background: var(--bg-white); padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
-        .perc-box input { width: 80px; text-align: center; margin-bottom: 0; font-weight: bold; font-size: 1.1rem; color: var(--primary-blue); }
-
-        /* Buttons */
-        .btn {
-            padding: 14px 28px; border: none; border-radius: 8px; cursor: pointer;
-            font-weight: bold; transition: all 0.3s; background: var(--accent-orange); color: white; font-size: 1rem; width: 100%;
-        }
-        .btn:hover { background: #e65c00; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 107, 0, 0.3); }
-        .btn-blue { background: var(--primary-blue); margin-top: 20px; }
-        .btn-blue:hover { background: #071a2e; }
-
-        /* Loading & Output */
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-orange); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        #word-preview {
-            background: white; border: 1px solid #ddd; padding: 50px; margin-top: 20px;
-            min-height: 500px; font-family: "Times New Roman", serif; overflow-x: auto; line-height: 1.5; color: black;
-        }
-        
-        .file-drop { border: 2px dashed var(--primary-blue); padding: 30px; text-align: center; border-radius: 12px; background: rgba(10, 37, 64, 0.03); cursor: pointer; margin-bottom: 10px; }
-        .file-status-box { padding: 15px; border-radius: 8px; background: #e2e8f0; font-weight: bold; text-align: center; font-size: 0.95rem; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 font-sans text-gray-800">
 
-<div class="sidebar">
-    <div class="sidebar-header">
-        <h2>DEPED OS</h2>
-        <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 5px;">Master Teacher Suite</div>
-    </div>
-    <div class="sidebar-menu">
-        <div class="menu-item active" onclick="showTab('planner')">📝 Lesson Planner</div>
-        <div class="menu-item" onclick="showTab('tos')">📊 TOS & Quiz Maker</div>
-        <div class="menu-item" onclick="showTab('analysis')">📈 Item Analysis</div>
-        <div class="menu-item" onclick="showTab('references')">📂 Reference Library</div>
-        <div class="menu-item" onclick="showTab('profile')">🏫 School Profile</div>
-    </div>
-    
-    <div class="api-settings">
-        <label>AI Model Engine</label>
-        <select id="ai-model">
-            <option value="gemini-1.5-flash-002">Gemini 1.5 Flash 002</option>
-            <option value="gemini-flash-latest">Gemini Flash Latest</option>
-            <option value="gemini-1.5-pro-002">Gemini 1.5 Pro 002</option>
-        </select>
-        <div class="menu-item" onclick="fetchLiveModels(this)" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.2); padding: 10px; font-size: 0.8rem; justify-content: center; margin-bottom: 8px;">🔄 Auto-Fetch API Models</div>
-        <div class="menu-item" onclick="resetApiKey()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); opacity: 0.7; padding: 10px; font-size: 0.8rem; justify-content: center;">⚙️ Reset API Key</div>
-    </div>
-</div>
+    <div class="max-w-5xl mx-auto p-6">
+        <header class="mb-8 border-b pb-4">
+            <h1 class="text-3xl font-bold text-blue-700">ILAW Framework Educator Portal</h1>
+            <p class="text-gray-600">Generate Trimester-aligned Lesson Plans and TOS/Quizzes</p>
+        </header>
 
-<div class="main-content">
-    
-    <div class="card" style="border-top-color: var(--primary-blue);">
-        <div class="grid-3">
-            <div>
-                <label>Grade Level</label>
-                <select id="grade-level" onchange="toggleSemester()">
-                    <option>Grade 1</option><option>Grade 2</option><option>Grade 3</option>
-                    <option>Grade 4</option><option>Grade 5</option><option>Grade 6</option>
-                    <option>Grade 7</option><option>Grade 8</option><option>Grade 9</option>
-                    <option>Grade 10</option><option value="SHS">Grade 11 (SHS)</option><option value="SHS">Grade 12 (SHS)</option>
-                </select>
-            </div>
-            <div>
-                <label id="term-label">Quarter</label>
-                <select id="term-select">
-                    <option>1st Quarter</option><option>2nd Quarter</option>
-                    <option>3rd Quarter</option><option>4th Quarter</option>
-                </select>
-            </div>
-            <div>
-                <label>Subject / Learning Area</label>
-                <input type="text" id="subject" placeholder="e.g. Practical Research 2">
-            </div>
+        <div class="flex space-x-4 mb-6">
+            <button onclick="switchTab('lp-maker')" id="tab-lp" class="px-4 py-2 bg-blue-600 text-white rounded-md font-semibold">Lesson Plan Maker</button>
+            <button onclick="switchTab('tos-maker')" id="tab-tos" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold hover:bg-gray-300">TOS & Quiz Maker</button>
         </div>
-    </div>
 
-    <div id="planner" class="tab-content active">
-        <div class="card">
-            <h3 style="margin-top:0; color: var(--primary-blue);">Smart Lesson Planner</h3>
-            <div class="grid-2" style="margin-bottom: 15px;">
+        <div class="bg-white p-6 rounded-lg shadow-sm border mb-6">
+            <h2 class="text-xl font-bold mb-2">1. Upload Learning Materials</h2>
+            <p class="text-sm text-gray-500 mb-4">Upload PDF, PPTX, or DOCX files. The system will extract the text to align the generated content perfectly.</p>
+            
+            <div class="flex items-center space-x-4">
+                <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.ppt,.pptx" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                <button onclick="extractContent()" class="px-6 py-2 bg-green-600 text-white rounded-md font-semibold hover:bg-green-700 whitespace-nowrap">Extract Content</button>
+            </div>
+            
+            <div id="extractionStatus" class="hidden mt-4 flex items-center space-x-2 text-blue-600">
+                <div class="loader"></div>
+                <span id="extractionText">Extracting content, please wait...</span>
+            </div>
+            <textarea id="extractedData" class="hidden w-full mt-4 p-2 border rounded-md" rows="4" readonly></textarea>
+        </div>
+
+        <div id="lp-maker" class="bg-white p-6 rounded-lg shadow-sm border">
+            <h2 class="text-xl font-bold mb-4">2. Configure Lesson Plan</h2>
+            
+            <div class="mb-6">
+                <label class="block font-semibold mb-2">Lesson Plan Format</label>
+                <div class="flex space-x-6">
+                    <label class="flex items-center">
+                        <input type="radio" name="lpType" value="weekly" checked onchange="toggleLPType()" class="mr-2"> 
+                        Weekly DLL (4 Sessions)
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="lpType" value="semi-detailed" onchange="toggleLPType()" class="mr-2"> 
+                        Semi-Detailed LP
+                    </label>
+                </div>
+            </div>
+
+            <div id="timeAllotmentContainer" class="mb-6 hidden bg-blue-50 p-4 rounded-md border border-blue-100">
+                <label class="block font-semibold mb-1">Time Allotment (Minutes)</label>
+                <p class="text-xs text-gray-500 mb-2">The system will automatically distribute this time across the 'Flow' and 'Assessment' sections.</p>
+                <input type="number" id="timeAllotment" placeholder="e.g., 60" class="w-1/3 p-2 border rounded-md">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                    <label>Document Format</label>
-                    <select id="doc-type" onchange="togglePPST()">
-                        <option value="DLL">4-Day DLL (Landscape Grid)</option>
-                        <option value="SDLP">Semi-Detailed w/ PPST Annotations (Portrait)</option>
+                    <label class="block font-semibold text-sm">Lesson Title</label>
+                    <input type="text" id="lessonTitle" class="w-full p-2 border rounded-md" placeholder="Enter Title">
+                </div>
+                <div>
+                    <label class="block font-semibold text-sm">Key Stage (For Design Principles)</label>
+                    <select id="keyStage" class="w-full p-2 border rounded-md">
+                        <option value="Stage 1">Key Stage 1 (K - Gr 3)</option>
+                        <option value="Stage 2">Key Stage 2 (Gr 4-6)</option>
+                        <option value="Stage 3">Key Stage 3 (Gr 7-10)</option>
+                        <option value="Stage 4">Key Stage 4 (Gr 11-12)</option>
                     </select>
                 </div>
-                <div id="ppst-box" style="display:none;">
-                    <label>Teaching Position (RPMS-COT Alignment)</label>
-                    <select id="position">
-                        <option value="Teacher I-III (Proficient)">Teacher I - III</option>
-                        <option value="Teacher IV-VII (Proficient/Highly Proficient)">Teacher IV - VII</option>
-                        <option value="Master Teacher I-IV (Highly Proficient)">MT I - MT IV</option>
+            </div>
+
+            <button onclick="generateOutput('LP')" class="w-full py-3 bg-blue-800 text-white rounded-md font-bold hover:bg-blue-900 transition">
+                Generate ILAW Lesson Plan
+            </button>
+        </div>
+
+        <div id="tos-maker" class="hidden bg-white p-6 rounded-lg shadow-sm border">
+            <h2 class="text-xl font-bold mb-4">2. Configure TOS & Quiz</h2>
+            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block font-semibold text-sm">Number of Items</label>
+                    <input type="number" id="quizItems" class="w-full p-2 border rounded-md" placeholder="e.g., 20">
+                </div>
+                <div>
+                    <label class="block font-semibold text-sm">Assessment Type</label>
+                    <select id="quizType" class="w-full p-2 border rounded-md">
+                        <option value="Multiple Choice">Multiple Choice</option>
+                        <option value="Identification">Identification</option>
+                        <option value="Essay">Essay & Rubric</option>
+                        <option value="Mixed">Mixed (TOS Aligned)</option>
                     </select>
                 </div>
             </div>
-            
-            <div style="background: var(--bg-white); padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                <h4 style="margin-top: 0; color: var(--primary-blue); margin-bottom: 15px;">I. OBJECTIVES ENCODER</h4>
-                <label>A. Content Standards</label>
-                <textarea id="cs-input" rows="2" placeholder="The learners demonstrate an understanding of..."></textarea>
-                
-                <label>B. Performance Standards</label>
-                <textarea id="ps-input" rows="2" placeholder="The learners..."></textarea>
-                
-                <label>C. Learning Competencies / Objectives (with LC Code)</label>
-                <textarea id="lc-input" rows="2" placeholder="Paste the specific Learning Competency and code here..."></textarea>
-            </div>
 
-            <button class="btn" onclick="generateAI('lesson')">✨ Generate Lesson Plan</button>
+            <button onclick="generateOutput('TOS')" class="w-full py-3 bg-purple-700 text-white rounded-md font-bold hover:bg-purple-800 transition">
+                Generate TOS & Quiz
+            </button>
         </div>
-    </div>
 
-    <div id="tos" class="tab-content">
-        <div class="card">
-            <h3 style="margin-top:0; color: var(--primary-blue);">TOS & Assessment Generator</h3>
-            
-            <label>Cognitive Weightage Distribution (%)</label>
-            <div class="tos-config">
-                <div class="perc-box"><label>Easy</label><input type="number" id="perc-easy" value="40"></div>
-                <div class="perc-box"><label>Average</label><input type="number" id="perc-avg" value="40"></div>
-                <div class="perc-box"><label>Difficult</label><input type="number" id="perc-diff" value="20"></div>
-            </div>
-            
-            <div><label>Total Test Items</label><input type="number" id="total-items" value="30" style="max-width: 200px;"></div>
-
-            <label style="margin-top: 15px;">Assessment Formats (Check all that apply)</label>
-            <div class="checkbox-group">
-                <label><input type="checkbox" class="quiz-format" value="Multiple Choice" checked> Multiple Choice</label>
-                <label><input type="checkbox" class="quiz-format" value="True or False"> True or False</label>
-                <label><input type="checkbox" class="quiz-format" value="Matching Type"> Matching Type</label>
-                <label><input type="checkbox" class="quiz-format" value="Identification"> Identification</label>
-                <label><input type="checkbox" class="quiz-format" value="Assertion-Reasoning (HOTS)"> Assertion-Reasoning (HOTS)</label>
-                <label><input type="checkbox" class="quiz-format" value="Data Interpretation (HOTS)"> Data Interpretation (HOTS)</label>
-                <label><input type="checkbox" class="quiz-format" value="Scenario-Based Multiple Choice"> Scenario-Based MCQ</label>
-                <label><input type="checkbox" class="quiz-format" value="Scenario-Based True or False"> Scenario-Based T/F</label>
-                <label><input type="checkbox" class="quiz-format" value="Scenario-Based Identification"> Scenario-Based Identification</label>
-                <label><input type="checkbox" class="quiz-format" value="Essay/Short Answer"> Essay</label>
-            </div>
-
-            <div style="background: var(--bg-white); padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 20px; margin-bottom: 20px;">
-                <h4 style="margin-top: 0; color: var(--primary-blue); margin-bottom: 15px;">TOS Competencies Encoder</h4>
-                
-                <div style="display:flex; gap:10px; font-size: 0.8rem; font-weight: bold; color: var(--primary-blue); margin-bottom: 5px;">
-                    <div style="flex:2;">Content Title</div>
-                    <div style="flex:3;">Competency Description</div>
-                    <div style="flex:1;">Code</div>
-                    <div style="flex:1;">Days Taught</div>
-                    <div style="width:45px;"></div>
+        <div id="outputSection" class="mt-8 hidden">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2">Generated Output</h2>
+            <div id="outputContent" class="bg-white p-8 border rounded-lg shadow-inner min-h-[300px] prose max-w-none">
                 </div>
-                
-                <div id="tos-competencies-container">
-                    <div class="tos-row" style="display:flex; gap:10px; margin-bottom:10px;">
-                        <input type="text" class="tos-comp-title" placeholder="e.g. Nature of Inquiry" style="flex:2; margin-bottom:0;">
-                        <input type="text" class="tos-comp-desc" placeholder="e.g. Defines research..." style="flex:3; margin-bottom:0;">
-                        <input type="text" class="tos-comp-code" placeholder="CS_RS11-IIIa-1" style="flex:1; margin-bottom:0;">
-                        <input type="number" class="tos-comp-days" placeholder="Days" style="flex:1; margin-bottom:0;" value="1">
-                        <button class="btn btn-blue" style="width:45px; padding:10px; margin:0;" onclick="addTOSRow()">+</button>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn" onclick="generateAI('tos')">📊 Calculate TOS & Generate Quiz</button>
         </div>
+
     </div>
 
-    <div id="analysis" class="tab-content">
-        <div class="card">
-            <h3 style="margin-top:0; color: var(--primary-blue);">Item Analysis & Remediation Planner</h3>
-            <p style="font-size: 0.9rem; color: #666;">Paste your item results to automatically calculate the MPL, identify Least Learned Competencies, and generate targeted intervention strategies.</p>
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.getElementById('lp-maker').classList.add('hidden');
+            document.getElementById('tos-maker').classList.add('hidden');
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.getElementById('tab-lp').className = tabId === 'lp-maker' ? 'px-4 py-2 bg-blue-600 text-white rounded-md font-semibold' : 'px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold hover:bg-gray-300';
+            document.getElementById('tab-tos').className = tabId === 'tos-maker' ? 'px-4 py-2 bg-blue-600 text-white rounded-md font-semibold' : 'px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold hover:bg-gray-300';
             
-            <div class="grid-2" style="margin-bottom: 15px;">
-                <div><label>Total Number of Takers (Learners)</label><input type="number" id="total-learners" value="40"></div>
-            </div>
-            
-            <label>Paste Item Results Data</label>
-            <p style="font-size: 0.8rem; color: var(--primary-blue); margin-top: 0;">Format: Item Number | Competency | Number of Correct Responses (You can copy-paste directly from Excel/Sheets)</p>
-            <textarea id="item-analysis-data" rows="8" placeholder="e.g.&#10;1 | Defines research | 35&#10;2 | Defines research | 30&#10;3 | Differentiates quantitative and qualitative | 15"></textarea>
-            
-            <button class="btn" onclick="generateAI('analysis')">📈 Generate Item Analysis & Interventions</button>
-        </div>
-    </div>
-
-    <div id="references" class="tab-content">
-        <div class="card">
-            <h3 style="margin-top:0; color: var(--primary-blue);">Upload Context Library (Multi-File Supported)</h3>
-            <p style="font-size: 0.9rem; color: #666;">You can highlight and upload multiple files at once. The AI will read them all to ensure output alignment.</p>
-            
-            <div class="file-drop" onclick="document.getElementById('file-upload').click()">
-                <div style="font-size: 2rem; margin-bottom: 10px;">📂</div>
-                <b>Click to browse or drop files here</b><br>
-                <span style="font-size: 0.8rem;">Supports multiple .PDF, .DOCX, .TXT</span>
-                <input type="file" id="file-upload" accept=".txt,.pdf,.docx" multiple hidden onchange="handleFileUpload()">
-            </div>
-            <div id="file-status" class="file-status-box" style="color: var(--text-main);">No context uploaded yet.</div>
-        </div>
-    </div>
-
-    <div id="profile" class="tab-content">
-        <div class="card">
-            <h3 style="margin-top:0; color: var(--primary-blue);">Institutional Signatories</h3>
-            <label>Complete School Name</label><input type="text" id="prof-school" placeholder="e.g. San Jose National High School" oninput="saveProfile()">
-            <div class="grid-2">
-                <div><label>Prepared by (Your Name)</label><input type="text" id="prof-teacher" placeholder="Juan Dela Cruz" oninput="saveProfile()"></div>
-                <div><label>Checked by (Head/Coordinator)</label><input type="text" id="prof-checker" placeholder="Maria Clara" oninput="saveProfile()"></div>
-            </div>
-            <label>Approved by (Principal)</label><input type="text" id="prof-approver" placeholder="Dr. Jose Rizal" oninput="saveProfile()">
-        </div>
-    </div>
-
-    <div id="loading" style="display:none; text-align:center; padding: 40px;">
-        <div class="loader"></div>
-        <h3 style="color: var(--primary-blue); margin: 10px 0;">AI is analyzing pedagogy and drafting document...</h3>
-        <p style="color: #666;">Please wait. Ensuring exact adherence to formatting constraints.</p>
-    </div>
-
-    <div id="output-section" style="display:none;">
-        <div class="card" style="border-top-color: #38a169;">
-            <h3 style="margin-top:0; color: #38a169;">✅ Document Ready</h3>
-            <div id="word-preview"></div>
-            <button class="btn btn-blue" onclick="exportToWord()">💾 Download as MS Word (.doc) — Ready to Print</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    // --- Initialize Workers ---
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
-    let uploadedContext = "";
-
-    function showTab(id) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
-
-    function toggleSemester() {
-        const isSHS = document.getElementById('grade-level').value === "SHS";
-        document.getElementById('term-label').innerText = isSHS ? "Semester" : "Quarter";
-        document.getElementById('term-select').innerHTML = isSHS ? 
-            `<option>1st Semester</option><option>2nd Semester</option>` : 
-            `<option>1st Quarter</option><option>2nd Quarter</option><option>3rd Quarter</option><option>4th Quarter</option>`;
-    }
-
-    function togglePPST() {
-        const type = document.getElementById('doc-type').value;
-        document.getElementById('ppst-box').style.display = (type === "SDLP") ? "block" : "none";
-    }
-
-    // --- Dynamic TOS Rows ---
-    function addTOSRow() {
-        const container = document.getElementById('tos-competencies-container');
-        const row = document.createElement('div');
-        row.className = 'tos-row';
-        row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
-        row.innerHTML = `
-            <input type="text" class="tos-comp-title" placeholder="Content title..." style="flex:2; margin-bottom:0;">
-            <input type="text" class="tos-comp-desc" placeholder="Next competency..." style="flex:3; margin-bottom:0;">
-            <input type="text" class="tos-comp-code" placeholder="Code" style="flex:1; margin-bottom:0;">
-            <input type="number" class="tos-comp-days" placeholder="Days" style="flex:1; margin-bottom:0;" value="1">
-            <button class="btn" style="width:45px; padding:10px; margin:0; background:#e53e3e;" onclick="this.parentElement.remove()">-</button>
-        `;
-        container.appendChild(row);
-    }
-
-    async function fetchLiveModels(btn) {
-        let apiKey = localStorage.getItem("gamai_key");
-        if (!apiKey) {
-            apiKey = prompt("Enter your Gemini API Key to fetch your allowed models:");
-            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim());
-            else return;
+            // Hide output when switching tabs
+            document.getElementById('outputSection').classList.add('hidden');
         }
 
-        const originalText = btn.innerHTML;
-        btn.innerHTML = "⏳ Fetching...";
-        btn.style.pointerEvents = "none";
-        
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-            const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
+        // Toggle Time Allotment for Semi-Detailed LP
+        function toggleLPType() {
+            const format = document.querySelector('input[name="lpType"]:checked').value;
+            const timeContainer = document.getElementById('timeAllotmentContainer');
             
-            const select = document.getElementById('ai-model');
-            select.innerHTML = ''; 
-            
-            data.models.forEach(m => {
-                if (m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent") && !m.name.includes("embedding")) {
-                    const modelId = m.name.replace('models/', '');
-                    const option = document.createElement('option');
-                    option.value = modelId;
-                    option.textContent = `${m.displayName || modelId} (${modelId})`;
-                    select.appendChild(option);
-                }
-            });
-            alert(`Success! Loaded models directly from your API Key.`);
-        } catch (e) {
-            alert("Error fetching models: " + e.message);
-        } finally {
-            btn.innerHTML = originalText;
-            btn.style.pointerEvents = "auto";
-        }
-    }
-
-    // --- Multi-File Upload Logic ---
-    async function handleFileUpload() {
-        const fileInput = document.getElementById('file-upload');
-        const files = fileInput.files;
-        const statusDiv = document.getElementById('file-status');
-        if (files.length === 0) return;
-        
-        statusDiv.innerHTML = "⏳ Reading files... please wait.";
-        statusDiv.style.color = "var(--accent-orange)";
-        
-        uploadedContext = "";
-        let fileNames = [];
-
-        try {
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                fileNames.push(file.name);
-                const ext = file.name.split('.').pop().toLowerCase();
-                let extractedText = "";
-
-                if (ext === 'txt') {
-                    extractedText = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.onerror = (e) => reject(e);
-                        reader.readAsText(file);
-                    });
-                } else if (ext === 'docx') {
-                    const arrayBuffer = await file.arrayBuffer();
-                    const result = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
-                    extractedText = result.value;
-                } else if (ext === 'pdf') {
-                    const arrayBuffer = await file.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-                    for (let j = 1; j <= pdf.numPages; j++) {
-                        const page = await pdf.getPage(j);
-                        const content = await page.getTextContent();
-                        extractedText += content.items.map(item => item.str).join(' ') + '\n';
-                    }
-                }
-                
-                uploadedContext += `\n--- Context from Document: ${file.name} ---\n${extractedText}\n`;
-            }
-            
-            statusDiv.innerHTML = `✅ <b>${files.length} file(s)</b> loaded successfully! (${fileNames.join(', ')})`;
-            statusDiv.style.color = "green";
-        } catch (err) {
-            statusDiv.innerHTML = "❌ Error reading files.";
-            statusDiv.style.color = "red";
-        }
-    }
-
-    function saveProfile() {
-        const data = {
-            school: document.getElementById('prof-school').value,
-            teacher: document.getElementById('prof-teacher').value,
-            checker: document.getElementById('prof-checker').value,
-            approver: document.getElementById('prof-approver').value
-        };
-        localStorage.setItem('deped_profile_v3', JSON.stringify(data));
-    }
-
-    function loadProfile() {
-        const data = JSON.parse(localStorage.getItem('deped_profile_v3'));
-        if(data) {
-            document.getElementById('prof-school').value = data.school || '';
-            document.getElementById('prof-teacher').value = data.teacher || '';
-            document.getElementById('prof-checker').value = data.checker || '';
-            document.getElementById('prof-approver').value = data.approver || '';
-        }
-    }
-
-    async function generateAI(mode) {
-        const subject = document.getElementById('subject').value.trim();
-        if (!subject) { alert("Please enter a Subject/Learning Area at the top."); return; }
-        
-        let apiKey = localStorage.getItem("gamai_key");
-        if (!apiKey) {
-            apiKey = prompt("Enter your Gemini API Key:");
-            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim());
-            else return;
-        }
-
-        document.getElementById('loading').style.display = "block";
-        document.getElementById('output-section').style.display = "none";
-
-        const grade = document.getElementById('grade-level').value;
-        const term = document.getElementById('term-select').value;
-        const school = document.getElementById('prof-school').value || "[School Name]";
-        const teacher = document.getElementById('prof-teacher').value || "[Teacher Name]";
-        const selectedModel = document.getElementById('ai-model').value;
-        let promptText = "";
-
-        if (mode === 'lesson') {
-            const cs = document.getElementById('cs-input').value.trim() || " ";
-            const ps = document.getElementById('ps-input').value.trim() || " ";
-            const lc = document.getElementById('lc-input').value.trim() || " ";
-            const docType = document.getElementById('doc-type').value;
-            const pos = document.getElementById('position').value;
-            
-            let formatInstruction = "";
-            if (docType === "DLL") {
-                formatInstruction = `
-                Strictly output the lesson plan inside these EXACT HTML tables. Fill in the content for Day 1 to Day 4 appropriately. Do not change the table structure. Do not hallucinate; use only contextualized and realistic pedagogy. Incorporate localized and contextualized teaching strategies appropriate to the lesson setting.
-                
-                <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-                  <tr><td rowspan="3" style="text-align:center; width:10%; vertical-align:middle; font-weight:bold;">[LOGO]</td><td style="width:20%; font-weight:bold;">School</td><td style="width:25%;">${school}</td><td style="width:20%; font-weight:bold;">Grade Level</td><td style="width:25%;">${grade}</td></tr>
-                  <tr><td style="font-weight:bold;">Teacher</td><td>${teacher}</td><td style="font-weight:bold;">Learning Area</td><td>${subject}</td></tr>
-                  <tr><td style="font-weight:bold;">Teaching Dates and Time</td><td>[Insert Dates]</td><td style="font-weight:bold;">Quarter/Semester</td><td>${term}</td></tr>
-                </table>
-                <table border="1" style="width:100%; border-collapse: collapse;">
-                  <tr><th style="width:20%; background:#f2f2f2;"></th><th style="width:20%; background:#f2f2f2;">Day 1</th><th style="width:20%; background:#f2f2f2;">Day 2</th><th style="width:20%; background:#f2f2f2;">Day 3</th><th style="width:20%; background:#f2f2f2;">Day 4</th></tr>
-                  <tr><td style="font-weight:bold; background:#f9f9f9;">I. OBJECTIVES</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>A. Content Standards</td><td>${cs}</td><td>${cs}</td><td>${cs}</td><td>${cs}</td></tr>
-                  <tr><td>B. Performance Standards</td><td>${ps}</td><td>${ps}</td><td>${ps}</td><td>${ps}</td></tr>
-                  <tr><td>C. Learning Competencies/ Objectives</td><td>${lc}</td><td>${lc}</td><td>${lc}</td><td>${lc}</td></tr>
-                  <tr><td style="font-weight:bold; background:#f9f9f9;">II. CONTENT</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td style="font-weight:bold; background:#f9f9f9;">III. LEARNING RESOURCES</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>A. References</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>1. Teachers Guide pages</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>2. Learner's Materials pages</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>3. Textbook pages</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>4. Additional Materials from LR portal</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>B. Other Learning Resources</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td style="font-weight:bold; background:#f9f9f9;">IV. PROCEDURES</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>A. Reviewing previous lesson or presenting the new lesson</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>B. Establishing a purpose for the lesson</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>C. Presenting examples/instances of the new lesson</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>D. Discussing new concepts and practicing new skills #1</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>E. Discussing new concepts and practicing new skills #2</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>F. Developing mastery (Leads to Formative Assessment 3)</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>G. Finding practical applications of concepts and skills in daily living</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>H. Making generalizations and abstractions about the lesson</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>I. Evaluating learning</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>J. Additional activities for applications or remediation</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td style="font-weight:bold; background:#f9f9f9;">V. REMARKS</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td style="font-weight:bold; background:#f9f9f9;">VI. REFLECTION</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>A. No. of learners who earned 80% in evaluation</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>B. No. of learners who require remediation</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>C. Did the remedial lessons work? No. of learners who caught up</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>D. No. of learners who continue to require remediation</td><td></td><td></td><td></td><td></td></tr>
-                  <tr><td>E. Which of my teaching strategies work well? Why did this work?</td>
-                  <td>&#9744; Lecture-Discussion<br>&#9744; Cooperative/Group Learning<br>&#9744; Differentiated Instruction<br>&#9744; Inquiry-Based Approach<br>&#9744; Use of ICT/Multimedia<br>&#9744; Guided Practice<br>&#9744; Hands-On Activities<br>&#9744; Formative Assessment</td>
-                  <td>&#9744; Lecture-Discussion<br>&#9744; Cooperative/Group Learning<br>&#9744; Differentiated Instruction<br>&#9744; Inquiry-Based Approach<br>&#9744; Use of ICT/Multimedia<br>&#9744; Guided Practice<br>&#9744; Hands-On Activities<br>&#9744; Formative Assessment</td>
-                  <td>&#9744; Lecture-Discussion<br>&#9744; Cooperative/Group Learning<br>&#9744; Differentiated Instruction<br>&#9744; Inquiry-Based Approach<br>&#9744; Use of ICT/Multimedia<br>&#9744; Guided Practice<br>&#9744; Hands-On Activities<br>&#9744; Formative Assessment</td>
-                  <td>&#9744; Lecture-Discussion<br>&#9744; Cooperative/Group Learning<br>&#9744; Differentiated Instruction<br>&#9744; Inquiry-Based Approach<br>&#9744; Use of ICT/Multimedia<br>&#9744; Guided Practice<br>&#9744; Hands-On Activities<br>&#9744; Formative Assessment</td>
-                  </tr>
-                  <tr><td>F. What difficulties did I encounter which my principal or supervisor can help me solve?</td>
-                  <td>&#9744; Insufficient materials<br>&#9744; Class size/management<br>&#9744; Integrating ICT<br>&#9744; Lack of time<br>&#9744; Diverse learning needs<br>&#9744; Need for training<br>&#9744; Equipment availability<br>&#9744; Parent/community support</td>
-                  <td>&#9744; Insufficient materials<br>&#9744; Class size/management<br>&#9744; Integrating ICT<br>&#9744; Lack of time<br>&#9744; Diverse learning needs<br>&#9744; Need for training<br>&#9744; Equipment availability<br>&#9744; Parent/community support</td>
-                  <td>&#9744; Insufficient materials<br>&#9744; Class size/management<br>&#9744; Integrating ICT<br>&#9744; Lack of time<br>&#9744; Diverse learning needs<br>&#9744; Need for training<br>&#9744; Equipment availability<br>&#9744; Parent/community support</td>
-                  <td>&#9744; Insufficient materials<br>&#9744; Class size/management<br>&#9744; Integrating ICT<br>&#9744; Lack of time<br>&#9744; Diverse learning needs<br>&#9744; Need for training<br>&#9744; Equipment availability<br>&#9744; Parent/community support</td>
-                  </tr>
-                  <tr><td>G. What innovation or localized materials did I use/discover which I wish to share with other teachers?</td>
-                  <td>&#9744; Teacher-made worksheets<br>&#9744; Local materials for activities<br>&#9744; Contextualized reading<br>&#9744; ICT-based resources<br>&#9744; Visual aids/recycled materials<br>&#9744; Classroom management tech.<br>&#9744; Differentiated strategies<br>&#9744; Other:_____________</td>
-                  <td>&#9744; Teacher-made worksheets<br>&#9744; Local materials for activities<br>&#9744; Contextualized reading<br>&#9744; ICT-based resources<br>&#9744; Visual aids/recycled materials<br>&#9744; Classroom management tech.<br>&#9744; Differentiated strategies<br>&#9744; Other:_____________</td>
-                  <td>&#9744; Teacher-made worksheets<br>&#9744; Local materials for activities<br>&#9744; Contextualized reading<br>&#9744; ICT-based resources<br>&#9744; Visual aids/recycled materials<br>&#9744; Classroom management tech.<br>&#9744; Differentiated strategies<br>&#9744; Other:_____________</td>
-                  <td>&#9744; Teacher-made worksheets<br>&#9744; Local materials for activities<br>&#9744; Contextualized reading<br>&#9744; ICT-based resources<br>&#9744; Visual aids/recycled materials<br>&#9744; Classroom management tech.<br>&#9744; Differentiated strategies<br>&#9744; Other:_____________</td>
-                  </tr>
-                </table>
-                `;
+            if (format === 'semi-detailed') {
+                timeContainer.classList.remove('hidden');
             } else {
-                formatInstruction = `Format as a vertical Semi-Detailed Lesson Plan mapping the DepEd Parts I to VI. Create a 3-column table for the Procedures section: "Parts of LP", "Teacher/Student Activity", and "PPST Annotations (RPMS-COT)". Carefully align the PPST indicators for a ${pos} career stage. CRITICAL INSTRUCTION: In the PPST Annotations column, DO NOT just list the indicator code. You MUST explicitly explain HOW the corresponding teacher/student activity demonstrates that specific indicator. Additionally, integrate localized and contextualized teaching strategies appropriate to the learners' setting in the activities. Do not hallucinate; only use realistic pedagogy based on the provided topic/competencies.`;
+                timeContainer.classList.add('hidden');
             }
-            
-            promptText = `Act as an expert DepEd Philippines Master Teacher. Generate a ${docType} for ${subject}, ${grade}, ${term}. 
-            Context Material provided by teacher: ${uploadedContext}
-            ${formatInstruction}
-            Output strictly as professional HTML tags. Do not include markdown code blocks.`;
-            
-        } else if (mode === 'tos') {
-            const items = document.getElementById('total-items').value;
-            const e = document.getElementById('perc-easy').value;
-            const a = document.getElementById('perc-avg').value;
-            const d = document.getElementById('perc-diff').value;
-            
-            const formatCheckboxes = document.querySelectorAll('.quiz-format:checked');
-            let selectedFormats = Array.from(formatCheckboxes).map(cb => cb.value).join(", ");
-            if(!selectedFormats) selectedFormats = "Multiple Choice";
+        }
 
-            const tosRows = document.querySelectorAll('.tos-row');
-            let tosDataList = [];
-            let totalDays = 0;
-            tosRows.forEach((row, index) => {
-                const title = row.querySelector('.tos-comp-title').value;
-                const desc = row.querySelector('.tos-comp-desc').value;
-                const code = row.querySelector('.tos-comp-code').value;
-                const days = parseInt(row.querySelector('.tos-comp-days').value) || 0;
-                if(desc || title) {
-                    tosDataList.push(`${index+1}. Content Title: ${title} | Competency: ${desc} (Code: ${code}) - ${days} Days`);
-                    totalDays += days;
-                }
-            });
-            const tosContext = tosDataList.join("\n");
-
-            promptText = `Act as a DepEd Philippines Assessment Expert. Generate a Table of Specification (TOS) and a ${items}-item assessment for ${subject}, ${grade}, ${term}.
-            
-            Encoded Competencies & Time Spent:
-            ${tosContext}
-            Total Days Taught: ${totalDays}
-            
-            Instructions for TOS Table:
-            1. Include these EXACT columns in this order: Content Title, Competency, LC Code, No. of Days Taught, Percentage (%), No. of Items, Item Placement (Remembering, Understanding, Applying, Analyzing, Evaluating, Creating).
-            2. Calculate Percentage (%) per competency: (Days Taught / Total Days) * 100. CRITICAL: Output strictly as a WHOLE NUMBER (round appropriately). Do NOT swap this column with No. of Items.
-            3. Calculate No. of Items per competency: (Percentage / 100) * ${items}. CRITICAL: Output strictly as a WHOLE NUMBER. Make sure the total sum equals exactly ${items}. Do NOT swap this column with Percentage.
-            4. Distribute the items across the Cognitive Spread: ${e}% Easy (Remember/Understand), ${a}% Average (Apply/Analyze), ${d}% Difficult (Evaluate/Create).
-            5. CRITICAL: In the Item Placement columns, provide the SPECIFIC ITEM NUMBERS (e.g., "1-3", "4", "5-7"), not just the count of items. Match the question's true cognitive complexity.
-            6. Output the TOS as a professional HTML Table.
-            
-            Instructions for the Generated Assessment:
-            1. Provide the actual test questions directly below the TOS table.
-            2. Number the test questions continuously from 1 to ${items}. 
-            3. CRITICAL: DO NOT place the cognitive domain or item distribution in parentheses next to the test questions. (e.g., WRONG: "1. (Remembering) What is...". RIGHT: "1. What is..."). The question numbers MUST align perfectly with the specific Item Placement numbers you generated in the TOS table.
-            4. Categorize the questions matching these exact Assessment Formats requested by the teacher: ${selectedFormats}. Ensure Scenario-Based questions are truly objective based on the selected formats.
-            5. Include an Answer Key at the very bottom.
-            
-            Context Material provided by teacher: ${uploadedContext}
-            Output strictly as HTML tags without markdown block wrappers. Do not hallucinate; use only the provided competencies and context.`;
-            
-        } else if (mode === 'analysis') {
-            const totalLearners = document.getElementById('total-learners').value;
-            const itemData = document.getElementById('item-analysis-data').value;
-            
-            if (!totalLearners || !itemData) {
-                alert("Please enter Total Learners and paste the raw item data.");
-                document.getElementById('loading').style.display = "none";
+        // Mock Extraction Logic
+        function extractContent() {
+            const fileInput = document.getElementById('fileUpload');
+            if (fileInput.files.length === 0) {
+                alert('Please select a file first.');
                 return;
             }
 
-            promptText = `Act as an expert DepEd Philippines Master Teacher and Assessment Coordinator. Generate an Item Analysis and Least Learned Competency Remediation Report for ${subject}, ${grade}, ${term}.
+            const status = document.getElementById('extractionStatus');
+            const statusText = document.getElementById('extractionText');
+            const dataBox = document.getElementById('extractedData');
             
-            Total Number of Takers/Learners: ${totalLearners}
-            Raw Item Data (Item Number | Competency | Correct Responses):
-            ${itemData}
-            
-            Instructions:
-            1. Calculate the Mean Percentage Score (MPL/Mastery Level) per item using this strict formula: (Number of Correct Responses / Total Learners) * 100. Output this as a percentage.
-            2. Aggregate the data per Competency to find the Average MPL per Competency.
-            3. Create a professional HTML table summarizing the: Item No., Competency, No. of Correct Responses, Item MPL %, and Descriptive Equivalence (e.g., Mastered, Moving Towards Mastery, Least Learned/Needs Remediation).
-            4. Explicitly categorize and list the "Most Learned Competencies" (Highest MPLs) and "Least Learned Competencies" (Lowest MPLs).
-            5. For the Least Learned Competencies, act as a Master Teacher and provide detailed, actionable intervention, remediation, and reteaching strategies (e.g., localized materials, differentiated instruction, peer tutoring) complying with DepEd Order No. 8, s. 2015.
-            
-            Output strictly as professional HTML tags without markdown code blocks. Make it format like an official DepEd report. Do not hallucinate math results.`;
+            status.classList.remove('hidden');
+            dataBox.classList.add('hidden');
+            statusText.innerText = "Extracting content, please wait...";
+            statusText.classList.remove('text-green-600');
+            statusText.classList.add('text-blue-600');
+            document.querySelector('.loader').style.display = 'block';
+
+            // Simulate server/API processing time
+            setTimeout(() => {
+                document.querySelector('.loader').style.display = 'none';
+                statusText.innerText = "Extraction Complete! Content is ready for generation.";
+                statusText.classList.remove('text-blue-600');
+                statusText.classList.add('text-green-600');
+                
+                // Show raw text box (mocked data)
+                dataBox.classList.remove('hidden');
+                dataBox.value = "[SYSTEM NOTE: In a live environment, this box will contain the parsed text from the PDF/DOCX/PPTX to be fed into the AI prompt.]\n\nSample Extracted Concept: The water cycle consists of evaporation, condensation, and precipitation.";
+            }, 2500);
         }
 
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    contents: [{ parts: [{ text: promptText }] }],
-                    generationConfig: { temperature: 0.1 }
-                })
-            });
+        // Mock Generation Logic connecting inputs to the ILAW Template
+        function generateOutput(type) {
+            const outputSection = document.getElementById('outputSection');
+            const outputContent = document.getElementById('outputContent');
+            const extractedData = document.getElementById('extractedData').value;
             
-            const resData = await response.json();
-            if (resData.error) throw new Error(resData.error.message);
-            
-            let aiHtml = resData.candidates[0].content.parts[0].text;
-            aiHtml = aiHtml.replace(/```html/g, '').replace(/```/g, '').trim();
-            
-            document.getElementById('word-preview').innerHTML = aiHtml;
-            document.getElementById('output-section').style.display = "block";
-            document.getElementById('output-section').scrollIntoView({behavior: 'smooth'});
-            
-        } catch (e) { 
-            alert("Generation Failed: " + e.message); 
-        } finally {
-            document.getElementById('loading').style.display = "none";
+            outputSection.classList.remove('hidden');
+            outputContent.innerHTML = `<div class="flex justify-center items-center h-32"><div class="loader"></div><span class="ml-4">Generating ${type}...</span></div>`;
+
+            setTimeout(() => {
+                if (type === 'LP') {
+                    const lpType = document.querySelector('input[name="lpType"]:checked').value;
+                    const time = document.getElementById('timeAllotment').value;
+                    const stage = document.getElementById('keyStage').value;
+                    
+                    let timeDistributionHTML = "";
+                    if (lpType === 'semi-detailed' && time) {
+                        timeDistributionHTML = `<p class="text-sm text-red-600 font-bold mb-4">Note: The allotted ${time} minutes have been distributed in the 'Flow' and 'Assessment' sections below.</p>`;
+                    }
+
+                    outputContent.innerHTML = `
+                        ${timeDistributionHTML}
+                        <h3 class="text-xl font-bold bg-gray-200 p-2">ILAW LESSON PLAN TEMPLATE (${lpType.toUpperCase()})</h3>
+                        
+                        <h4 class="font-bold mt-4">I. Basic Information</h4>
+                        <table class="w-full text-left border-collapse border border-gray-300 mb-4 text-sm">
+                            <tr><th class="border p-2 bg-gray-50 w-1/3">Declaration of AI use</th><td class="border p-2">Content formulated based on extracted file using AI. (See DO 3 s.2026 Annex A)</td></tr>
+                        </table>
+
+                        <h4 class="font-bold mt-4">II. Intentions</h4>
+                        <table class="w-full text-left border-collapse border border-gray-300 mb-4 text-sm">
+                            <tr><th class="border p-2 bg-gray-50 w-1/3">Learner Context</th><td class="border p-2">[Generated based on Key ${stage} typical profile]</td></tr>
+                        </table>
+
+                        <h4 class="font-bold mt-4">III. Learning Experience</h4>
+                        <table class="w-full text-left border-collapse border border-gray-300 mb-4 text-sm">
+                            <tr>
+                                <th class="border p-2 bg-gray-50 w-1/3">Flow ${lpType === 'semi-detailed' && time ? `<br><span class="text-red-500 font-normal">(${Math.floor(time * 0.7)} mins)</span>` : ''}</th>
+                                <td class="border p-2">
+                                    <ul class="list-disc pl-4">
+                                        <li><strong>Clear Goals:</strong> [Generated Strategy for ${stage}]</li>
+                                        <li><strong>Active Retrieval:</strong> [Generated Strategy for ${stage}]</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <h4 class="font-bold mt-4">IV. Assessment</h4>
+                        <table class="w-full text-left border-collapse border border-gray-300 mb-4 text-sm">
+                            <tr>
+                                <th class="border p-2 bg-gray-50 w-1/3">Formative Assessment ${lpType === 'semi-detailed' && time ? `<br><span class="text-red-500 font-normal">(${Math.floor(time * 0.3)} mins)</span>` : ''}</th>
+                                <td class="border p-2">[Generated Assessment aligned with Extracted Materials]</td>
+                            </tr>
+                        </table>
+                    `;
+                } else {
+                    // TOS Generation Mock
+                    const items = document.getElementById('quizItems').value || 10;
+                    outputContent.innerHTML = `
+                        <h3 class="text-xl font-bold bg-gray-200 p-2">TABLE OF SPECIFICATIONS & QUIZ</h3>
+                        <p class="mt-2 text-sm text-gray-600">Generated based on ${items} items using the extracted uploaded materials.</p>
+                        <table class="w-full text-left border-collapse border border-gray-300 mt-4 text-sm">
+                            <tr class="bg-gray-100"><th class="border p-2">Topic</th><th class="border p-2">Knowledge</th><th class="border p-2">Application</th><th class="border p-2">Total Items</th></tr>
+                            <tr><td class="border p-2">[Extracted Topic 1]</td><td class="border p-2">${Math.floor(items/2)}</td><td class="border p-2">${Math.ceil(items/2)}</td><td class="border p-2">${items}</td></tr>
+                        </table>
+                    `;
+                }
+            }, 1500);
         }
-    }
-
-    // --- MS Word Export ---
-    function exportToWord() {
-        const activeTab = document.querySelector('.tab-content.active').id;
-        let isLandscape = false;
-        if (activeTab === 'planner') {
-            isLandscape = document.getElementById('doc-type').value === "DLL";
-        }
-        
-        const p = JSON.parse(localStorage.getItem('deped_profile_v3')) || {};
-        const content = document.getElementById('word-preview').innerHTML;
-
-        const docHtml = `
-        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
-        <head><meta charset='utf-8'>
-        <style>
-            @page { size: 8.5in 13in; margin: 0.5in; mso-page-orientation: ${isLandscape ? 'landscape' : 'portrait'}; }
-            body { font-family: "Times New Roman", serif; font-size: 10pt; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; }
-            th, td { border: 1px solid black; padding: 6px; vertical-align: top; }
-            .sign-table { width: 100%; border: none; margin-top: 40px; }
-            .sign-table td { border: none; padding: 10px; text-align: left; }
-        </style>
-        </head><body>
-        
-        ${activeTab !== 'planner' || document.getElementById('doc-type').value === 'SDLP' ? 
-        `<div style="text-align: center; font-weight: bold; margin-bottom: 25px; line-height: 1.2;">
-            Republic of the Philippines<br>Department of Education<br>${p.school ? p.school.toUpperCase() : 'NAME OF SCHOOL'}
-        </div>` : ''}
-        
-        ${content}
-        
-        <table class="sign-table">
-            <tr>
-                <td style="width: 33%;">Prepared by:<br><br><br><b><u>${p.teacher ? p.teacher.toUpperCase() : 'TEACHER NAME'}</u></b></td>
-                <td style="width: 33%;">Checked by:<br><br><br><b><u>${p.checker ? p.checker.toUpperCase() : 'CHECKER NAME'}</u></b></td>
-                <td style="width: 33%;">Approved by:<br><br><br><b><u>${p.approver ? p.approver.toUpperCase() : 'PRINCIPAL NAME'}</u></b></td>
-            </tr>
-        </table>
-        </body></html>`;
-
-        const blob = new Blob(['\ufeff', docHtml], { type: 'application/msword' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        const subj = document.getElementById('subject').value.replace(/[^a-z0-9]/gi, '_') || "Subject";
-        link.download = `DepEd_${activeTab}_${subj}.doc`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    window.onload = loadProfile;
-    function resetApiKey() { 
-        if(confirm("Remove API Key?")) { localStorage.removeItem("gamai_key"); alert("API Key Cleared."); }
-    }
-</script>
+    </script>
 </body>
 </html>
