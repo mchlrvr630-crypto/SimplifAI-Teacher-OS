@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DepEd Teacher's OS v4.6 - Clean Format Restored</title>
+    <title>DepEd Teacher's OS v4.7 - Clean Natural Format</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
@@ -306,8 +306,8 @@
 
     <div id="loading" style="display:none; text-align:center; padding: 40px;">
         <div class="loader"></div>
-        <h3 style="color: var(--primary-blue); margin: 10px 0;">AI is generating a clean, MS Word-friendly document...</h3>
-        <p style="color: #666;">Please wait. Applying dynamic layout fixes.</p>
+        <h3 style="color: var(--primary-blue); margin: 10px 0;">AI is processing content...</h3>
+        <p style="color: #666;">Please wait. Applying natural MS Word-friendly formatting.</p>
     </div>
 
     <div id="output-section" style="display:none;">
@@ -501,7 +501,6 @@
             const timeMins = document.getElementById('time-allotment').value;
             const pos = document.getElementById('position').value;
 
-            // Strict LDP Definitions Provided by User
             const ldpContext = `
             The 8 Learning Design Principles (LDPs) to guide the lesson activities:
             1. Clear Goals and Teaching: Ensuring learners know exactly what they are expected to learn.
@@ -543,19 +542,29 @@
                     </tr>
                     </table>`;
             } else {
-                specificInstruction = `CRITICAL FOR DLL: The Lesson Proper begins at the "Pre-Lesson" phase. In the 'Flow' section, output a standard 4-column table detailing the progression of the lesson from Day 1 to Day 4. Explicitly integrate the Learning Design Principles appropriately across the days. Additionally, in the 'I. INTENTIONS' table, unpack and map the 'Learning Objectives' to Day 1, Day 2, Day 3, and Day 4 using a clear, bolded list.`;
+                specificInstruction = `CRITICAL FOR DLL: The Lesson Proper begins at the "Pre-Lesson" phase. In the 'Flow' section, output a standard 4-column table detailing the progression of the lesson from Day 1 to Day 4. Explicitly integrate the Learning Design Principles appropriately across the days. Additionally, in the 'I. INTENTIONS' table, unpack and map the 'Learning Objectives' inside a nested table across Day 1, Day 2, Day 3, and Day 4 to show progression cleanly.`;
                 
                 intentionsTableHTML = `
                 <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
                     <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">I. INTENTIONS</th></tr>
                     <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Learning Competency and Curriculum Standards</td><td style="padding:6px;">${comp}</td></tr>
                     <tr>
-                        <td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Objectives</td>
-                        <td style="padding:6px;">
-                            <b>Day 1:</b> [Objective/s for Day 1 mapped from: ${obj}]<br><br>
-                            <b>Day 2:</b> [Objective/s for Day 2 mapped from: ${obj}]<br><br>
-                            <b>Day 3:</b> [Objective/s for Day 3 mapped from: ${obj}]<br><br>
-                            <b>Day 4:</b> [Objective/s for Day 4 mapped from: ${obj}]
+                        <td style="font-weight:bold; background:#f9f9f9; padding:6px; vertical-align:middle;">Learning Objectives</td>
+                        <td style="padding:0;">
+                            <table border="1" style="width:100%; border-collapse: collapse; border-style: hidden;">
+                                <tr>
+                                    <th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:1px solid black; border-bottom:1px solid black;">Day 1</th>
+                                    <th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:1px solid black; border-bottom:1px solid black;">Day 2</th>
+                                    <th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:1px solid black; border-bottom:1px solid black;">Day 3</th>
+                                    <th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:none; border-bottom:1px solid black;">Day 4</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:1px solid black; border-bottom:none;">[Objective/s for Day 1 mapped from: ${obj}]</td>
+                                    <td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:1px solid black; border-bottom:none;">[Objective/s for Day 2 mapped from: ${obj}]</td>
+                                    <td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:1px solid black; border-bottom:none;">[Objective/s for Day 3 mapped from: ${obj}]</td>
+                                    <td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:none; border-bottom:none;">[Objective/s for Day 4 mapped from: ${obj}]</td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                     <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learner Context</td><td style="padding:6px;">${context}</td></tr>
@@ -579,8 +588,8 @@
             }
 
             const formatInstruction = `
-            CRITICAL SYSTEM INSTRUCTION: You are generating raw HTML for a rigid system implementing the DepEd DO 3 s.2026 ILAW Framework. 
-            Do not modify the structural skeleton of the outermost HTML tables below. Use clean, standard HTML tables so they export flawlessly to MS Word.
+            CRITICAL SYSTEM INSTRUCTION: You are generating raw HTML for a system implementing the DepEd DO 3 s.2026 ILAW Framework. 
+            Do not modify the structural skeleton of the HTML tables below. Use clean, natural HTML tables (border-collapse: collapse) so they export flawlessly to MS Word.
             
             ${specificInstruction}
             
