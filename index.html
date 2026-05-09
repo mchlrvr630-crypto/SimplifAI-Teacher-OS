@@ -3,153 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ILAW Framework LP & TOS Generator</title>
+    <title>Educator Portal - ILAW LP & TOS Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Simple loader for extraction simulation */
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #3b82f6;
+            border-top: 4px solid #2563eb;
             border-radius: 50%;
             width: 24px;
             height: 24px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .tab-active { background-color: #2563eb; color: white; border-color: #2563eb; }
+        .tab-inactive { background-color: #f3f4f6; color: #4b5563; border-color: #d1d5db; }
     </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="bg-gray-100 font-sans text-gray-800">
 
-    <div class="max-w-5xl mx-auto p-6">
-        <header class="mb-8 border-b pb-4">
-            <h1 class="text-3xl font-bold text-blue-700">ILAW Framework Educator Portal</h1>
-            <p class="text-gray-600">Generate Trimester-aligned Lesson Plans and TOS/Quizzes</p>
+    <div class="max-w-6xl mx-auto p-4 md:p-8">
+        
+        <header class="bg-white p-6 rounded-t-lg shadow-sm border-b-4 border-blue-600 mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900">Educator Portal</h1>
+                <p class="text-gray-500 mt-1">Lesson Planning (ILAW Framework), TOS, Quiz & Item Analysis</p>
+            </div>
+            <div class="text-right">
+                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">Trimester Ready</span>
+            </div>
         </header>
 
-        <div class="flex space-x-4 mb-6">
-            <button onclick="switchTab('lp-maker')" id="tab-lp" class="px-4 py-2 bg-blue-600 text-white rounded-md font-semibold">Lesson Plan Maker</button>
-            <button onclick="switchTab('tos-maker')" id="tab-tos" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold hover:bg-gray-300">TOS & Quiz Maker</button>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-sm border mb-6">
-            <h2 class="text-xl font-bold mb-2">1. Upload Learning Materials</h2>
-            <p class="text-sm text-gray-500 mb-4">Upload PDF, PPTX, or DOCX files. The system will extract the text to align the generated content perfectly.</p>
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Upload Learning Materials
+            </h2>
+            <p class="text-sm text-gray-600 mb-4">Upload your PDF, PPTX, or DOCX files here. The system will extract the content to ensure the LP, TOS, and Quiz are perfectly aligned.</p>
             
-            <div class="flex items-center space-x-4">
-                <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.ppt,.pptx" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                <button onclick="extractContent()" class="px-6 py-2 bg-green-600 text-white rounded-md font-semibold hover:bg-green-700 whitespace-nowrap">Extract Content</button>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.ppt,.pptx" class="block w-full sm:w-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border rounded-md p-1">
+                <button onclick="extractContent()" class="px-6 py-2 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition w-full sm:w-auto">Extract Content</button>
             </div>
             
-            <div id="extractionStatus" class="hidden mt-4 flex items-center space-x-2 text-blue-600">
+            <div id="extractionStatus" class="hidden mt-4 flex items-center space-x-3 text-blue-600 bg-blue-50 p-3 rounded-md">
                 <div class="loader"></div>
-                <span id="extractionText">Extracting content, please wait...</span>
+                <span id="extractionText" class="font-medium">Extracting text, please wait...</span>
             </div>
-            <textarea id="extractedData" class="hidden w-full mt-4 p-2 border rounded-md" rows="4" readonly></textarea>
+            <textarea id="extractedData" class="hidden w-full mt-4 p-3 border border-green-300 bg-green-50 rounded-md text-sm text-gray-700 h-24" readonly></textarea>
         </div>
 
-        <div id="lp-maker" class="bg-white p-6 rounded-lg shadow-sm border">
-            <h2 class="text-xl font-bold mb-4">2. Configure Lesson Plan</h2>
+        <div class="flex flex-wrap gap-2 mb-6 border-b pb-2">
+            <button onclick="switchTab('lp-maker')" id="tab-lp" class="px-5 py-2.5 rounded-t-lg font-bold border-t border-l border-r tab-active transition">Lesson Plan Maker</button>
+            <button onclick="switchTab('tos-maker')" id="tab-tos" class="px-5 py-2.5 rounded-t-lg font-bold border-t border-l border-r tab-inactive transition">TOS & Quiz Maker</button>
+            <button onclick="switchTab('item-analysis')" id="tab-analysis" class="px-5 py-2.5 rounded-t-lg font-bold border-t border-l border-r tab-inactive transition">Item Analysis</button>
+        </div>
+
+        <div id="lp-maker" class="bg-white p-6 rounded-b-lg shadow-sm border border-gray-200">
+            <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-2">ILAW Lesson Plan Configuration</h2>
             
-            <div class="mb-6">
-                <label class="block font-semibold mb-2">Lesson Plan Format</label>
-                <div class="flex space-x-6">
-                    <label class="flex items-center">
-                        <input type="radio" name="lpType" value="weekly" checked onchange="toggleLPType()" class="mr-2"> 
-                        Weekly DLL (4 Sessions)
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="lpType" value="semi-detailed" onchange="toggleLPType()" class="mr-2"> 
-                        Semi-Detailed LP
-                    </label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-gray-50 p-4 rounded-md border">
+                    <label class="block font-bold text-gray-700 mb-3">Lesson Plan Format</label>
+                    <div class="flex flex-col space-y-2">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="lpType" value="weekly" checked onchange="toggleTimeAllotment()" class="form-radio h-5 w-5 text-blue-600"> 
+                            <span class="ml-2">Weekly DLL (4 Sessions)</span>
+                        </label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="lpType" value="semi-detailed" onchange="toggleTimeAllotment()" class="form-radio h-5 w-5 text-blue-600"> 
+                            <span class="ml-2">Semi-Detailed LP</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="timeContainer" class="bg-blue-50 p-4 rounded-md border border-blue-200 hidden">
+                    <label class="block font-bold text-blue-900 mb-2">Time Allotment (Minutes)</label>
+                    <p class="text-xs text-blue-700 mb-3">Distributed automatically to Lesson Flow & Assessment.</p>
+                    <input type="number" id="timeAllotment" placeholder="e.g., 60" class="w-full p-2 border border-blue-300 rounded-md focus:ring-blue-500">
                 </div>
             </div>
 
-            <div id="timeAllotmentContainer" class="mb-6 hidden bg-blue-50 p-4 rounded-md border border-blue-100">
-                <label class="block font-semibold mb-1">Time Allotment (Minutes)</label>
-                <p class="text-xs text-gray-500 mb-2">The system will automatically distribute this time across the 'Flow' and 'Assessment' sections.</p>
-                <input type="number" id="timeAllotment" placeholder="e.g., 60" class="w-1/3 p-2 border rounded-md">
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
-                    <label class="block font-semibold text-sm">Lesson Title</label>
-                    <input type="text" id="lessonTitle" class="w-full p-2 border rounded-md" placeholder="Enter Title">
+                    <label class="block font-semibold text-sm text-gray-700 mb-1">Subject / Learning Area</label>
+                    <input type="text" id="lpSubject" class="w-full p-2 border rounded-md" placeholder="e.g., Science">
                 </div>
                 <div>
-                    <label class="block font-semibold text-sm">Key Stage (For Design Principles)</label>
+                    <label class="block font-semibold text-sm text-gray-700 mb-1">Grade Level & Section</label>
+                    <input type="text" id="lpGrade" class="w-full p-2 border rounded-md" placeholder="e.g., Grade 9 - Newton">
+                </div>
+                <div>
+                    <label class="block font-semibold text-sm text-gray-700 mb-1">Key Stage (ILAW Target)</label>
                     <select id="keyStage" class="w-full p-2 border rounded-md">
-                        <option value="Stage 1">Key Stage 1 (K - Gr 3)</option>
-                        <option value="Stage 2">Key Stage 2 (Gr 4-6)</option>
-                        <option value="Stage 3">Key Stage 3 (Gr 7-10)</option>
-                        <option value="Stage 4">Key Stage 4 (Gr 11-12)</option>
+                        <option value="Stage 1">Stage 1 (K - Gr 3)</option>
+                        <option value="Stage 2">Stage 2 (Gr 4-6)</option>
+                        <option value="Stage 3">Stage 3 (Gr 7-10)</option>
+                        <option value="Stage 4">Stage 4 (Gr 11-12)</option>
                     </select>
                 </div>
             </div>
 
-            <button onclick="generateOutput('LP')" class="w-full py-3 bg-blue-800 text-white rounded-md font-bold hover:bg-blue-900 transition">
+            <button onclick="generateContent('LP')" class="w-full py-3 bg-blue-700 text-white rounded-md font-bold hover:bg-blue-800 transition text-lg shadow-md">
                 Generate ILAW Lesson Plan
             </button>
         </div>
 
-        <div id="tos-maker" class="hidden bg-white p-6 rounded-lg shadow-sm border">
-            <h2 class="text-xl font-bold mb-4">2. Configure TOS & Quiz</h2>
+        <div id="tos-maker" class="hidden bg-white p-6 rounded-b-lg shadow-sm border border-gray-200">
+            <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-2">Table of Specifications & Quiz Configuration</h2>
             
-            <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                    <label class="block font-semibold text-sm">Number of Items</label>
-                    <input type="number" id="quizItems" class="w-full p-2 border rounded-md" placeholder="e.g., 20">
+                    <label class="block font-semibold text-sm text-gray-700 mb-1">Total Number of Items</label>
+                    <input type="number" id="quizItems" class="w-full p-2 border rounded-md" placeholder="e.g., 50">
                 </div>
                 <div>
-                    <label class="block font-semibold text-sm">Assessment Type</label>
+                    <label class="block font-semibold text-sm text-gray-700 mb-1">Assessment Type</label>
                     <select id="quizType" class="w-full p-2 border rounded-md">
-                        <option value="Multiple Choice">Multiple Choice</option>
-                        <option value="Identification">Identification</option>
-                        <option value="Essay">Essay & Rubric</option>
-                        <option value="Mixed">Mixed (TOS Aligned)</option>
+                        <option value="Multiple Choice">Multiple Choice Only</option>
+                        <option value="Mixed">Mixed (Multiple Choice, Identification, Essay)</option>
+                        <option value="Performance">Performance Task & Rubric</option>
                     </select>
                 </div>
             </div>
-
-            <button onclick="generateOutput('TOS')" class="w-full py-3 bg-purple-700 text-white rounded-md font-bold hover:bg-purple-800 transition">
+            
+            <button onclick="generateContent('TOS')" class="w-full py-3 bg-indigo-600 text-white rounded-md font-bold hover:bg-indigo-700 transition text-lg shadow-md">
                 Generate TOS & Quiz
             </button>
         </div>
 
-        <div id="outputSection" class="mt-8 hidden">
-            <h2 class="text-2xl font-bold mb-4 border-b pb-2">Generated Output</h2>
-            <div id="outputContent" class="bg-white p-8 border rounded-lg shadow-inner min-h-[300px] prose max-w-none">
+        <div id="item-analysis" class="hidden bg-white p-6 rounded-b-lg shadow-sm border border-gray-200">
+            <h2 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Automated Item Analysis</h2>
+            <p class="text-sm text-gray-600 mb-6">Analyze post-assessment results to determine Difficulty and Discrimination indices. Identifies items to Retain, Revise, or Reject.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block font-semibold text-sm text-gray-700 mb-1">Total Students</label>
+                    <input type="number" id="totalStudents" class="w-full p-2 border rounded-md" placeholder="e.g., 40">
                 </div>
+                <div class="md:col-span-2">
+                    <label class="block font-semibold text-sm text-gray-700 mb-1">Paste Raw Scores/Item Data (CSV Format)</label>
+                    <textarea id="itemData" class="w-full p-2 border rounded-md h-20 text-sm" placeholder="Item No, Correct in Upper 27%, Correct in Lower 27%..."></textarea>
+                </div>
+            </div>
+
+            <button onclick="generateContent('ANALYSIS')" class="w-full py-3 bg-teal-600 text-white rounded-md font-bold hover:bg-teal-700 transition text-lg shadow-md">
+                Generate Item Analysis Report
+            </button>
+        </div>
+
+        <div id="outputContainer" class="mt-8 hidden">
+            <div class="bg-white p-8 rounded-lg shadow-md border border-gray-300">
+                <div class="flex justify-between items-center border-b pb-4 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Generated Output</h2>
+                    <button onclick="printOutput()" class="px-4 py-2 bg-gray-800 text-white rounded text-sm font-semibold hover:bg-gray-900">Print / Save as PDF</button>
+                </div>
+                <div id="outputArea" class="prose max-w-none text-gray-800">
+                    </div>
+            </div>
         </div>
 
     </div>
 
     <script>
-        // Tab Switching Logic
+        // Tab Management
         function switchTab(tabId) {
+            // Hide all tabs
             document.getElementById('lp-maker').classList.add('hidden');
             document.getElementById('tos-maker').classList.add('hidden');
-            document.getElementById(tabId).classList.remove('hidden');
-
-            document.getElementById('tab-lp').className = tabId === 'lp-maker' ? 'px-4 py-2 bg-blue-600 text-white rounded-md font-semibold' : 'px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold hover:bg-gray-300';
-            document.getElementById('tab-tos').className = tabId === 'tos-maker' ? 'px-4 py-2 bg-blue-600 text-white rounded-md font-semibold' : 'px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold hover:bg-gray-300';
+            document.getElementById('item-analysis').classList.add('hidden');
             
-            // Hide output when switching tabs
-            document.getElementById('outputSection').classList.add('hidden');
+            // Reset tab styles
+            const tabs = ['tab-lp', 'tab-tos', 'tab-analysis'];
+            tabs.forEach(t => {
+                document.getElementById(t).className = 'px-5 py-2.5 rounded-t-lg font-bold border-t border-l border-r tab-inactive transition';
+            });
+
+            // Show selected tab
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            // Set active style
+            let activeTabId = tabId === 'lp-maker' ? 'tab-lp' : (tabId === 'tos-maker' ? 'tab-tos' : 'tab-analysis');
+            document.getElementById(activeTabId).className = 'px-5 py-2.5 rounded-t-lg font-bold border-t border-l border-r tab-active transition';
+            
+            // Hide output when switching
+            document.getElementById('outputContainer').classList.add('hidden');
         }
 
-        // Toggle Time Allotment for Semi-Detailed LP
-        function toggleLPType() {
-            const format = document.querySelector('input[name="lpType"]:checked').value;
-            const timeContainer = document.getElementById('timeAllotmentContainer');
-            
-            if (format === 'semi-detailed') {
+        // Toggle Time Allotment UI
+        function toggleTimeAllotment() {
+            const lpType = document.querySelector('input[name="lpType"]:checked').value;
+            const timeContainer = document.getElementById('timeContainer');
+            if (lpType === 'semi-detailed') {
                 timeContainer.classList.remove('hidden');
             } else {
                 timeContainer.classList.add('hidden');
             }
         }
 
-        // Mock Extraction Logic
+        // File Extraction Simulation
         function extractContent() {
             const fileInput = document.getElementById('fileUpload');
             if (fileInput.files.length === 0) {
@@ -163,92 +214,161 @@
             
             status.classList.remove('hidden');
             dataBox.classList.add('hidden');
-            statusText.innerText = "Extracting content, please wait...";
-            statusText.classList.remove('text-green-600');
-            statusText.classList.add('text-blue-600');
+            status.className = 'mt-4 flex items-center space-x-3 text-blue-600 bg-blue-50 p-3 rounded-md';
+            statusText.innerText = "Extracting text, please wait...";
             document.querySelector('.loader').style.display = 'block';
 
-            // Simulate server/API processing time
+            // Simulate processing
             setTimeout(() => {
                 document.querySelector('.loader').style.display = 'none';
-                statusText.innerText = "Extraction Complete! Content is ready for generation.";
-                statusText.classList.remove('text-blue-600');
-                statusText.classList.add('text-green-600');
+                status.className = 'mt-4 flex items-center space-x-3 text-green-700 bg-green-50 p-3 rounded-md border border-green-200';
+                statusText.innerText = "Extraction Successful! Content is ready and aligned for generation.";
                 
-                // Show raw text box (mocked data)
                 dataBox.classList.remove('hidden');
-                dataBox.value = "[SYSTEM NOTE: In a live environment, this box will contain the parsed text from the PDF/DOCX/PPTX to be fed into the AI prompt.]\n\nSample Extracted Concept: The water cycle consists of evaporation, condensation, and precipitation.";
-            }, 2500);
+                dataBox.value = "[Extracted Content Preview] \nThe curriculum focuses on Earth and Space... (This text is securely passed to the AI prompt).";
+            }, 2000);
         }
 
-        // Mock Generation Logic connecting inputs to the ILAW Template
-        function generateOutput(type) {
-            const outputSection = document.getElementById('outputSection');
-            const outputContent = document.getElementById('outputContent');
-            const extractedData = document.getElementById('extractedData').value;
+        // Main Generation Logic
+        function generateContent(type) {
+            const outputContainer = document.getElementById('outputContainer');
+            const outputArea = document.getElementById('outputArea');
+            outputContainer.classList.remove('hidden');
             
-            outputSection.classList.remove('hidden');
-            outputContent.innerHTML = `<div class="flex justify-center items-center h-32"><div class="loader"></div><span class="ml-4">Generating ${type}...</span></div>`;
+            outputArea.innerHTML = `<div class="flex justify-center items-center h-40 flex-col"><div class="loader mb-4"></div><span class="text-gray-600 font-medium">Generating perfectly aligned ${type}...</span></div>`;
 
             setTimeout(() => {
+                let htmlContent = '';
+
                 if (type === 'LP') {
                     const lpType = document.querySelector('input[name="lpType"]:checked').value;
+                    const subject = document.getElementById('lpSubject').value || "[Subject]";
+                    const grade = document.getElementById('lpGrade').value || "[Grade/Section]";
                     const time = document.getElementById('timeAllotment').value;
-                    const stage = document.getElementById('keyStage').value;
+                    const isSemi = lpType === 'semi-detailed';
                     
-                    let timeDistributionHTML = "";
-                    if (lpType === 'semi-detailed' && time) {
-                        timeDistributionHTML = `<p class="text-sm text-red-600 font-bold mb-4">Note: The allotted ${time} minutes have been distributed in the 'Flow' and 'Assessment' sections below.</p>`;
-                    }
+                    let timeFlow = isSemi && time ? `<span class="text-red-600 font-normal ml-2">(${Math.floor(time * 0.7)} mins)</span>` : '';
+                    let timeAssess = isSemi && time ? `<span class="text-red-600 font-normal ml-2">(${Math.floor(time * 0.3)} mins)</span>` : '';
 
-                    outputContent.innerHTML = `
-                        ${timeDistributionHTML}
-                        <h3 class="text-xl font-bold bg-gray-200 p-2">ILAW LESSON PLAN TEMPLATE (${lpType.toUpperCase()})</h3>
-                        
-                        <h4 class="font-bold mt-4">I. Basic Information</h4>
-                        <table class="w-full text-left border-collapse border border-gray-300 mb-4 text-sm">
-                            <tr><th class="border p-2 bg-gray-50 w-1/3">Declaration of AI use</th><td class="border p-2">Content formulated based on extracted file using AI. (See DO 3 s.2026 Annex A)</td></tr>
+                    htmlContent = `
+                        <div class="text-center mb-6">
+                            <h2 class="text-xl font-bold uppercase">LESSON PLAN TEMPLATE</h2>
+                            <p class="text-sm font-semibold uppercase text-blue-700">${lpType === 'weekly' ? 'Weekly DLL (4 Sessions)' : 'Semi-Detailed LP'}</p>
+                        </div>
+
+                        <h3 class="font-bold text-lg bg-gray-200 p-2 mt-4">I. Basic Information</h3>
+                        <table class="w-full text-sm border-collapse border border-gray-400 mb-4 text-left">
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50 w-1/3">Learning Area/s</th><td class="border border-gray-400 p-2">${subject}</td></tr>
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50">Grade Level and Section</th><td class="border border-gray-400 p-2">${grade}</td></tr>
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50">No. of Sessions</th><td class="border border-gray-400 p-2">${isSemi ? '1 Session' : '4 Sessions'}</td></tr>
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50">Declaration of AI use</th><td class="border border-gray-400 p-2">Aligned with extracted uploaded materials. (DO 3 s.2026 Annex A)</td></tr>
                         </table>
 
-                        <h4 class="font-bold mt-4">II. Intentions</h4>
-                        <table class="w-full text-left border-collapse border border-gray-300 mb-4 text-sm">
-                            <tr><th class="border p-2 bg-gray-50 w-1/3">Learner Context</th><td class="border p-2">[Generated based on Key ${stage} typical profile]</td></tr>
+                        <h3 class="font-bold text-lg bg-gray-200 p-2 mt-4">II. Intentions</h3>
+                        <table class="w-full text-sm border-collapse border border-gray-400 mb-4 text-left">
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50 w-1/3">Learning Competency</th><td class="border border-gray-400 p-2">[Competency based on uploaded materials]</td></tr>
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50">Learning Objectives</th><td class="border border-gray-400 p-2">[Objective 1], [Objective 2]</td></tr>
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50">Learner Context</th><td class="border border-gray-400 p-2">[Generated strengths and barriers based on Key Stage]</td></tr>
                         </table>
 
-                        <h4 class="font-bold mt-4">III. Learning Experience</h4>
-                        <table class="w-full text-left border-collapse border border-gray-300 mb-4 text-sm">
-                            <tr>
-                                <th class="border p-2 bg-gray-50 w-1/3">Flow ${lpType === 'semi-detailed' && time ? `<br><span class="text-red-500 font-normal">(${Math.floor(time * 0.7)} mins)</span>` : ''}</th>
-                                <td class="border p-2">
-                                    <ul class="list-disc pl-4">
-                                        <li><strong>Clear Goals:</strong> [Generated Strategy for ${stage}]</li>
-                                        <li><strong>Active Retrieval:</strong> [Generated Strategy for ${stage}]</li>
-                                    </ul>
-                                </td>
-                            </tr>
+                        <h3 class="font-bold text-lg bg-gray-200 p-2 mt-4">III. Learning Experience</h3>
+                        <table class="w-full text-sm border-collapse border border-gray-400 mb-4 text-left">
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50 w-1/3">Pre-Lesson</th><td class="border border-gray-400 p-2">[Pre-lesson activity to get learners ready]</td></tr>
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50">Flow ${timeFlow}</th><td class="border border-gray-400 p-2">
+                                <ul class="list-disc pl-5">
+                                    <li><strong>Clear Goals & Teaching:</strong> [Strategy specific to Key Stage]</li>
+                                    <li><strong>Active Retrieval & Spacing:</strong> [Strategy specific to Key Stage]</li>
+                                    <li><strong>Checks for Understanding:</strong> [Strategy specific to Key Stage]</li>
+                                </ul>
+                            </td></tr>
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50">Learning Resources</th><td class="border border-gray-400 p-2">Extracted Materials (PPT/PDF/DOCX)</td></tr>
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50">Integration</th><td class="border border-gray-400 p-2">[Relevant Integration Area]</td></tr>
                         </table>
 
-                        <h4 class="font-bold mt-4">IV. Assessment</h4>
-                        <table class="w-full text-left border-collapse border border-gray-300 mb-4 text-sm">
-                            <tr>
-                                <th class="border p-2 bg-gray-50 w-1/3">Formative Assessment ${lpType === 'semi-detailed' && time ? `<br><span class="text-red-500 font-normal">(${Math.floor(time * 0.3)} mins)</span>` : ''}</th>
-                                <td class="border p-2">[Generated Assessment aligned with Extracted Materials]</td>
-                            </tr>
+                        <h3 class="font-bold text-lg bg-gray-200 p-2 mt-4">IV. Assessment</h3>
+                        <table class="w-full text-sm border-collapse border border-gray-400 mb-4 text-left">
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50 w-1/3">Formative Assessment ${timeAssess}</th><td class="border border-gray-400 p-2">[Generated Assessment aligned to extracted content with varied response formats]</td></tr>
+                        </table>
+
+                        <h3 class="font-bold text-lg bg-gray-200 p-2 mt-4">V. Ways Forward</h3>
+                        <table class="w-full text-sm border-collapse border border-gray-400 mb-4 text-left">
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50 w-1/3">Extended Learning</th><td class="border border-gray-400 p-2">[Outside classroom reinforcement activities]</td></tr>
+                            <tr><th class="border border-gray-400 p-2 bg-gray-50">Reflections</th><td class="border border-gray-400 p-2">[Teacher Reflection Prompts]</td></tr>
                         </table>
                     `;
-                } else {
-                    // TOS Generation Mock
-                    const items = document.getElementById('quizItems').value || 10;
-                    outputContent.innerHTML = `
-                        <h3 class="text-xl font-bold bg-gray-200 p-2">TABLE OF SPECIFICATIONS & QUIZ</h3>
-                        <p class="mt-2 text-sm text-gray-600">Generated based on ${items} items using the extracted uploaded materials.</p>
-                        <table class="w-full text-left border-collapse border border-gray-300 mt-4 text-sm">
-                            <tr class="bg-gray-100"><th class="border p-2">Topic</th><th class="border p-2">Knowledge</th><th class="border p-2">Application</th><th class="border p-2">Total Items</th></tr>
-                            <tr><td class="border p-2">[Extracted Topic 1]</td><td class="border p-2">${Math.floor(items/2)}</td><td class="border p-2">${Math.ceil(items/2)}</td><td class="border p-2">${items}</td></tr>
+                } 
+                else if (type === 'TOS') {
+                    const items = document.getElementById('quizItems').value || 30;
+                    htmlContent = `
+                        <h2 class="text-xl font-bold mb-4 text-center">TABLE OF SPECIFICATIONS</h2>
+                        <table class="w-full text-sm border-collapse border border-gray-400 mb-8 text-center">
+                            <tr class="bg-gray-200">
+                                <th class="border border-gray-400 p-2">Learning Competency</th>
+                                <th class="border border-gray-400 p-2">No. of Days</th>
+                                <th class="border border-gray-400 p-2">% of Items</th>
+                                <th class="border border-gray-400 p-2">Remembering</th>
+                                <th class="border border-gray-400 p-2">Applying</th>
+                                <th class="border border-gray-400 p-2">Total Items</th>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-400 p-2 text-left">[Extracted Competency 1]</td>
+                                <td class="border border-gray-400 p-2">5</td>
+                                <td class="border border-gray-400 p-2">100%</td>
+                                <td class="border border-gray-400 p-2">1-${Math.floor(items/2)}</td>
+                                <td class="border border-gray-400 p-2">${Math.floor(items/2) + 1}-${items}</td>
+                                <td class="border border-gray-400 p-2 font-bold">${items}</td>
+                            </tr>
+                        </table>
+                        <h3 class="font-bold text-lg mt-8 mb-2 border-b">Generated Quiz (Aligned with Extracted Text)</h3>
+                        <p class="text-sm italic text-gray-600">[Quiz items will generate here based on the selected type...]</p>
+                    `;
+                }
+                else if (type === 'ANALYSIS') {
+                    htmlContent = `
+                        <h2 class="text-xl font-bold mb-4 text-center">ITEM ANALYSIS REPORT</h2>
+                        <div class="mb-4 text-sm text-gray-700">
+                            <p><strong>Total Students:</strong> ${document.getElementById('totalStudents').value || 40}</p>
+                            <p><strong>Formula Used:</strong> Standard Difficulty and Discrimination Index</p>
+                        </div>
+                        <table class="w-full text-sm border-collapse border border-gray-400 mb-4 text-center">
+                            <tr class="bg-teal-50">
+                                <th class="border border-gray-400 p-2">Item No.</th>
+                                <th class="border border-gray-400 p-2">Difficulty Index (Df)</th>
+                                <th class="border border-gray-400 p-2">Discrimination Index (Ds)</th>
+                                <th class="border border-gray-400 p-2">Interpretation</th>
+                                <th class="border border-gray-400 p-2">Decision</th>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-400 p-2">1</td>
+                                <td class="border border-gray-400 p-2">0.85</td>
+                                <td class="border border-gray-400 p-2">0.15</td>
+                                <td class="border border-gray-400 p-2">Very Easy / Poor Discrimination</td>
+                                <td class="border border-gray-400 p-2 font-bold text-red-600">REJECT</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-400 p-2">2</td>
+                                <td class="border border-gray-400 p-2">0.55</td>
+                                <td class="border border-gray-400 p-2">0.40</td>
+                                <td class="border border-gray-400 p-2">Average / Good Discrimination</td>
+                                <td class="border border-gray-400 p-2 font-bold text-green-600">RETAIN</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-400 p-2">3</td>
+                                <td class="border border-gray-400 p-2">0.25</td>
+                                <td class="border border-gray-400 p-2">0.20</td>
+                                <td class="border border-gray-400 p-2">Difficult / Fair Discrimination</td>
+                                <td class="border border-gray-400 p-2 font-bold text-yellow-600">REVISE</td>
+                            </tr>
                         </table>
                     `;
                 }
-            }, 1500);
+
+                outputArea.innerHTML = htmlContent;
+            }, 1200);
+        }
+
+        function printOutput() {
+            window.print();
         }
     </script>
 </body>
