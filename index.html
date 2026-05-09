@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DepEd Teacher's OS v4.1 - ILAW + Time Formatting</title>
+    <title>DepEd Teacher's OS v4.5 - Strict LDP Integration</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
@@ -119,7 +119,7 @@
         <div class="grid-3">
             <div>
                 <label>Grade Level</label>
-                <select id="grade-level" onchange="toggleSemester()">
+                <select id="grade-level">
                     <option value="Key Stage 1 (K-Gr3)">Grade 1</option>
                     <option value="Key Stage 1 (K-Gr3)">Grade 2</option>
                     <option value="Key Stage 1 (K-Gr3)">Grade 3</option>
@@ -135,10 +135,12 @@
                 </select>
             </div>
             <div>
-                <label id="term-label">Quarter</label>
+                <label>Term</label>
                 <select id="term-select">
-                    <option>1st Quarter</option><option>2nd Quarter</option>
-                    <option>3rd Quarter</option><option>4th Quarter</option>
+                    <option>1st Term</option>
+                    <option>2nd Term</option>
+                    <option>3rd Term</option>
+                    <option>4th Term</option>
                 </select>
             </div>
             <div>
@@ -280,18 +282,32 @@
         <div class="card">
             <h3 style="margin-top:0; color: var(--primary-blue);">Institutional Signatories</h3>
             <label>Complete School Name</label><input type="text" id="prof-school" placeholder="e.g. San Jose National High School" oninput="saveProfile()">
-            <div class="grid-2">
-                <div><label>Prepared by (Your Name)</label><input type="text" id="prof-teacher" placeholder="Juan Dela Cruz" oninput="saveProfile()"></div>
-                <div><label>Checked by (Head/Coordinator)</label><input type="text" id="prof-checker" placeholder="Maria Clara" oninput="saveProfile()"></div>
+            
+            <div class="grid-2" style="margin-top: 15px;">
+                <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <label style="color: var(--accent-orange);">Prepared by</label>
+                    <input type="text" id="prof-teacher" placeholder="Name (e.g. Juan Dela Cruz)" oninput="saveProfile()">
+                    <input type="text" id="prof-teacher-pos" placeholder="Position (e.g. Teacher III)" oninput="saveProfile()">
+                </div>
+                <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <label style="color: var(--accent-orange);">Checked by</label>
+                    <input type="text" id="prof-checker" placeholder="Name (e.g. Maria Clara)" oninput="saveProfile()">
+                    <input type="text" id="prof-checker-pos" placeholder="Position (e.g. Master Teacher I)" oninput="saveProfile()">
+                </div>
             </div>
-            <label>Approved by (Principal)</label><input type="text" id="prof-approver" placeholder="Dr. Jose Rizal" oninput="saveProfile()">
+            
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px;">
+                <label style="color: var(--accent-orange);">Approved by</label>
+                <input type="text" id="prof-approver" placeholder="Name (e.g. Dr. Jose Rizal)" oninput="saveProfile()">
+                <input type="text" id="prof-approver-pos" placeholder="Position (e.g. School Principal IV)" oninput="saveProfile()">
+            </div>
         </div>
     </div>
 
     <div id="loading" style="display:none; text-align:center; padding: 40px;">
         <div class="loader"></div>
         <h3 style="color: var(--primary-blue); margin: 10px 0;">AI is processing strict deterministic output...</h3>
-        <p style="color: #666;">Please wait. Enforcing exact DepEd ILAW constraints.</p>
+        <p style="color: #666;">Please wait. Enforcing exact DepEd ILAW constraints & table alignments.</p>
     </div>
 
     <div id="output-section" style="display:none;">
@@ -314,15 +330,6 @@
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         event.currentTarget.classList.add('active');
-    }
-
-    function toggleSemester() {
-        const gradeText = document.getElementById('grade-level').options[document.getElementById('grade-level').selectedIndex].text;
-        const isSHS = gradeText.includes("SHS");
-        document.getElementById('term-label').innerText = isSHS ? "Semester" : "Quarter";
-        document.getElementById('term-select').innerHTML = isSHS ? 
-            `<option>1st Semester</option><option>2nd Semester</option>` : 
-            `<option>1st Quarter</option><option>2nd Quarter</option><option>3rd Quarter</option><option>4th Quarter</option>`;
     }
 
     function togglePPST() {
@@ -438,19 +445,25 @@
         const data = {
             school: document.getElementById('prof-school').value,
             teacher: document.getElementById('prof-teacher').value,
+            teacherPos: document.getElementById('prof-teacher-pos').value,
             checker: document.getElementById('prof-checker').value,
-            approver: document.getElementById('prof-approver').value
+            checkerPos: document.getElementById('prof-checker-pos').value,
+            approver: document.getElementById('prof-approver').value,
+            approverPos: document.getElementById('prof-approver-pos').value
         };
-        localStorage.setItem('deped_profile_v3', JSON.stringify(data));
+        localStorage.setItem('deped_profile_v4', JSON.stringify(data));
     }
 
     function loadProfile() {
-        const data = JSON.parse(localStorage.getItem('deped_profile_v3'));
+        const data = JSON.parse(localStorage.getItem('deped_profile_v4'));
         if(data) {
             document.getElementById('prof-school').value = data.school || '';
             document.getElementById('prof-teacher').value = data.teacher || '';
+            document.getElementById('prof-teacher-pos').value = data.teacherPos || '';
             document.getElementById('prof-checker').value = data.checker || '';
+            document.getElementById('prof-checker-pos').value = data.checkerPos || '';
             document.getElementById('prof-approver').value = data.approver || '';
+            document.getElementById('prof-approver-pos').value = data.approverPos || '';
         }
         togglePPST();
     }
@@ -488,29 +501,78 @@
             const timeMins = document.getElementById('time-allotment').value;
             const pos = document.getElementById('position').value;
 
-            // Generate the dynamic nested table for the 'Flow' section based on SDLP vs DLL
+            // Strict LDP Definitions Provided by User
+            const ldpContext = `
+            The 8 Learning Design Principles (LDPs) to guide the lesson activities:
+            1. Clear Goals and Teaching: Ensuring learners know exactly what they are expected to learn.
+            2. Scaffolding: Breaking down complex tasks into smaller, manageable steps.
+            3. Checks for Understanding: Frequent "pulse checks" during the lesson to see if students are following.
+            4. Active Retrieval and Spacing: Using techniques to help students recall information over time.
+            5. Self-awareness and Metacognition: Encouraging students to think about their own learning process.
+            6. Social Learning: Creating opportunities for students to learn from and with each other.
+            7. Values and Purpose Integration: Connecting lessons to real-world meaning and character building.
+            8. Inclusion: Ensuring the lesson is accessible to all learners, regardless of ability or background.
+            `;
+
             let flowTableHTML = "";
+            let intentionsTableHTML = "";
             let specificInstruction = "";
             
             if (docType === "SDLP") {
-                specificInstruction = `CRITICAL FOR SDLP: Allocate the ${timeMins} minutes appropriately across the parts of the Lesson Proper (e.g., Motivation, Activity, Analysis, Abstraction, Application). In the 'Flow' section, output a 3-column table ensuring the total time adds up exactly to ${timeMins} minutes. Explcitly detail how the Teacher/Learner activities integrate the Learning Design Principles and map to the specific PPST indicator.`;
+                specificInstruction = `CRITICAL FOR SDLP: Allocate the exactly ${timeMins} minutes appropriately across the Pre-Lesson, Flow, and Formative Assessment. The sum of the minutes across these sections MUST strictly equal exactly ${timeMins} minutes. Do not exceed this limit. In the "Flow" section, output a strict 3-column table. Incorporate any of the 8 Learning Design Principles (LDPs) as appropriate to serve as your shared pedagogical guide. Detail how the Teacher/Learner activities integrate the LDPs and map to the specific PPST indicator.`;
+                
+                intentionsTableHTML = `
+                <table border="1" style="width:100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 20px;">
+                    <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">I. INTENTIONS</th></tr>
+                    <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Learning Competency and Curriculum Standards</td><td style="padding:6px;">${comp}</td></tr>
+                    <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Objectives</td><td style="padding:6px;">${obj}</td></tr>
+                    <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learner Context</td><td style="padding:6px;">${context}</td></tr>
+                </table>`;
+
                 flowTableHTML = `
-                <table border="1" style="width:100%; border-collapse: collapse; margin-top:5px; margin-bottom:5px;">
+                <table border="1" style="width:100%; border-collapse: collapse; table-layout: fixed; margin-top:5px; margin-bottom:5px;">
                     <tr>
-                        <th style="padding: 6px; background:#e2e8f0; width:20%;">Part of LP & Time Allocation (${timeMins} Mins)</th>
+                        <th style="padding: 6px; background:#e2e8f0; width:20%;">Part of LP & Time (Total: ${timeMins} Mins)</th>
                         <th style="padding: 6px; background:#e2e8f0; width:50%;">Teacher & Learner Activity (Integrate LDPs)</th>
                         <th style="padding: 6px; background:#e2e8f0; width:30%;">PPST Annotations (${pos})</th>
                     </tr>
                     <tr>
-                        <td style="padding: 6px;">[e.g., Introduction/Motivation - X mins]</td>
-                        <td style="padding: 6px;">[Detail sequential activities incorporating the 8 Learning Design Principles]</td>
+                        <td style="padding: 6px;">[e.g., Activity - X mins]</td>
+                        <td style="padding: 6px;">[Detail activity integrating appropriate Learning Design Principles]</td>
                         <td style="padding: 6px;">[Explicitly explain HOW the activity demonstrates specific PPST indicators]</td>
                     </tr>
                     </table>`;
             } else {
-                specificInstruction = `CRITICAL FOR DLL: In the 'Flow' section, output a 4-column table detailing the progression of the lesson from Day 1 to Day 4. Explicitly integrate the 8 Learning Design Principles appropriately across the days.`;
+                specificInstruction = `CRITICAL FOR DLL: The Lesson Proper begins at the "Pre-Lesson" phase. In the 'Flow' section, output a rigid 4-column table detailing the progression of the lesson from Day 1 to Day 4. Incorporate the 8 Learning Design Principles appropriately across the days to serve as your pedagogical guide. Additionally, in the 'I. INTENTIONS' table, logically unpack and divide the main 'Learning Objectives' input across Day 1 to Day 4 to show progression.`;
+                
+                intentionsTableHTML = `
+                <table border="1" style="width:100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 20px;">
+                    <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">I. INTENTIONS</th></tr>
+                    <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Learning Competency and Curriculum Standards</td><td style="padding:6px;">${comp}</td></tr>
+                    <tr>
+                        <td style="font-weight:bold; background:#f9f9f9; padding:6px; vertical-align:middle;">Learning Objectives</td>
+                        <td style="padding:0;">
+                            <table border="1" style="width:100%; border-collapse: collapse; table-layout: fixed; border-style: hidden;">
+                                <tr>
+                                    <th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:1px solid black; border-bottom:1px solid black;">Day 1</th>
+                                    <th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:1px solid black; border-bottom:1px solid black;">Day 2</th>
+                                    <th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:1px solid black; border-bottom:1px solid black;">Day 3</th>
+                                    <th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:none; border-bottom:1px solid black;">Day 4</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:1px solid black; border-bottom:none;">[Objective/s for Day 1 mapped from: ${obj}]</td>
+                                    <td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:1px solid black; border-bottom:none;">[Objective/s for Day 2 mapped from: ${obj}]</td>
+                                    <td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:1px solid black; border-bottom:none;">[Objective/s for Day 3 mapped from: ${obj}]</td>
+                                    <td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:none; border-bottom:none;">[Objective/s for Day 4 mapped from: ${obj}]</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learner Context</td><td style="padding:6px;">${context}</td></tr>
+                </table>`;
+
                 flowTableHTML = `
-                <table border="1" style="width:100%; border-collapse: collapse; margin-top:5px; margin-bottom:5px;">
+                <table border="1" style="width:100%; border-collapse: collapse; table-layout: fixed; margin-top:5px; margin-bottom:5px;">
                     <tr>
                         <th style="padding: 6px; background:#e2e8f0; width:25%;">Day 1</th>
                         <th style="padding: 6px; background:#e2e8f0; width:25%;">Day 2</th>
@@ -518,53 +580,49 @@
                         <th style="padding: 6px; background:#e2e8f0; width:25%;">Day 4</th>
                     </tr>
                     <tr>
-                        <td style="vertical-align:top; padding:6px;">[Detail Day 1 Flow integrating LDPs]</td>
-                        <td style="vertical-align:top; padding:6px;">[Detail Day 2 Flow integrating LDPs]</td>
-                        <td style="vertical-align:top; padding:6px;">[Detail Day 3 Flow integrating LDPs]</td>
-                        <td style="vertical-align:top; padding:6px;">[Detail Day 4 Flow integrating LDPs]</td>
+                        <td style="vertical-align:top; padding:6px;">[Detail Day 1 Flow integrating appropriate LDPs]</td>
+                        <td style="vertical-align:top; padding:6px;">[Detail Day 2 Flow integrating appropriate LDPs]</td>
+                        <td style="vertical-align:top; padding:6px;">[Detail Day 3 Flow integrating appropriate LDPs]</td>
+                        <td style="vertical-align:top; padding:6px;">[Detail Day 4 Flow integrating appropriate LDPs]</td>
                     </tr>
                 </table>`;
             }
 
             const formatInstruction = `
             CRITICAL SYSTEM INSTRUCTION: You are generating raw HTML for a rigid system implementing the DepEd DO 3 s.2026 ILAW Framework. 
-            Do not modify the structural skeleton of the outermost HTML tables below. Do not merge cells or change the outer columns. 
+            Do not modify the structural skeleton of the outermost HTML tables below. The CSS property 'table-layout: fixed' is used to ensure perfect vertical alignment; DO NOT remove it or alter the percentage widths.
             
             ${specificInstruction}
             
-            When designing activities, explicitly mention the integration of the 8 Learning Design Principles (Clear Goals, Scaffolding, Checks for Understanding, Active Retrieval, Self-awareness/Metacognition, Social Learning, Values Integration, Inclusion). Suggest specific pedagogy suitable for ${keyStage}.
+            ${ldpContext}
+            When designing activities, explicitly mention the integration of the exact Learning Design Principles above where appropriate. Suggest specific pedagogy suitable for ${keyStage}.
             
             Use the exact HTML table structure below:
             
-            <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+            <table border="1" style="width:100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 20px;">
                 <tr><td style="font-weight:bold; width:25%; background:#f2f2f2; padding:6px;">Lesson Title</td><td style="width:25%; padding:6px;">[Generate highly relevant title]</td><td style="font-weight:bold; width:25%; background:#f2f2f2; padding:6px;">Learning Area/s</td><td style="width:25%; padding:6px;">${subject}</td></tr>
                 <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Name of Teacher/s</td><td style="padding:6px;">${teacher}</td><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Grade Level and Section</td><td style="padding:6px;">${gradeText}</td></tr>
-                <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Time Allotment</td><td style="padding:6px;">${docType === 'SDLP' ? timeMins + ' Mins' : '4 Days'}</td><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Quarter/Semester</td><td style="padding:6px;">${term}</td></tr>
+                <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Time Allotment</td><td style="padding:6px;">${docType === 'SDLP' ? timeMins + ' Mins' : '4 Days'}</td><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Term</td><td style="padding:6px;">${term}</td></tr>
                 <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">References</td><td colspan="3" style="padding:6px;">[List books, websites, toolkits, etc.]</td></tr>
                 <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Declaration of AI use</td><td colspan="3" style="padding:6px;">AI was utilized to draft the structured flow and pedagogical strategies of this lesson plan in alignment with DO 3 s.2026 Annex A, specifically integrating Learning Design Principles for ${keyStage}. All AI-generated content was reviewed and modified by the educator.</td></tr>
             </table>
 
-            <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-                <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">I. INTENTIONS</th></tr>
-                <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Learning Competency and Curriculum Standards</td><td style="padding:6px;">${comp}</td></tr>
-                <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Objectives</td><td style="padding:6px;">${obj}</td></tr>
-                <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learner Context</td><td style="padding:6px;">${context}</td></tr>
-            </table>
+            ${intentionsTableHTML}
 
-            <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+            <table border="1" style="width:100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 20px;">
                 <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">II. LEARNING EXPERIENCE</th></tr>
-                <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Pre-Lesson</td><td style="padding:6px;">[Describe how you will help learners get ready for the lesson]</td></tr>
+                <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Pre-Lesson</td><td style="padding:6px;">[Describe how you will help learners get ready for the lesson. Note: This begins the Lesson Proper. ${docType === 'SDLP' ? 'Explicitly state the time allocated here (e.g., 5 mins).' : ''}]</td></tr>
                 <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px; vertical-align:middle;">Flow</td><td style="padding:0;">${flowTableHTML}</td></tr>
                 <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Resources</td><td style="padding:6px;">[List needed resources. Include options and alternatives in case of emergencies.]</td></tr>
                 <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Opportunities for integration</td><td style="padding:6px;">[Write down possibilities to meaningfully integrate another learning area, special topic, or technology. Write N/A if none.]</td></tr>
             </table>
 
-            <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+            <table border="1" style="width:100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 20px;">
                 <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">III. ASSESSMENT</th></tr>
-                <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Formative Assessment</td><td style="padding:6px;">[Create a task, activity or questions to evaluate learning. Include appropriate accommodations so varied learning styles can demonstrate understanding.]</td></tr>
+                <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Formative Assessment</td><td style="padding:6px;">[Create a task, activity or questions to evaluate learning. ${docType === 'SDLP' ? 'Explicitly state the time allocated here (e.g., 10 mins). Ensure the total time across Pre-Lesson, Flow, and this Assessment equals exactly ' + timeMins + ' minutes.' : ''} Include appropriate accommodations so varied learning styles can demonstrate understanding.]</td></tr>
             </table>
 
-            <table border="1" style="width:100%; border-collapse: collapse;">
+            <table border="1" style="width:100%; border-collapse: collapse; table-layout: fixed;">
                 <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">IV. WAYS FORWARD</th></tr>
                 <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Extended learning opportunities</td><td style="padding:6px;">[Suggest learning experiences outside the classroom to reinforce learning or provide support in areas of difficulty.]</td></tr>
                 <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Reflections</td><td style="padding:6px;">[Leave blank for the teacher to fill out post-lesson regarding changes needed, learner interests, and notes for instructional coaches.]</td></tr>
@@ -620,7 +678,7 @@
             4. Include Answer Key.
             
             Context Material: ${uploadedContext}
-            Output strictly as valid HTML. DO NOT output markdown blocks.`;
+            Output strictly as valid HTML with 'table-layout: fixed' on tables. DO NOT output markdown blocks.`;
             
         } else if (mode === 'analysis') {
             const totalLearners = document.getElementById('total-learners').value;
@@ -645,7 +703,7 @@
             4. Explicitly list "Most Learned Competencies" and "Least Learned Competencies".
             5. Provide actionable DepEd-compliant intervention/remediation strategies for the Least Learned.
             
-            Output strictly as professional HTML tags without markdown code blocks. Make it format like an official DepEd report.`;
+            Output strictly as professional HTML tags without markdown code blocks. Make it format like an official DepEd report with rigid tables (use 'table-layout: fixed').`;
         }
 
         try {
@@ -686,7 +744,7 @@
             isLandscape = true;
         }
         
-        const p = JSON.parse(localStorage.getItem('deped_profile_v3')) || {};
+        const p = JSON.parse(localStorage.getItem('deped_profile_v4')) || {};
         const content = document.getElementById('word-preview').innerHTML;
 
         const docHtml = `
@@ -695,9 +753,9 @@
         <style>
             @page { size: 8.5in 13in; margin: 0.5in; mso-page-orientation: ${isLandscape ? 'landscape' : 'portrait'}; }
             body { font-family: "Times New Roman", serif; font-size: 11pt; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; }
+            table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 10px; margin-bottom: 10px; }
             th, td { border: 1px solid black; padding: 8px; vertical-align: top; }
-            .sign-table { width: 100%; border: none; margin-top: 40px; }
+            .sign-table { width: 100%; border: none; margin-top: 40px; table-layout: fixed; }
             .sign-table td { border: none; padding: 10px; text-align: left; }
         </style>
         </head><body>
@@ -710,9 +768,9 @@
         
         <table class="sign-table">
             <tr>
-                <td style="width: 33%;">Prepared by:<br><br><br><b><u>${p.teacher ? p.teacher.toUpperCase() : 'TEACHER NAME'}</u></b></td>
-                <td style="width: 33%;">Checked by:<br><br><br><b><u>${p.checker ? p.checker.toUpperCase() : 'CHECKER NAME'}</u></b></td>
-                <td style="width: 33%;">Approved by:<br><br><br><b><u>${p.approver ? p.approver.toUpperCase() : 'PRINCIPAL NAME'}</u></b></td>
+                <td style="width: 33%;">Prepared by:<br><br><br><b><u>${p.teacher ? p.teacher.toUpperCase() : 'TEACHER NAME'}</u></b><br>${p.teacherPos || ''}</td>
+                <td style="width: 33%;">Checked by:<br><br><br><b><u>${p.checker ? p.checker.toUpperCase() : 'CHECKER NAME'}</u></b><br>${p.checkerPos || ''}</td>
+                <td style="width: 33%;">Approved by:<br><br><br><b><u>${p.approver ? p.approver.toUpperCase() : 'PRINCIPAL NAME'}</u></b><br>${p.approverPos || ''}</td>
             </tr>
         </table>
         </body></html>`;
