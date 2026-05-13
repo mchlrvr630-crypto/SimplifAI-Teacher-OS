@@ -44,7 +44,7 @@
         /* Main Workspace */
         .main-content { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; }
         .card { background: var(--card-white); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border-top: 4px solid var(--accent-orange); }
-        .page { display: none; } /* SPA Logic */
+        .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.4s ease; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -248,7 +248,7 @@
                         </select>
                     </div>
                     <div><label>Type</label><select id="ws-type"></select></div>
-                    <div id="ws-count-box"><label>Number of Items (Max 15 for Crossword)</label><input type="number" id="ws-count" value="10"></div>
+                    <div id="ws-count-box"><label>Number of Items</label><input type="number" id="ws-count" value="10"></div>
                 </div>
                 <label>Enter Words and Clues (Overrides defaults)</label>
                 <p style="font-size: 0.8rem; color: var(--primary-blue); margin-top: 0;">Format: Word | Clue (one per line).</p>
@@ -579,14 +579,39 @@
                 const tosRows = document.querySelectorAll('.tos-row'); let tosDataList = []; let totalDays = 0;
                 tosRows.forEach((row, index) => { const title = row.querySelector('.tos-comp-title').value; const desc = row.querySelector('.tos-comp-desc').value; const code = row.querySelector('.tos-comp-code').value; const days = parseInt(row.querySelector('.tos-comp-days').value) || 0; if(desc || title) { tosDataList.push(`${index+1}. Title: ${title} | Comp: ${desc} (Code: ${code}) - ${days} Days`); totalDays += days; } });
                 
-                promptText = `Generate TOS and a ${totalCalculatedItems}-item assessment for ${subject}, ${gradeText}. Competencies: ${tosDataList.join("\n")}. Total Days: ${totalDays}. Include EXACT columns: Content Title, Competency, LC Code, No. of Days, Percentage (%) (Whole number), No. of Items (Whole number), Item Placement. Distribute items based on: ${e}% Easy, ${a}% Average, ${d}% Difficult. 
-                CRITICAL: Follow these specific assessment formats and their item limits exactly: ${formatsString}. Total items must be exactly ${totalCalculatedItems}. Include Answer Key at the bottom. Output clean HTML tables. No markdown asterisks. Context: ${uploadedContext}`;
+                promptText = `Act as a strict DepEd Philippines Assessment Expert. Generate a Table of Specification (TOS) and a ${totalCalculatedItems}-item assessment for ${subject}, ${gradeText}.
+                Competencies: ${tosDataList.join("\n")}
+                Total Days Taught: ${totalDays}
+
+                Instructions for TOS Table:
+                1. Include EXACTLY these columns in this EXACT order: Content Title, Competency, LC Code, No. of Days Taught, Percentage (%), No. of Items, Item Placement (Remembering, Understanding, Applying, Analyzing, Evaluating, Creating).
+                2. Percentage (%): (Days Taught / Total Days) * 100. Output strictly as a WHOLE NUMBER.
+                3. No. of Items: (Percentage / 100) * ${totalCalculatedItems}. Ensure total sum equals ${totalCalculatedItems}.
+                4. Item Placement: Distribute exact item numbers across the Cognitive Spread (${e}% Easy, ${a}% Average, ${d}% Difficult) under the correct Cognitive Domains. Provide SPECIFIC ITEM NUMBERS (e.g., "1-3", "4", "5-7").
+
+                Instructions for Assessment:
+                1. Format questions plainly. Provide test questions matching exactly the ${totalCalculatedItems} items.
+                2. Formats to use and item counts: ${formatsString}.
+                3. Include Answer Key.
+                
+                Output valid HTML tables (border-collapse: collapse). NO markdown asterisks.`;
             
             } else if (mode === 'analysis') {
                 document.getElementById('loading-text').innerText = "AI is computing Master Level...";
                 const totalLearners = document.getElementById('total-learners').value; const itemData = document.getElementById('item-analysis-data').value;
                 if (!totalLearners || !itemData) { alert("Enter Learners and Data"); document.getElementById('loading').style.display = "none"; return; }
-                promptText = `Generate Item Analysis. Learners: ${totalLearners}. Data: ${itemData}. Compute MPL per item = (Correct / Total)*100. Table: Item No., Competency, Correct, MPL %, Equivalence. List Most Learned and Least Learned. Provide interventions. Output clean HTML table.`;
+                promptText = `Act as an expert DepEd Master Teacher and Assessment Coordinator. Generate a complete Item Analysis and Remediation Report.
+                Total Learners: ${totalLearners}
+                Data: ${itemData}
+
+                Instructions:
+                1. Calculate MPL per item: (Correct Responses / Total Learners) * 100.
+                2. Output an HTML table with EXACT columns: Item No., Competency, No. of Correct Responses, MPL %, Descriptive Equivalence.
+                3. Below the table, explicitly create an HTML <h3> tag titled "Most Learned Competencies" and list them.
+                4. Explicitly create an HTML <h3> tag titled "Least Learned Competencies" and list them.
+                5. Explicitly create an HTML <h3> tag titled "Suggested Interventions/Remediation" and provide actionable DepEd-compliant strategies for the least learned competencies.
+                
+                Output clean HTML. NO markdown asterisks.`;
             }
 
             try {
@@ -786,6 +811,21 @@
                             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
                             for(let r=0; r<size; r++) { let qRow = "", aRow = ""; for(let c=0; c<size; c++) { if(grid[r][c] === '.') { qRow += letters[randInt(0,25)]; aRow += "."; } else { qRow += grid[r][c]; aRow += grid[r][c]; } } qHtml += qRow + "\n"; aHtml += aRow + "\n"; }
                             content = qHtml + "</pre></div><br><b>Words to Find:</b><br>" + wordsToUse.join(', '); answers = aHtml + "</pre>";
+                        } else if (type === 'wg_matching' || type === 'sci_match') {
+                            inst = "Match the items in Column A with the correct terms in Column B.";
+                            let pairs = customData ? customData.map(c=>[c.clue, c.word]) : (type === 'sci_match' ? shuffle([...defSciTerms]) : shuffle([...defClues.map((c,i)=>[c,defWords[i]])])).slice(0, count);
+                            let colA = pairs.map((p,i) => ({id:i, text:p[0]})); let colB = pairs.map((p,i) => ({id:i, text:p[1]})); colB = shuffle(colB);
+                            
+                            content = `<table style="width:100%; border-collapse:collapse;"><tr><td style="width:50%; vertical-align:top; padding:10px;"><b>Column A</b><br><br>`;
+                            colA.forEach((x,i) => content += `${i+1}. ${x.text}<br><br>`);
+                            content += `</td><td style="width:50%; vertical-align:top; padding:10px;"><b>Column B</b><br><br>`;
+                            colB.forEach((x,i) => content += `${String.fromCharCode(65+i)}. ${x.text}<br><br>`);
+                            content += `</td></tr></table><br><b>Answers:</b><br>`;
+                            for(let i=0; i<colA.length; i++) content += `${i+1}. _____ &nbsp;&nbsp;&nbsp;`;
+                            
+                            answers = "<ol>";
+                            colA.forEach((a, i) => { let matchIdx = colB.findIndex(b => b.id === a.id); answers += `<li>${i+1} -> ${String.fromCharCode(65+matchIdx)}</li>`; });
+                            answers += "</ol>";
                         } else {
                             content = "<p>Standard layout for this type is active.</p>"; answers = "<p>Answers provided where applicable.</p>";
                         }
