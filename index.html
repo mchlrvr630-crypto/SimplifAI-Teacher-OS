@@ -27,7 +27,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             display: flex;
-            flex-direction: column; /* Changed to column for Dashboard-first layout */
+            flex-direction: column;
             height: 100vh;
             background: var(--bg-white);
             color: var(--text-main);
@@ -46,96 +46,37 @@
             z-index: 10;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .top-header h2 {
-            margin: 0;
-            color: var(--accent-orange);
-            font-weight: 800;
-            letter-spacing: 1px;
-            cursor: pointer;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .top-header h2 { margin: 0; color: var(--accent-orange); font-weight: 800; letter-spacing: 1px; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 10px; }
 
         .header-select {
-            padding: 8px;
-            font-size: 0.85rem;
-            border: none;
-            border-radius: 6px;
-            background: rgba(255,255,255,0.9);
-            color: var(--primary-blue);
-            outline: none;
+            padding: 8px; font-size: 0.85rem; border: none; border-radius: 6px;
+            background: rgba(255,255,255,0.9); color: var(--primary-blue); outline: none;
         }
 
         .header-btn {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
+            background: transparent; border: 1px solid rgba(255,255,255,0.3);
+            color: white; padding: 8px 15px; border-radius: 6px; cursor: pointer;
+            font-weight: 600; font-size: 0.85rem; transition: all 0.3s ease;
         }
 
-        .header-btn:hover {
-            background: rgba(255, 107, 0, 0.1);
-            border-color: var(--accent-orange);
-            color: var(--accent-orange);
-        }
-
-        .back-btn {
-            background: var(--accent-orange);
-            color: white;
-            border: none;
-            display: none; /* Hidden by default on dashboard */
-        }
-
-        .back-btn:hover {
-            background: #e65c00;
-            color: white;
-            border-color: transparent;
-            transform: translateY(-1px);
-        }
+        .header-btn:hover { background: rgba(255, 107, 0, 0.1); border-color: var(--accent-orange); color: var(--accent-orange); }
+        .back-btn { background: var(--accent-orange); color: white; border: none; display: none; }
+        .back-btn:hover { background: #e65c00; color: white; border-color: transparent; transform: translateY(-1px); }
 
         /* Main Workspace */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-        }
+        .main-content { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; }
 
         .card {
-            background: var(--card-white);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            margin-bottom: 20px;
-            border-top: 4px solid var(--accent-orange);
+            background: var(--card-white); padding: 25px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border-top: 4px solid var(--accent-orange);
         }
 
         .page { display: none; }
-        .page.active { 
-            display: block; 
-            animation: fadeIn 0.4s ease;
-        }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Layout Grids */
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
@@ -143,192 +84,52 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         /* Forms & Inputs */
-        label {
-            font-weight: 700;
-            display: block;
-            margin-bottom: 6px;
-            color: var(--primary-blue);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-
+        label { font-weight: 700; display: block; margin-bottom: 6px; color: var(--primary-blue); font-size: 0.85rem; text-transform: uppercase; }
         select, input[type="text"], input[type="number"], textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 0.95rem;
-            transition: 0.3s;
+            width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
+            margin-bottom: 15px; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: 0.3s;
         }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1); }
 
-        select:focus, input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-orange);
-            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
-        }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 15px; }
+        .checkbox-group label { text-transform: none; font-weight: 500; font-size: 0.90rem; color: var(--text-main); display: flex; align-items: center; gap: 5px; cursor: pointer; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .format-qty { width: 60px !important; padding: 4px 8px !important; margin: 0 0 0 5px !important; display: none; }
 
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .checkbox-group label {
-            text-transform: none;
-            font-weight: 500;
-            font-size: 0.90rem;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            background: #f8fafc;
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .format-qty {
-            width: 60px !important;
-            padding: 4px 8px !important;
-            margin: 0 0 0 5px !important;
-            display: none;
-        }
-
-        .perc-box {
-            background: var(--bg-white);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-
-        .perc-box input {
-            width: 80px;
-            text-align: center;
-            margin-bottom: 0;
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: var(--primary-blue);
-        }
+        .perc-box { background: var(--bg-white); padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
+        .perc-box input { width: 80px; text-align: center; margin-bottom: 0; font-weight: bold; font-size: 1.1rem; color: var(--primary-blue); }
 
         /* Buttons */
         .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            background: var(--accent-orange);
-            color: white;
-            font-size: 1rem;
-            width: 100%;
-            display: inline-block;
-            text-align: center;
-            text-decoration: none;
-            box-sizing: border-box;
+            padding: 14px 28px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
+            transition: all 0.3s; background: var(--accent-orange); color: white; font-size: 1rem; width: 100%;
         }
-
-        .btn:hover {
-            background: #e65c00;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(255, 107, 0, 0.3);
-        }
-
+        .btn:hover { background: #e65c00; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 107, 0, 0.3); }
         .btn-blue { background: var(--primary-blue); }
         .btn-blue:hover { background: #071a2e; }
         .btn-green { background: #38a169; }
         .btn-green:hover { background: #2f855a; }
 
         /* Dashboard Cards */
-        .dash-card {
-            cursor: pointer;
-            text-align: center;
-            transition: transform 0.2s;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .dash-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
-        .dash-badge {
-            margin-top: 15px;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
+        .dash-card { cursor: pointer; text-align: center; transition: transform 0.2s; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-decoration: none; color: inherit; }
+        .dash-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .dash-badge { margin-top: 15px; padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .badge-ai { background: #e2e8f0; color: var(--accent-orange); }
         .badge-js { background: #c6f6d5; color: #276749; }
 
         /* Loading & Output */
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--accent-orange);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-orange); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        #word-preview, #worksheet-preview { background: white; border: 1px solid #ddd; padding: 50px; margin-top: 20px; min-height: 500px; font-family: "Times New Roman", serif; overflow-x: auto; line-height: 1.5; color: black; }
+        .file-drop { border: 2px dashed var(--primary-blue); padding: 30px; text-align: center; border-radius: 12px; background: rgba(10, 37, 64, 0.03); margin-bottom: 10px; cursor: pointer; }
+        .file-status-box { padding: 15px; border-radius: 8px; background: #e2e8f0; font-weight: bold; text-align: center; font-size: 0.95rem; }
+        .answer-key-section { margin-top: 40px; border-top: 1px dashed #ccc; padding-top: 20px; color: #d32f2f; }
 
-        #word-preview, #worksheet-preview {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 50px;
-            margin-top: 20px;
-            min-height: 500px;
-            font-family: "Times New Roman", serif;
-            overflow-x: auto;
-            line-height: 1.5;
-            color: black;
-        }
-
-        .file-drop {
-            border: 2px dashed var(--primary-blue);
-            padding: 30px;
-            text-align: center;
-            border-radius: 12px;
-            background: rgba(10, 37, 64, 0.03);
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-        .file-status-box {
-            padding: 15px;
-            border-radius: 8px;
-            background: #e2e8f0;
-            font-weight: bold;
-            text-align: center;
-            font-size: 0.95rem;
-        }
-
-        .answer-key-section {
-            margin-top: 40px;
-            border-top: 1px dashed #ccc;
-            padding-top: 20px;
-            color: #d32f2f;
-        }
+        /* PowerPoint Preview Formatting */
+        .ppt-slide { border: 1px solid #ccc; margin-bottom: 20px; padding: 25px; border-radius: 8px; background: #fff; page-break-after: always; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .ppt-title { color: var(--primary-blue); border-bottom: 2px solid var(--accent-orange); padding-bottom: 8px; margin-top:0; font-family: Arial, sans-serif;}
+        .ppt-content { font-family: Arial, sans-serif; font-size: 1.1rem; }
+        .ppt-image { background: #e2e8f0; padding: 12px; margin-top: 20px; font-style: italic; border-radius: 6px; border-left: 4px solid var(--primary-blue); font-size: 0.95rem;}
 
     </style>
 </head>
@@ -379,19 +180,19 @@
             <div onclick="showPage('worksheet')" class="card dash-card" style="border-top-color: #38a169;">
                 <div style="font-size: 3rem; margin-bottom: 15px;">🧩</div>
                 <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Worksheet Generator</h3>
-                <p style="color: #666; font-size: 0.85rem; margin: 0;">Non-AI rule-based system. Instantly generate printable worksheets.</p>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate Word Scrambles, Missing Letters & Cryptograms offline.</p>
                 <div class="dash-badge badge-js">Pure JS (No API)</div>
             </div>
             <div onclick="showPage('lesson')" class="card dash-card" style="border-top-color: var(--accent-orange);">
                 <div style="font-size: 3rem; margin-bottom: 15px;">📝</div>
                 <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">ILAW Lesson Planner</h3>
-                <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate strict DO 3 s.2026 compliant lesson plans automatically.</p>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate strict DepEd compliant lesson plans automatically.</p>
                 <div class="dash-badge badge-ai">Gemini AI Powered</div>
             </div>
             <div onclick="showPage('presentation')" class="card dash-card" style="border-top-color: var(--accent-orange);">
                 <div style="font-size: 3rem; margin-bottom: 15px;">🖥️</div>
                 <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Presentation Maker</h3>
-                <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate creative slide outlines aligned with the ILAW Framework.</p>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate slide outlines aligned with the ILAW Framework. Exports to PPTX.</p>
                 <div class="dash-badge badge-ai">Gemini AI Powered</div>
             </div>
             <div onclick="showPage('testmaker')" class="card dash-card" style="border-top-color: var(--accent-orange);">
@@ -450,16 +251,8 @@
             <h3 style="margin-top:0; color: var(--primary-blue);">AI Presentation Maker</h3>
             <div class="grid-2">
                 <div><label>Number of Slides</label><input type="number" id="slide-count" value="10"></div>
-                <div><label>Visual Theme Export</label>
-                    <select id="slide-theme">
-                        <option value="light">Modern Light</option>
-                        <option value="dark">Professional Dark</option>
-                        <option value="deped">DepEd Standard (Blue/White)</option>
-                    </select>
-                </div>
+                <div><label>Topic / Presentation Content</label><textarea id="slide-content" rows="2" placeholder="Provide the topic or key points..."></textarea></div>
             </div>
-            <label>Topic / Presentation Content</label>
-            <textarea id="slide-content" rows="4" placeholder="Provide the topic, key points, or paste an article here to summarize into slides..."></textarea>
             <button class="btn" onclick="generateAI('presentation')">🖥️ Generate Presentation Outline</button>
         </div>
     </div>
@@ -467,23 +260,20 @@
     <div id="page-worksheet" class="page">
         <div class="card">
             <h3 style="margin-top:0; color: var(--primary-blue);">🧩 Worksheet Generator <span style="font-size:0.7rem; background:#38a169; color:white; padding:3px 6px; border-radius:4px; vertical-align:middle;">Offline / Non-AI</span></h3>
-            <p style="font-size: 0.9rem; color: #666;">Instantly generate randomized, ready-to-print worksheets using predefined logic.</p>
             <div class="grid-2" style="margin-top: 20px;">
                 <div>
                     <label>Category</label>
                     <select id="ws-category" onchange="updateTypes()">
-                        <option value="wordgames" selected>Word Games & Puzzles</option>
+                        <option value="puzzles" selected>Puzzles & Word Games</option>
                         <option value="math">Mathematics</option>
-                        <option value="language">Language</option>
-                        <option value="science">Science</option>
-                        <option value="logic">Logic</option>
+                        <option value="language">Language & Logic</option>
                     </select>
                 </div>
                 <div><label>Type</label><select id="ws-type"></select></div>
-                <div id="ws-count-box"><label>Number of Items (For Math/Auto gen)</label><input type="number" id="ws-count" value="10"></div>
+                <div id="ws-count-box"><label>Number of Items (For Math)</label><input type="number" id="ws-count" value="10"></div>
             </div>
             <label>Enter Words and Clues</label>
-            <p style="font-size: 0.8rem; color: var(--primary-blue); margin-top: 0;">Format: Word | Clue (one per line). Overrides default examples. Ignored for Math.</p>
+            <p style="font-size: 0.8rem; color: var(--primary-blue); margin-top: 0;">Format: Word | Clue (one per line). Ignored for Math.</p>
             <textarea id="puzzle-data" rows="5" placeholder="Photosynthesis | The process by which plants make food.&#10;Gravity | The force that attracts a body toward the center of the earth."></textarea>
             <button class="btn btn-green" onclick="generateRuleBasedWorksheet()">⚙️ Generate Randomized Worksheet</button>
         </div>
@@ -492,7 +282,6 @@
     <div id="page-testmaker" class="page">
         <div class="card">
             <h3 style="margin-top:0; color: var(--primary-blue);">📝 Test Maker (Non-TOS)</h3>
-            <p style="font-size: 0.9rem; color: #666;">Generates only the Questionnaire and Answer Key directly.</p>
             <div class="grid-3">
                 <div style="grid-column: span 3;">
                     <label>Distribution of Difficulty (%) - Must total 100%</label>
@@ -505,7 +294,6 @@
             </div>
             
             <label style="margin-top:15px;">Test Formats & Item Counts</label>
-            <p style="font-size: 0.8rem; color: #666; margin-top:0;">Check the formats you want and set the number of items for each.</p>
             <div class="checkbox-group" id="tm-formats-container">
                 <label><input type="checkbox" class="tm-quiz-format" value="Multiple Choice" onchange="toggleTOSQty(this)" checked> Multiple Choice <input type="number" class="format-qty" value="10" min="1" style="display:inline-block;"></label>
                 <label><input type="checkbox" class="tm-quiz-format" value="True or False" onchange="toggleTOSQty(this)"> True/False <input type="number" class="format-qty" value="5" min="1"></label>
@@ -586,7 +374,6 @@
     <div id="page-references" class="page">
         <div class="card">
             <h3 style="margin-top:0; color: var(--primary-blue);">📂 AI Reference Context Library</h3>
-            <p style="color:#666; font-size:0.9rem;">Upload modules, curriculum guides, or readings. The AI will use these documents as the knowledge base.</p>
             <div class="file-drop" onclick="document.getElementById('file-upload').click()">
                 <div style="font-size: 3rem; margin-bottom: 10px;">📄</div>
                 <h4 style="margin:0; color:var(--primary-blue);">Click to Upload Context Documents</h4>
@@ -600,15 +387,14 @@
     <div id="page-profile" class="page">
         <div class="card">
             <h3 style="margin-top:0; color: var(--primary-blue);">🏫 School Profile Settings</h3>
-            <p style="color:#666; font-size:0.9rem;">Used as headers and signatories for exported Word Documents.</p>
             <label>School Name / Header Text</label>
             <input type="text" id="prof-school" placeholder="e.g. SAN JOSE DEL MONTE NATIONAL HIGH SCHOOL">
             <div class="grid-2">
-                <div><label>Teacher Name (Prepared By)</label><input type="text" id="prof-teacher" placeholder="e.g. JUAN DELA CRUZ"></div>
+                <div><label>Teacher Name</label><input type="text" id="prof-teacher" placeholder="e.g. JUAN DELA CRUZ"></div>
                 <div><label>Teacher Position</label><input type="text" id="prof-teacher-pos" placeholder="e.g. Teacher I"></div>
-                <div><label>Checker Name (Checked By)</label><input type="text" id="prof-checker" placeholder="e.g. MARIA CLARA"></div>
+                <div><label>Checker Name</label><input type="text" id="prof-checker" placeholder="e.g. MARIA CLARA"></div>
                 <div><label>Checker Position</label><input type="text" id="prof-checker-pos" placeholder="e.g. Master Teacher I"></div>
-                <div><label>Approver Name (Approved By)</label><input type="text" id="prof-approver" placeholder="e.g. DR. JOSE RIZAL"></div>
+                <div><label>Approver Name</label><input type="text" id="prof-approver" placeholder="e.g. DR. JOSE RIZAL"></div>
                 <div><label>Approver Position</label><input type="text" id="prof-approver-pos" placeholder="e.g. School Principal IV"></div>
             </div>
             <button class="btn btn-blue" onclick="saveProfile()">💾 Save Signatories Profile</button>
@@ -627,6 +413,7 @@
                 <div id="word-preview"></div>
                 <div style="margin-top: 20px; display: flex; gap: 10px;">
                     <button id="dl-word-btn" class="btn btn-blue" onclick="exportToWord('main')" style="width:auto; margin-top:0;">💾 Download as MS Word</button>
+                    <button id="dl-ppt-btn" class="btn btn-blue" onclick="exportToPPT()" style="width:auto; margin-top:0; background:#d35400; display:none;">📊 Download as PowerPoint (.pptx)</button>
                 </div>
             </div>
             
@@ -646,32 +433,21 @@
 <script>
     // --- ROUTING / SPA LOGIC ---
     function showPage(pageId) {
-        // Hide all pages
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-        
-        // Show target page
         document.getElementById('page-' + pageId).classList.add('active');
-        
-        // Hide outputs on navigation change
         document.getElementById('output-section').style.display = 'none';
         document.getElementById('loading').style.display = 'none';
         
-        // Toggle Global Settings Bar
         const globalSettings = document.getElementById('global-settings-bar');
-        if (globalSettings) {
-            globalSettings.style.display = (pageId === 'dashboard' || pageId === 'profile' || pageId === 'references') ? 'none' : 'block';
-        }
+        if (globalSettings) globalSettings.style.display = (pageId === 'dashboard' || pageId === 'profile' || pageId === 'references') ? 'none' : 'block';
         
-        // Toggle Back Button visibility
         const backBtn = document.getElementById('back-btn');
-        if (backBtn) {
-            backBtn.style.display = (pageId === 'dashboard') ? 'none' : 'inline-block';
-        }
+        if (backBtn) backBtn.style.display = (pageId === 'dashboard') ? 'none' : 'inline-block';
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         loadProfile();
-        updateTypes(); // Initialize the Worksheet categories
+        updateTypes();
     });
 
     function toggleTOSQty(cb) {
@@ -685,7 +461,7 @@
         if(box) box.style.display = (type === "SDLP") ? "block" : "none";
     }
 
-    // --- PROFILE & SETTINGS ---
+    // --- PROFILE & API ---
     function saveProfile() {
         const data = {
             school: document.getElementById('prof-school')?.value,
@@ -714,138 +490,88 @@
     }
 
     function resetApiKey() {
-        if(confirm("Remove API Key?")) {
-            localStorage.removeItem("gamai_key");
-            alert("API Key Cleared.");
-        }
+        if(confirm("Remove API Key?")) { localStorage.removeItem("gamai_key"); alert("API Key Cleared."); }
     }
 
     async function fetchLiveModels(btn) {
         let apiKey = localStorage.getItem("gamai_key");
         if (!apiKey) {
             apiKey = prompt("Enter your Gemini API Key:");
-            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim());
-            else return;
+            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim()); else return;
         }
-        
         const originalText = btn.innerHTML;
-        btn.innerHTML = "⏳ Fetching...";
-        btn.style.pointerEvents = "none";
-        
+        btn.innerHTML = "⏳ Fetching..."; btn.style.pointerEvents = "none";
         try {
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
             const data = await response.json();
             if (data.error) throw new Error(data.error.message);
-            
             const select = document.getElementById('ai-model');
             if(select) {
                 select.innerHTML = '';
                 data.models.forEach(m => {
                     if (m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent") && !m.name.includes("embedding")) {
-                        const option = document.createElement('option');
-                        option.value = m.name.replace('models/', '');
-                        option.textContent = `${m.displayName} (${option.value})`;
-                        select.appendChild(option);
+                        select.innerHTML += `<option value="${m.name.replace('models/', '')}">${m.displayName} (${m.name.replace('models/', '')})</option>`;
                     }
                 });
             }
             alert(`Success! Loaded models.`);
-        } catch (e) {
-            alert("Error fetching models: " + e.message);
-        } finally {
-            btn.innerHTML = originalText;
-            btn.style.pointerEvents = "auto";
-        }
+        } catch (e) { alert("Error fetching models: " + e.message); } finally { btn.innerHTML = originalText; btn.style.pointerEvents = "auto"; }
     }
 
-    // --- FILE UPLOAD (REFERENCE LIBRARY) ---
     let uploadedContext = "";
-
     async function handleFileUpload() {
-        const fileInput = document.getElementById('file-upload');
-        const files = fileInput.files;
+        const files = document.getElementById('file-upload').files;
         const statusDiv = document.getElementById('file-status');
-        
         if (files.length === 0) return;
-        
-        statusDiv.innerHTML = "⏳ Reading files... please wait.";
-        statusDiv.style.color = "var(--accent-orange)";
-        uploadedContext = "";
-        
+        statusDiv.innerHTML = "⏳ Reading files..."; statusDiv.style.color = "var(--accent-orange)"; uploadedContext = "";
         try {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const ext = file.name.split('.').pop().toLowerCase();
                 let extractedText = "";
-                
                 if (ext === 'txt') {
-                    extractedText = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.readAsText(file);
-                    });
+                    extractedText = await new Promise((resolve) => { const reader = new FileReader(); reader.onload = (e) => resolve(e.target.result); reader.readAsText(file); });
                 } else if (ext === 'docx') {
                     const arrayBuffer = await file.arrayBuffer();
                     const result = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
                     extractedText = result.value;
-                } else if (ext === 'pdf') {
-                    const arrayBuffer = await file.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-                    for (let j = 1; j <= pdf.numPages; j++) {
-                        const page = await pdf.getPage(j);
-                        const content = await page.getTextContent();
-                        extractedText += content.items.map(item => item.str).join(' ') + '\n';
-                    }
                 }
                 uploadedContext += `\n--- Context from: ${file.name} ---\n${extractedText}\n`;
             }
-            statusDiv.innerHTML = `✅ <b>${files.length} file(s)</b> loaded successfully!`;
-            statusDiv.style.color = "green";
-        } catch (err) {
-            statusDiv.innerHTML = "❌ Error reading files.";
-            statusDiv.style.color = "red";
-            console.error(err);
-        }
+            statusDiv.innerHTML = `✅ <b>${files.length} file(s)</b> loaded!`; statusDiv.style.color = "green";
+        } catch (err) { statusDiv.innerHTML = "❌ Error reading files."; statusDiv.style.color = "red"; }
     }
 
-    // --- DYNAMIC ROWS FOR TOS & TEST MAKER ---
     function addTOSRow() {
         const container = document.getElementById('tos-competencies-container');
-        const row = document.createElement('div');
-        row.className = 'tos-row';
-        row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
+        const row = document.createElement('div'); row.className = 'tos-row'; row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
         row.innerHTML = `<input type="text" class="tos-comp-title" placeholder="Content title..." style="flex:2; margin-bottom:0;"><input type="text" class="tos-comp-desc" placeholder="Learning competency..." style="flex:3; margin-bottom:0;"><input type="text" class="tos-comp-code" placeholder="Code" style="flex:1; margin-bottom:0;"><input type="number" class="tos-comp-days" placeholder="Days" style="flex:1; margin-bottom:0;" value="1"><button class="btn" style="width:45px; padding:10px; margin:0; background:#e53e3e;" onclick="this.parentElement.remove()">-</button>`;
         container.appendChild(row);
     }
     
     function addTMRow() {
         const container = document.getElementById('tm-competencies-container');
-        const row = document.createElement('div');
-        row.className = 'tm-row';
-        row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
-        row.innerHTML = `<input type="text" class="tm-comp-title" placeholder="Topic title..." style="flex:2; margin-bottom:0;"><input type="text" class="tm-comp-desc" placeholder="Details or Learning competency..." style="flex:3; margin-bottom:0;"><button class="btn" style="width:45px; padding:10px; margin:0; background:#e53e3e;" onclick="this.parentElement.remove()">-</button>`;
+        const row = document.createElement('div'); row.className = 'tm-row'; row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
+        row.innerHTML = `<input type="text" class="tm-comp-title" placeholder="Topic title..." style="flex:2; margin-bottom:0;"><input type="text" class="tm-comp-desc" placeholder="Details or competency..." style="flex:3; margin-bottom:0;"><button class="btn" style="width:45px; padding:10px; margin:0; background:#e53e3e;" onclick="this.parentElement.remove()">-</button>`;
         container.appendChild(row);
     }
 
     // --- GEMINI AI GENERATION ---
     async function generateAI(mode) {
         const subject = document.getElementById('global-subject')?.value.trim();
-        if (!subject && mode !== 'presentation') {
-            alert("Please enter a Subject/Learning Area at the top.");
-            return;
-        }
+        if (!subject && mode !== 'presentation') { alert("Please enter a Subject/Learning Area at the top."); return; }
 
         let apiKey = localStorage.getItem("gamai_key");
-        if (!apiKey) {
-            apiKey = prompt("Enter your Gemini API Key:");
-            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim());
-            else return;
-        }
+        if (!apiKey) { apiKey = prompt("Enter your Gemini API Key:"); if (apiKey) localStorage.setItem("gamai_key", apiKey.trim()); else return; }
 
         document.getElementById('loading').style.display = "block";
         document.getElementById('output-section').style.display = "none";
         document.getElementById('word-preview-container').style.display = "block";
         document.getElementById('worksheet-preview-container').style.display = "none";
+        
+        // Show/Hide PPT button based on mode
+        document.getElementById('dl-word-btn').style.display = (mode === 'presentation') ? "none" : "inline-block";
+        document.getElementById('dl-ppt-btn').style.display = (mode === 'presentation') ? "inline-block" : "none";
 
         const gradeSelect = document.getElementById('global-grade');
         const gradeText = gradeSelect?.options[gradeSelect.selectedIndex].text;
@@ -854,177 +580,113 @@
         
         let promptText = "";
 
-        if (mode === 'presentation') {
+        if (mode === 'lesson') {
+            document.getElementById('loading-text').innerText = "AI is writing ILAW Lesson Plan...";
+            const comp = document.getElementById('comp-input').value.trim() || "[Insert Learning Competency/Standards]";
+            const obj = document.getElementById('obj-input').value.trim() || "[Insert Learning Objectives]";
+            const context = document.getElementById('context-input').value.trim() || "[Insert Learner Context]";
+            const docType = document.getElementById('doc-type').value;
+            const timeMins = document.getElementById('time-allotment').value;
+            const pos = document.getElementById('position').value;
+
+            promptText = `You are an expert instructional designer. Generate a strict DepEd DO 42 s.2016 compliant lesson plan structured strictly using the ILAW Framework.
+Format: ${docType} | Subject: ${subject} | Grade Level: ${gradeText} | Time Allotment: ${timeMins} minutes | Teaching Position: ${pos} (Include PPST annotations).
+Competency: ${comp}
+Objectives: ${obj}
+Learner Context: ${context}
+
+CRITICAL REQUIREMENT: The Lesson Plan MUST be formatted precisely with the ILAW Framework headers:
+I. Introduction
+II. Let's Analyze
+III. Abstraction
+IV. We Apply
+
+Format the output strictly in professional, clean HTML using <h2>, <h3>, <p>, and <table> where appropriate. DO NOT use markdown \`\`\`html tags.`;
+
+        } else if (mode === 'presentation') {
             document.getElementById('loading-text').innerText = "AI is designing Creative ILAW Presentation...";
             const slideCount = document.getElementById('slide-count').value || 10;
             const slideContent = document.getElementById('slide-content').value || "[Provide Topic]";
 
-            promptText = `You are an expert instructional designer. Generate a creative, engaging Presentation Outline for approximately ${slideCount} slides based on the following:
-Subject: ${subject}
-Grade Level: ${gradeText}
-Topic/Content: ${slideContent}
+            promptText = `You are an expert instructional designer. Generate a creative Presentation Outline for exactly ${slideCount} slides based on:
+Subject: ${subject} | Grade Level: ${gradeText} | Topic: ${slideContent}
 
 REQUIREMENTS:
-1. ILAW Framework Alignment: Structure the presentation sequence using the strict ILAW framework (Introduction, Let's Analyze, Abstraction, We Apply).
-2. HOTS Integration: Actively inject Higher-Order Thinking Skills (HOTS) questions into the slides to stimulate critical thinking and discussion.
-3. Creative & Engaging: Provide concise bullet points, interactive prompts, and specific visual design/image suggestions for each slide.
-4. Reliable Sources & References: Ensure all factual information generated is based on legitimate, accurate, and verifiable sources. 
-5. Final Reference Slide: The absolute final slide of the presentation MUST be titled "References" and list the credible sources, websites, or materials where the information was derived.
+1. ILAW Framework: Sequence the slides strictly using the ILAW framework (Introduction, Let's Analyze, Abstraction, We Apply).
+2. HOTS Integration: Inject Higher-Order Thinking Skills (HOTS) questions to stimulate critical thinking.
+3. Image Suggestions: For EVERY slide, suggest a specific image. Describe what the image should be and exactly where to place it.
+4. References: The absolute final slide MUST be titled "References" citing legitimate, accurate sources.
 
-OUTPUT FORMAT:
-Format the outline entirely in clean HTML. Do not use markdown \`\`\`html tags. 
-Use clear headings for each slide (e.g., <h3>Slide 1: Title</h3>). 
-Clearly highlight which ILAW Phase the slide belongs to, and prominently display any HOTS questions.`;
+STRICT HTML OUTPUT FORMAT (CRITICAL FOR PPTX EXPORT):
+For each slide, you MUST output exactly this structure:
+<div class="ppt-slide">
+    <h3 class="ppt-title">Slide Title Here</h3>
+    <div class="ppt-content">
+        Bullet point content goes here. Use <ul> and <li>.
+    </div>
+    <div class="ppt-image"><b>Image Suggestion:</b> Describe image and placement here.</div>
+</div>
+Do not use markdown wrappers. Output only the raw HTML.`;
 
-        } else if (mode === 'tos') {
-            document.getElementById('loading-text').innerText = "AI is generating TOS, Test Items, and Answer Key...";
-            const easy = document.getElementById('perc-easy').value;
-            const avg = document.getElementById('perc-avg').value;
-            const diff = document.getElementById('perc-diff').value;
+        } else if (mode === 'tos' || mode === 'testmaker') {
+            document.getElementById('loading-text').innerText = "AI is generating Assessment Package...";
+            const easy = document.getElementById(mode==='tos'?'perc-easy':'tm-perc-easy').value;
+            const avg = document.getElementById(mode==='tos'?'perc-avg':'tm-perc-avg').value;
+            const diff = document.getElementById(mode==='tos'?'perc-diff':'tm-perc-diff').value;
             
-            const formats = Array.from(document.querySelectorAll('.quiz-format:checked')).map(cb => {
+            const formats = Array.from(document.querySelectorAll(mode==='tos'?'.quiz-format:checked':'.tm-quiz-format:checked')).map(cb => {
                 const qty = cb.parentElement.querySelector('.format-qty').value;
                 return `${cb.value} (${qty} items)`;
             }).join(', ');
             
-            const compRows = Array.from(document.querySelectorAll('.tos-row')).map(row => {
-                return `Title: ${row.querySelector('.tos-comp-title').value}, Desc: ${row.querySelector('.tos-comp-desc').value}, Code: ${row.querySelector('.tos-comp-code').value}, Days Taught: ${row.querySelector('.tos-comp-days').value}`;
+            const compRows = Array.from(document.querySelectorAll(mode==='tos'?'.tos-row':'.tm-row')).map(row => {
+                return `Topic: ${row.querySelector(mode==='tos'?'.tos-comp-title':'.tm-comp-title').value}, Desc: ${row.querySelector(mode==='tos'?'.tos-comp-desc':'.tm-comp-desc').value}`;
             }).join('\n');
 
-            promptText = `You are a strict curriculum developer. Generate a comprehensive Assessment package based on the following:
-Subject: ${subject}
-Grade Level: ${gradeText}
-Term: ${term}
+            promptText = `You are a strict curriculum developer. Generate a comprehensive Test Questionnaire based on the following:
+Subject: ${subject} | Grade Level: ${gradeText} | Term: ${term}
 Difficulty Distribution: ${easy}% Easy, ${avg}% Average, ${diff}% Difficult.
 Test Formats and Items: ${formats}
-Competencies Covered:
+Topics/Competencies:
 ${compRows}
 
-CRITICAL RULE FOR TEST FORMATS:
-If "HOTS Objective Questions" or "PISA-Aligned Objective" are included in the formats, these items MUST be strictly OBJECTIVE TYPES (e.g., Scenario-based multiple choice, complex true/false, analytical matching). DO NOT generate essay questions for these formats.
+CRITICAL RULES FOR TEST ITEMS:
+1. If "HOTS" or "PISA-Aligned" formats are selected, they MUST be strictly OBJECTIVE TYPES (Scenario-based MCQs, analytical matching, etc.). No essay questions for these.
+2. The multiple-choice correct answers MUST be randomly and evenly distributed across A, B, C, and D. DO NOT repeat the same letter consecutively (e.g. 1-10 all 'C').
+3. EXPLICITLY label each question with its specific Cognitive Domain in brackets (e.g., [Analyzing], [Applying]) immediately after the question number. 
+${mode==='tos'?'4. Ensure the number of items per domain matches the numbers in your TOS exactly.':''}
 
-YOU MUST PROVIDE ALL 3 SECTIONS BELOW, FORMATTED IN HTML:
+${mode === 'tos' ? `SECTION 1: TABLE OF SPECIFICATIONS (TOS)
+Strictly create an HTML table using standard DepEd TOS format with headers for Cognitive Domains (Remembering, Understanding, Applying, Analyzing, Evaluating, Creating) and properly distribute item placements.` : ''}
 
-SECTION 1: TABLE OF SPECIFICATIONS (TOS)
-Strictly create an HTML table using the exact structure and headers below. Distribute the item placement numbers accurately based on the difficulty percentages and cognitive domains (Remembering, Understanding, Applying, Analyzing, Evaluating, Creating).
+SECTION ${mode==='tos'?'2':'1'}: TEST ITEMS
+Generate the actual test questions adhering strictly to the requested formats and item counts. Number them continuously. Provide clear instructions.
 
-<table border="1" style="width:100%; border-collapse: collapse; text-align: center;">
-    <thead>
-        <tr>
-            <th rowspan="3">Learning Competencies</th>
-            <th rowspan="3">No. of Days Taught</th>
-            <th rowspan="3">% of Total Items</th>
-            <th rowspan="3">No. of Items</th>
-            <th colspan="6">Item Placement</th>
-        </tr>
-        <tr>
-            <th colspan="2">Easy</th>
-            <th colspan="2">Average</th>
-            <th colspan="2">Difficult</th>
-        </tr>
-        <tr>
-            <th>Remembering</th>
-            <th>Understanding</th>
-            <th>Applying</th>
-            <th>Analyzing</th>
-            <th>Evaluating</th>
-            <th>Creating</th>
-        </tr>
-    </thead>
-    <tbody>
-        </tbody>
-</table>
+SECTION ${mode==='tos'?'3':'2'}: KEY TO CORRECTIONS
+Provide a clearly formatted answer key at the very end.
 
-SECTION 2: TEST ITEMS
-Generate the actual test questions immediately after the TOS.
-Strictly adhere to the selected test formats and the exact number of items requested for each format: ${formats}. 
-Do not skip any items. Number them continuously. Provide clear instructions for each test section.
-
-SECTION 3: KEY TO CORRECTIONS
-Provide a complete, clearly formatted answer key for all generated test items at the very end of the document. Include the item number and the correct answer.
-
-Use standard HTML styling (<h2>, <h3>, <table>, <ol>, <li>). Do not wrap in markdown \`\`\`html tags.`;
-
-        } else if (mode === 'testmaker') {
-            document.getElementById('loading-text').innerText = "AI is generating Test Items and Answer Key...";
-            const easy = document.getElementById('tm-perc-easy').value;
-            const avg = document.getElementById('tm-perc-avg').value;
-            const diff = document.getElementById('tm-perc-diff').value;
-            
-            const formats = Array.from(document.querySelectorAll('.tm-quiz-format:checked')).map(cb => {
-                const qty = cb.parentElement.querySelector('.format-qty').value;
-                return `${cb.value} (${qty} items)`;
-            }).join(', ');
-            
-            const compRows = Array.from(document.querySelectorAll('.tm-row')).map(row => {
-                return `Topic: ${row.querySelector('.tm-comp-title').value}, Details: ${row.querySelector('.tm-comp-desc').value}`;
-            }).join('\n');
-
-            promptText = `You are a strict curriculum developer. Generate a comprehensive Test Questionnaire (WITHOUT a Table of Specifications) based on the following:
-Subject: ${subject}
-Grade Level: ${gradeText}
-Term: ${term}
-Difficulty Distribution: ${easy}% Easy, ${avg}% Average, ${diff}% Difficult.
-Test Formats and Items: ${formats}
-Topics/Competencies Covered:
-${compRows}
-
-CRITICAL RULE FOR TEST FORMATS:
-If "HOTS Objective Questions" or "PISA-Aligned Objective" are included in the formats, these items MUST be strictly OBJECTIVE TYPES (e.g., Scenario-based multiple choice, complex true/false, analytical matching). DO NOT generate essay questions for these formats.
-
-YOU MUST PROVIDE ALL 2 SECTIONS BELOW, FORMATTED IN HTML:
-
-SECTION 1: TEST ITEMS
-Generate the actual test questions.
-Strictly adhere to the selected test formats and the exact number of items requested for each format (${formats}). Do not skip any items. Number them continuously. Include clear instructions for each part. Make sure the difficulty aligns with the requested distribution.
-
-SECTION 2: KEY TO CORRECTIONS
-Provide a complete, clearly formatted answer key for all generated test items at the very end of the document.
-
-Use standard HTML styling (<h2>, <h3>, <ol>, <li>). Do not wrap in markdown \`\`\`html tags.`;
+Format output entirely in clean HTML. Do not wrap in markdown \`\`\`html tags.`;
 
         } else if (mode === 'analysis') {
-            document.getElementById('loading-text').innerText = "AI is generating Item Analysis Report...";
+            document.getElementById('loading-text').innerText = "AI is generating Item Analysis...";
             const totalLearners = document.getElementById('total-learners').value || 45;
             const rawData = document.getElementById('item-analysis-data').value;
 
-            promptText = `You are an educational data analyst. Perform a detailed Item Analysis based on the following data.
-Subject: ${subject}
-Grade: ${gradeText}
-Total Number of Learners: ${totalLearners}
-Raw Item Data (Item # | Competency | Correct Responses):
-${rawData}
-
-YOU MUST PROVIDE ALL 4 SECTIONS BELOW, FORMATTED IN HTML:
-
-SECTION 1: ITEM ANALYSIS COMPUTATION
-Create a table showing: | Item No. | Competency | Correct Responses | Mean Percentage Score (MPS) / Mastery Level | Decision (Retain/Revise/Discard) |. Calculate the percentages accurately.
-
-SECTION 2: SUMMARY OF COMPETENCIES
-Provide a clear summary listing the "Most Learned Competencies" (those with high MPS) and the "Least Learned Competencies" (those with low MPS). Enumerate them clearly.
-
-SECTION 3: INTERPRETATION AS BASELINE DATA
-Provide a professional interpretation of this data. Explain what this means for the learners' mastery levels and how it serves as a baseline for future instruction.
-
-SECTION 4: PROPOSED INTERVENTIONS
-Provide a structured Remediation Plan / Proposed Interventions tailored specifically to address the Least Learned Competencies identified in Section 2. Suggest actionable strategies, activities, or alternative teaching methods.
-
-Format the output entirely in clean HTML. Do not wrap in markdown \`\`\`html tags.`;
+            promptText = `You are an educational data analyst. Perform an Item Analysis based on the following data: Subject: ${subject} | Total Learners: ${totalLearners} | Raw Data: ${rawData}
+Provide exactly 4 sections in HTML:
+1. COMPUTATION TABLE: Calculate MPS and Decision (Retain/Revise/Discard).
+2. SUMMARY: Most and Least Learned Competencies.
+3. INTERPRETATION: Professional baseline data interpretation.
+4. INTERVENTIONS: Remediation plan tailored to the least learned competencies.
+Do not use markdown wrappers.`;
         } 
-        else {
-             promptText = "Generate content for " + mode;
-        }
 
         try {
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: (uploadedContext ? `Context Documents:\n${uploadedContext}\n\n` : "") + promptText }
-                        ]
-                    }],
+                    contents: [{ parts: [{ text: (uploadedContext ? `Context Documents:\n${uploadedContext}\n\n` : "") + promptText }] }],
                     generationConfig: { temperature: 0.7 }
                 })
             });
@@ -1032,92 +694,68 @@ Format the output entirely in clean HTML. Do not wrap in markdown \`\`\`html tag
             const data = await response.json();
             if (data.error) throw new Error(data.error.message);
             
-            let htmlContent = data.candidates[0].content.parts[0].text;
-            htmlContent = htmlContent.replace(/```html/gi, '').replace(/```/g, '');
-            
+            let htmlContent = data.candidates[0].content.parts[0].text.replace(/```html/gi, '').replace(/```/g, '');
             document.getElementById('word-preview').innerHTML = htmlContent;
             document.getElementById('loading').style.display = 'none';
             document.getElementById('output-section').style.display = "block";
             document.getElementById('output-section').scrollIntoView({behavior: 'smooth'});
 
-        } catch (e) {
-            alert("Error: " + e.message);
-            document.getElementById('loading').style.display = 'none';
-        }
+        } catch (e) { alert("Error: " + e.message); document.getElementById('loading').style.display = 'none'; }
     }
 
     // --- HTML TO WORD EXPORT ---
     function exportToWord(target) {
-        let contentHtml = target === 'worksheet' 
-            ? document.getElementById('worksheet-preview').innerHTML 
-            : document.getElementById('word-preview').innerHTML;
-            
+        let contentHtml = target === 'worksheet' ? document.getElementById('worksheet-preview').innerHTML : document.getElementById('word-preview').innerHTML;
         const profile = JSON.parse(localStorage.getItem('teachersync_profile_v1')) || {};
-        
-        let header = `<div style="text-align:center; font-family: 'Times New Roman', serif; margin-bottom: 20px;">
-            <h3 style="margin:0; text-transform: uppercase;">${profile.school || 'SCHOOL NAME'}</h3>
-            <p style="margin:0;">Department of Education</p>
-        </div>`;
-        
-        let footer = `<br><br><table style="width: 100%; text-align: center; font-family: 'Times New Roman', serif; margin-top: 40px; page-break-inside: avoid;">
-            <tr>
-                <td>Prepared by:<br><br><b>${profile.teacher || 'TEACHER NAME'}</b><br>${profile.teacherPos || 'Teacher Position'}</td>
-                <td>Checked by:<br><br><b>${profile.checker || 'CHECKER NAME'}</b><br>${profile.checkerPos || 'Checker Position'}</td>
-                <td>Approved by:<br><br><b>${profile.approver || 'APPROVER NAME'}</b><br>${profile.approverPos || 'Approver Position'}</td>
-            </tr>
-        </table>`;
-
-        const fullHtml = `
-            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-            <head><meta charset='utf-8'><title>Exported Document</title>
-            <style>
-                body { font-family: "Times New Roman", serif; font-size: 12pt; }
-                table { border-collapse: collapse; width: 100%; margin-bottom: 15px; }
-                table, th, td { border: 1px solid black; padding: 5px; }
-            </style>
-            </head><body>
-            ${header}
-            ${contentHtml}
-            ${footer}
-            </body></html>
-        `;
-
+        let header = `<div style="text-align:center; font-family: 'Times New Roman', serif; margin-bottom: 20px;"><h3 style="margin:0; text-transform: uppercase;">${profile.school || 'SCHOOL NAME'}</h3><p style="margin:0;">Department of Education</p></div>`;
+        let footer = `<br><br><table style="width: 100%; text-align: center; font-family: 'Times New Roman', serif; margin-top: 40px; page-break-inside: avoid;"><tr><td>Prepared by:<br><br><b>${profile.teacher || 'TEACHER NAME'}</b><br>${profile.teacherPos || 'Teacher'}</td><td>Checked by:<br><br><b>${profile.checker || 'CHECKER NAME'}</b><br>${profile.checkerPos || 'Checker'}</td><td>Approved by:<br><br><b>${profile.approver || 'APPROVER NAME'}</b><br>${profile.approverPos || 'Approver'}</td></tr></table>`;
+        const fullHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Exported Document</title><style>body { font-family: "Times New Roman", serif; font-size: 12pt; } table { border-collapse: collapse; width: 100%; margin-bottom: 15px; } table, th, td { border: 1px solid black; padding: 5px; }</style></head><body>${header}${contentHtml}${footer}</body></html>`;
         const blob = new Blob(['\ufeff', fullHtml], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `TeacherSync_Export_${new Date().getTime()}.doc`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const link = document.createElement('a'); link.href = url; link.download = `TeacherSync_Export_${new Date().getTime()}.doc`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
-    // --- WORKSHEET UI TOGGLE ---
-    function toggleAnswerKey() {
-        const ak = document.getElementById('ws-answer-key');
-        if(ak) ak.style.display = (ak.style.display === 'none' || ak.style.display === '') ? 'block' : 'none';
+    // --- PRESENTATION TO PPTX EXPORT ---
+    async function exportToPPT() {
+        try {
+            let pptx = new PptxGenJS();
+            const profile = JSON.parse(localStorage.getItem('teachersync_profile_v1')) || {};
+            
+            // Title Slide
+            let slide = pptx.addSlide();
+            slide.addText(document.getElementById('global-subject')?.value || "Presentation", { x:1, y:1.5, w:'80%', fontSize:36, bold:true, color:'0A2540', align:'center' });
+            slide.addText(profile.teacher || "TeacherSync AI", { x:1, y:2.5, w:'80%', fontSize:18, color:'666666', align:'center' });
+
+            const slides = document.querySelectorAll('.ppt-slide');
+            if(slides.length === 0) { alert("No valid slide structure found. AI might have failed formatting."); return; }
+
+            slides.forEach(s => {
+                let newSlide = pptx.addSlide();
+                let title = s.querySelector('.ppt-title')?.innerText || "Slide";
+                let content = s.querySelector('.ppt-content')?.innerText || "";
+                let imgDesc = s.querySelector('.ppt-image')?.innerText || "";
+
+                newSlide.addText(title, { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true, color: '0A2540' });
+                newSlide.addText(content, { x: 0.5, y: 1.2, w: '90%', h: '50%', fontSize: 16, bullet: true, color: '333333', align: 'left', valign: 'top' });
+                newSlide.addText(imgDesc, { x: 0.5, y: '75%', w: '90%', h: '20%', fontSize: 12, italic: true, color: 'FF6B00', fill: 'F4F7F9', align:'center', valign:'middle' });
+            });
+
+            pptx.writeFile({ fileName: `Presentation_${new Date().getTime()}.pptx` });
+        } catch(e) { alert("Error exporting to PPTX: " + e); }
     }
 
-    // --- RULE-BASED WORKSHEET (FIXED & FULLY FUNCTIONAL) ---
+    function toggleAnswerKey() { const ak = document.getElementById('ws-answer-key'); if(ak) ak.style.display = (ak.style.display === 'none' || ak.style.display === '') ? 'block' : 'none'; }
+
+    // --- RULE-BASED WORKSHEET (PUZZLES FIXED) ---
     function updateTypes() {
         const cat = document.getElementById('ws-category').value;
         const typeSelect = document.getElementById('ws-type');
-        typeSelect.innerHTML = '';
-        let options = [];
-        
-        if(cat === 'wordgames') {
-            options = [['matching', 'Matching Type'], ['jumbled', 'Jumbled Letters']];
-        } else if(cat === 'math') {
-            options = [['basic_math', 'Basic Math Operations']];
-        } else if(cat === 'language' || cat === 'science') {
-            options = [['identification', 'Identification']];
-        } else if(cat === 'logic') {
-            options = [['true_false', 'True or False']];
-        }
-        
-        options.forEach(opt => {
-            typeSelect.innerHTML += `<option value="${opt[0]}">${opt[1]}</option>`;
-        });
+        typeSelect.innerHTML = ''; let options = [];
+        if(cat === 'puzzles') { options = [['jumbled', 'Word Scramble'], ['missing_letters', 'Missing Letters'], ['cryptogram', 'Cryptogram (Number Cipher)'], ['matching', 'Matching Type']]; } 
+        else if(cat === 'math') { options = [['basic_math', 'Basic Math Operations']]; } 
+        else if(cat === 'language') { options = [['identification', 'Identification'], ['true_false', 'True or False']]; }
+        options.forEach(opt => { typeSelect.innerHTML += `<option value="${opt[0]}">${opt[1]}</option>`; });
     }
 
     function generateRuleBasedWorksheet() {
@@ -1130,119 +768,91 @@ Format the output entirely in clean HTML. Do not wrap in markdown \`\`\`html tag
         document.getElementById('output-section').style.display = "none";
 
         setTimeout(() => {
-            let content = "";
-            let answers = "<ol>";
-            let inst = "";
-            let terms = [];
-            let clues = [];
-
-            // Default Fallbacks
-            let defaultTerms = ["Photosynthesis", "Gravity", "Friction", "Evaporation", "Condensation"];
+            let content = ""; let answers = "<ol>"; let inst = ""; let terms = []; let clues = [];
+            let defaultTerms = ["PHOTOSYNTHESIS", "GRAVITY", "FRICTION", "EVAPORATION", "CONDENSATION"];
             let defaultClues = ["Process by which plants make food.", "Force that attracts a body to the earth's center.", "Resistance when one surface moves over another.", "Process of liquid turning into vapor.", "Conversion of vapor or gas to a liquid."];
 
-            // Parse User Input
             if(rawData && cat !== 'math') {
-                const lines = rawData.split('\n');
-                lines.forEach(line => {
+                rawData.split('\n').forEach(line => {
                     const parts = line.split('|');
-                    if(parts.length >= 2) {
-                        terms.push(parts[0].trim());
-                        clues.push(parts[1].trim());
-                    }
+                    if(parts.length >= 2) { terms.push(parts[0].trim().toUpperCase()); clues.push(parts[1].trim()); }
                 });
-            } else if (cat !== 'math') {
-                terms = defaultTerms;
-                clues = defaultClues;
-            }
+            } else if (cat !== 'math') { terms = defaultTerms; clues = defaultClues; }
 
-            // Math Logic
             if (cat === 'math') {
-                 inst = "Solve the following mathematical equations.";
-                 content = "<ol>";
+                 inst = "Solve the following mathematical equations."; content = "<ol>";
                  for(let i=0; i<count; i++) {
-                     let num1 = Math.floor(Math.random() * 50) + 1;
-                     let num2 = Math.floor(Math.random() * 50) + 1;
-                     let ops = ['+', '-', '*'];
-                     let op = ops[Math.floor(Math.random()*ops.length)];
+                     let num1 = Math.floor(Math.random() * 50) + 1; let num2 = Math.floor(Math.random() * 50) + 1;
+                     let ops = ['+', '-', '*']; let op = ops[Math.floor(Math.random()*ops.length)];
                      let ans = eval(`${num1} ${op} ${num2}`);
                      content += `<li style="margin-bottom:15px;">${num1} ${op} ${num2} = ________</li>`;
                      answers += `<li>${ans}</li>`;
                  }
-                 content += "</ol>";
-                 answers += "</ol>";
+                 content += "</ol>"; answers += "</ol>";
             } 
-            // Matching Logic
+            else if (type === 'missing_letters') {
+                inst = "Fill in the missing letters to complete the word based on the clue."; content = "<ol>";
+                terms.forEach((t, i) => {
+                    let missing = t.split('').map((char, index) => (char === ' ') ? ' ' : (index % 2 === 0 ? char : '_')).join(' ');
+                    content += `<li style="margin-bottom:20px;"><b>${missing}</b><br><span style="color:#555;">Clue: ${clues[i]}</span></li>`;
+                    answers += `<li>${t}</li>`;
+                });
+                content += "</ol>"; answers += "</ol>";
+            }
+            else if (type === 'cryptogram') {
+                inst = "Decode the numbers to reveal the words using the provided Cipher Key."; content = "<ol>";
+                let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+                let numbers = Array.from({length: 26}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+                let cipherMap = {}; alphabet.forEach((letter, i) => cipherMap[letter] = numbers[i]);
+                
+                let keyHtml = "<div style='background:#f4f7f9; padding:15px; text-align:center; margin-bottom:20px; border:1px solid #ddd; font-family:monospace;'><b>CIPHER KEY</b><br><br>";
+                alphabet.forEach((letter, i) => { keyHtml += `<b>${letter}</b>=${numbers[i]} &nbsp; `; if((i+1)%9===0) keyHtml+="<br><br>"; });
+                keyHtml += "</div>"; content += keyHtml;
+
+                terms.forEach((t, i) => {
+                    let coded = t.split('').map(char => cipherMap[char] ? cipherMap[char] : char).join(' - ');
+                    content += `<li style="margin-bottom:20px;">Code: <b>${coded}</b><br><span style="color:#555;">Clue: ${clues[i]}</span><br>Answer: ____________________</li>`;
+                    answers += `<li>${t}</li>`;
+                });
+                content += "</ol>"; answers += "</ol>";
+            }
+            else if (type === 'jumbled') {
+                inst = "Unscramble the letters to find the correct word matching the clue."; content = "<ol>";
+                terms.forEach((t, i) => {
+                    let jumbled = t.split('').sort(() => Math.random() - 0.5).join('');
+                    content += `<li style="margin-bottom:20px;"><b>${jumbled}</b><br><span style="color:#555;">Clue: ${clues[i]}</span><br>Answer: ________________________</li>`;
+                    answers += `<li>${t}</li>`;
+                });
+                content += "</ol>"; answers += "</ol>";
+            }
             else if (type === 'matching') {
-                inst = "Match Column A with Column B. Write the letter of the correct answer on the blank.";
-                let shuffledTerms = [...terms].sort(() => Math.random() - 0.5);
-                let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+                inst = "Match Column A with Column B. Write the letter on the blank.";
+                let shuffledTerms = [...terms].sort(() => Math.random() - 0.5); let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
                 content = "<table style='width:100%; border:none;'><tr><td style='width:60%; vertical-align:top;'><ol>";
                 clues.forEach(c => { content += `<li style="margin-bottom:10px;">____ ${c}</li>`; });
                 content += "</ol></td><td style='width:40%; vertical-align:top;'><ul style='list-style-type:none;'>";
                 shuffledTerms.forEach((t, i) => { content += `<li style="margin-bottom:10px;"><b>${letters[i]}.</b> ${t}</li>`; });
                 content += "</ul></td></tr></table>";
-                
-                clues.forEach((c, i) => {
-                    let correctTerm = terms[i];
-                    let correctLetterIndex = shuffledTerms.indexOf(correctTerm);
-                    answers += `<li>${letters[correctLetterIndex]}</li>`;
-                });
+                clues.forEach((c, i) => { answers += `<li>${letters[shuffledTerms.indexOf(terms[i])]}</li>`; });
                 answers += "</ol>";
             }
-            // Identification Logic
             else if (type === 'identification') {
-                inst = "Identify the term being described in each item. Write your answer on the space provided.";
-                content = "<ol>";
-                clues.forEach((c, i) => {
-                    content += `<li style="margin-bottom:15px;">________________________ : ${c}</li>`;
-                    answers += `<li>${terms[i]}</li>`;
-                });
-                content += "</ol>";
-                answers += "</ol>";
+                inst = "Identify the term being described. Write your answer on the space provided."; content = "<ol>";
+                clues.forEach((c, i) => { content += `<li style="margin-bottom:15px;">________________________ : ${c}</li>`; answers += `<li>${terms[i]}</li>`; });
+                content += "</ol>"; answers += "</ol>";
             }
-            // Jumbled Words Logic
-            else if (type === 'jumbled') {
-                inst = "Unscramble the letters to find the correct word matching the clue.";
-                content = "<ol>";
-                terms.forEach((t, i) => {
-                    let jumbled = t.split('').sort(() => Math.random() - 0.5).join('').toUpperCase();
-                    content += `<li style="margin-bottom:15px;"><b>${jumbled}</b> - ${clues[i]} <br> Answer: ________________________</li>`;
-                    answers += `<li>${t}</li>`;
-                });
-                content += "</ol>";
-                answers += "</ol>";
-            }
-            // True or False Logic
             else if (type === 'true_false') {
-                inst = "Write TRUE if the statement is correct, and FALSE if it is wrong.";
-                content = "<ol>";
+                inst = "Write TRUE if the statement is correct, and FALSE if it is wrong."; content = "<ol>";
                 clues.forEach((c, i) => {
-                    let isTrue = Math.random() > 0.5;
-                    let statementTerm = isTrue ? terms[i] : terms[(i + 1) % terms.length];
+                    let isTrue = Math.random() > 0.5; let statementTerm = isTrue ? terms[i] : terms[(i + 1) % terms.length];
                     content += `<li style="margin-bottom:15px;">________ <b>${statementTerm}</b> is defined as: ${c}</li>`;
                     answers += `<li>${isTrue ? 'TRUE' : 'FALSE'}</li>`;
                 });
-                content += "</ol>";
-                answers += "</ol>";
+                content += "</ol>"; answers += "</ol>";
             }
 
             let title = document.getElementById('ws-type').options[document.getElementById('ws-type').selectedIndex].text;
-
-            let html = `
-                <div style="text-align: center; border-bottom: 2px solid black; padding-bottom: 15px; margin-bottom: 20px;">
-                    <h2 style="font-size: 1.5rem; font-weight: bold; margin: 0; text-transform: uppercase;">Worksheet Activity</h2>
-                    <div style="font-size: 1.2rem; font-weight: bold; margin-top: 5px;">${title}</div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 15px; font-weight: bold; font-size: 1rem;">
-                        <span>Name: ________________________________</span><span>Score: _______</span>
-                    </div>
-                </div>
-                <div style="margin-bottom: 20px;"><b>Instructions:</b> ${inst}</div>
-                <div style="font-size: 1.1rem; line-height: 1.8;">${content}</div>
-                <div id="ws-answer-key" class="answer-key-section" style="display:none;">
-                    <h3 style="margin-top:0;">Answer Key</h3>
-                    <div style="line-height: 1.5;">${answers}</div>
-                </div>
-            `;
+            let html = `<div style="text-align: center; border-bottom: 2px solid black; padding-bottom: 15px; margin-bottom: 20px;"><h2 style="font-size: 1.5rem; font-weight: bold; margin: 0; text-transform: uppercase;">Worksheet Activity</h2><div style="font-size: 1.2rem; font-weight: bold; margin-top: 5px;">${title}</div><div style="display: flex; justify-content: space-between; margin-top: 15px; font-weight: bold; font-size: 1rem;"><span>Name: ________________________________</span><span>Score: _______</span></div></div><div style="margin-bottom: 20px;"><b>Instructions:</b> ${inst}</div><div style="font-size: 1.1rem; line-height: 1.8;">${content}</div><div id="ws-answer-key" class="answer-key-section" style="display:none;"><h3 style="margin-top:0;">Answer Key</h3><div style="line-height: 1.5;">${answers}</div></div>`;
 
             document.getElementById('word-preview-container').style.display = "none";
             document.getElementById('worksheet-preview-container').style.display = "block";
