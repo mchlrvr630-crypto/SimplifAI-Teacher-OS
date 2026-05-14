@@ -441,23 +441,16 @@
 <script>
     // --- ROUTING / SPA LOGIC ---
     function showPage(pageId) {
-        // Hide all pages
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-        
-        // Show target page
         document.getElementById('page-' + pageId).classList.add('active');
-        
-        // Hide outputs on navigation change
         document.getElementById('output-section').style.display = 'none';
         document.getElementById('loading').style.display = 'none';
         
-        // Toggle Global Settings Bar
         const globalSettings = document.getElementById('global-settings-bar');
         if (globalSettings) {
             globalSettings.style.display = (pageId === 'dashboard' || pageId === 'profile' || pageId === 'references') ? 'none' : 'block';
         }
         
-        // Toggle Back Button visibility
         const backBtn = document.getElementById('back-btn');
         if (backBtn) {
             backBtn.style.display = (pageId === 'dashboard') ? 'none' : 'inline-block';
@@ -466,7 +459,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         loadProfile();
-        updateTypes(); // Initialize the Worksheet categories
+        updateTypes(); 
     });
 
     function toggleTOSQty(cb) {
@@ -477,7 +470,7 @@
     function togglePPST() {
         const type = document.getElementById('doc-type')?.value;
         const box = document.getElementById('ppst-box');
-        if(box) box.style.display = "block"; // Always show PPST box
+        if(box) box.style.display = "block"; 
     }
 
     // --- PROFILE & SETTINGS ---
@@ -553,7 +546,6 @@
         }
     }
 
-    // --- FILE UPLOAD (REFERENCE LIBRARY) ---
     let uploadedContext = "";
 
     async function handleFileUpload() {
@@ -603,7 +595,6 @@
         }
     }
 
-    // --- DYNAMIC ROWS FOR TOS & TEST MAKER ---
     function addTOSRow() {
         const container = document.getElementById('tos-competencies-container');
         const row = document.createElement('div');
@@ -642,7 +633,6 @@
         document.getElementById('word-preview-container').style.display = "block";
         document.getElementById('worksheet-preview-container').style.display = "none";
         
-        // Show/Hide PPT button based on mode
         document.getElementById('dl-word-btn').style.display = (mode === 'presentation') ? "none" : "inline-block";
         document.getElementById('dl-ppt-btn').style.display = (mode === 'presentation') ? "inline-block" : "none";
 
@@ -665,83 +655,42 @@
             const isDLL = docType.includes("DLL");
             const is5Day = docType.includes("5");
             const daysCount = is5Day ? 5 : 4;
+            const colSpan = daysCount + 1;
             const widthPerDay = 80 / daysCount;
 
-            // Define Flow Section based on format
-            let flowTable = isDLL ? `
-    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr>
-            <th style="font-weight:bold; width:20%; background:#f9f9f9; padding:6px; color:#000; text-align:left;">Flow<br><i style="font-weight:normal; font-size:0.85em;">Describe the activities that you can implement in 1 or more sessions to meet the learning objectives. Apply the Learning Design Principles...</i></th>
-            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:${widthPerDay}%;">Day 1</th>
-            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:${widthPerDay}%;">Day 2</th>
-            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:${widthPerDay}%;">Day 3</th>
-            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:${widthPerDay}%;">Day 4</th>
-            ${is5Day ? `<th style="background:#0A2540; color:white; text-align:center; padding:8px; width:${widthPerDay}%;">Day 5</th>` : ''}
-        </tr>
-        <tr>
-            <td style="font-weight:bold; background:#f9f9f9; padding:6px;">Activities (ILAW Framework)</td>
-            <td style="padding:6px; vertical-align:top;">[Day 1 Content]</td>
-            <td style="padding:6px; vertical-align:top;">[Day 2 Content]</td>
-            <td style="padding:6px; vertical-align:top;">[Day 3 Content]</td>
-            <td style="padding:6px; vertical-align:top;">[Day 4 Content]</td>
-            ${is5Day ? '<td style="padding:6px; vertical-align:top;">[Day 5 Content]</td>' : ''}
-        </tr>
+            let daysHeader = `<th style="width:${widthPerDay}%; background:#0A2540; color:white; padding:8px; text-align:center;">Day 1</th>
+                              <th style="width:${widthPerDay}%; background:#0A2540; color:white; padding:8px; text-align:center;">Day 2</th>
+                              <th style="width:${widthPerDay}%; background:#0A2540; color:white; padding:8px; text-align:center;">Day 3</th>
+                              <th style="width:${widthPerDay}%; background:#0A2540; color:white; padding:8px; text-align:center;">Day 4</th>
+                              ${is5Day ? `<th style="width:${widthPerDay}%; background:#0A2540; color:white; padding:8px; text-align:center;">Day 5</th>` : ''}`;
+            
+            let dayCells = `<td>[Content]</td><td>[Content]</td><td>[Content]</td><td>[Content]</td>${is5Day ? '<td>[Content]</td>' : ''}`;
+
+            let flowTemplate = isDLL ? `
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed;">
+        <tr><th style="width:20%; background:#f9f9f9;">Date/Day</th>${daysHeader}</tr>
+        <tr><th colspan="${colSpan}" style="background:#0A2540; color:white; text-align:left; padding:8px;">I. INTENTIONS</th></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Competency</td>${dayCells}</tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Objectives</td>${dayCells}</tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learner Context</td>${dayCells}</tr>
+
+        <tr><th colspan="${colSpan}" style="background:#0A2540; color:white; text-align:left; padding:8px;">II. LEARNING EXPERIENCE</th></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Pre-Lesson</td>${dayCells}</tr>
+        <tr><td colspan="${colSpan}" style="font-weight:bold; background:#e2e8f0; padding:6px; text-align:center;">Flow (ILAW Framework)</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Introduction</td>${dayCells}</tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Let's Analyze</td>${dayCells}</tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Abstraction</td>${dayCells}</tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">We Apply</td>${dayCells}</tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Resources</td>${dayCells}</tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Integration</td>${dayCells}</tr>
+
+        <tr><th colspan="${colSpan}" style="background:#0A2540; color:white; text-align:left; padding:8px;">III. ASSESSMENT</th></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Formative Assessment</td>${dayCells}</tr>
+
+        <tr><th colspan="${colSpan}" style="background:#0A2540; color:white; text-align:left; padding:8px;">IV. WAYS FORWARD</th></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Extended learning</td>${dayCells}</tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Reflections</td>${dayCells}</tr>
     </table>` : `
-    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr>
-            <th style="font-weight:bold; width:20%; background:#f9f9f9; padding:6px; color:#000; text-align:left;">Flow<br><i style="font-weight:normal; font-size:0.85em;">Describe the activities that you can implement in 1 or more sessions to meet the learning objectives. Apply the Learning Design Principles...</i></th>
-            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:50%;">Teacher & Learner Activities (ILAW Framework)</th>
-            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:30%;">PPST Annotations (${pos})</th>
-        </tr>
-        <tr>
-            <td style="font-weight:bold; background:#f9f9f9; padding:6px;">Introduction</td>
-            <td style="padding:6px; vertical-align:top;">[Insert Activities]</td>
-            <td style="padding:6px; vertical-align:top; font-size:0.9em;">[Insert PPST Indicator & Annotation]</td>
-        </tr>
-        <tr>
-            <td style="font-weight:bold; background:#f9f9f9; padding:6px;">Let's Analyze</td>
-            <td style="padding:6px; vertical-align:top;">[Insert Activities]</td>
-            <td style="padding:6px; vertical-align:top; font-size:0.9em;">[Insert PPST Indicator & Annotation]</td>
-        </tr>
-        <tr>
-            <td style="font-weight:bold; background:#f9f9f9; padding:6px;">Abstraction</td>
-            <td style="padding:6px; vertical-align:top;">[Insert Activities]</td>
-            <td style="padding:6px; vertical-align:top; font-size:0.9em;">[Insert PPST Indicator & Annotation]</td>
-        </tr>
-        <tr>
-            <td style="font-weight:bold; background:#f9f9f9; padding:6px;">We Apply</td>
-            <td style="padding:6px; vertical-align:top;">[Insert Activities]</td>
-            <td style="padding:6px; vertical-align:top; font-size:0.9em;">[Insert PPST Indicator & Annotation]</td>
-        </tr>
-    </table>`;
-
-            promptText = `You are an expert instructional designer. Generate a lesson plan based strictly on the uploaded templates.
-Subject: ${subject} | Grade Level: ${gradeText} | Time Allotment: ${timeMins} minutes | Teaching Position: ${pos}
-Format requested: ${docType}
-Competency: ${comp}
-Objectives: ${obj}
-Learner Context: ${context}
-
-When generating the "Flow" activities, you MUST apply the 8 Learning Design Principles: 1. Clear Goals and Teaching, 2. Scaffolding, 3. Checks for Understanding, 4. Active Retrieval and Spacing, 5. Self-awareness and Metacognition, 6. Social Learning, 7. Values and Purpose Integration, 8. Inclusion. 
-Specifically, think about how to: make objectives clear, guide learners before independent tasks, check well-being/mastery, connect new concepts to past lessons, encourage collaboration, invite reflection on relevance, and ensure inclusion for varied abilities/styles.
-
-CRITICAL REQUIREMENT: You MUST use the following exact HTML structure and keep the italicized descriptions per part exactly as written below. Fill in the specific content for the lesson corresponding to each section. Do NOT use markdown \`\`\`html tags. Output ONLY the raw HTML.
-
-<div style="font-family: Arial, sans-serif;">
-    <div style="text-align: center; font-weight: bold; margin-bottom: 25px; line-height: 1.2;">
-        Republic of the Philippines<br>Department of Education<br>[Insert School Name or "YOUR SCHOOL NAME"]
-    </div>
-
-    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Lesson Title</td><td style="padding:6px;">[Insert Title]</td></tr>
-        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Area/s</td><td style="padding:6px;">${subject}</td></tr>
-        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Name of Teacher/s</td><td style="padding:6px;">[Teacher Name]</td></tr>
-        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Grade Level and Section</td><td style="padding:6px;">${gradeText}</td></tr>
-        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">No. of Sessions</td><td style="padding:6px;">[Insert based on ${docType}]</td></tr>
-        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">References<br><i style="font-weight:normal; font-size:0.85em;">(books, websites, toolkits, etc.)</i></td><td style="padding:6px;">[Insert References]</td></tr>
-        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Declaration of AI use<br><i style="font-weight:normal; font-size:0.85em;">Cite how AI was used in the formulation of the lesson plan. See DO 3 s.2026 Annex A.</i></td><td style="padding:6px;">[Insert AI Declaration]</td></tr>
-    </table>
-
     <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
         <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">I. INTENTIONS</th></tr>
         <tr><td colspan="2" style="padding:6px; font-style:italic; font-size:0.9em; background:#fefefe;">Meaningful learning experiences are anchored in how we frame them. Start by deciding what you want learners to master by the end of the lesson – keep it clear and simple. Remember: Understanding your learners’ evolving context and designing around it ensure that your lessons connect with and are relevant to them.</td></tr>
@@ -756,7 +705,17 @@ CRITICAL REQUIREMENT: You MUST use the following exact HTML structure and keep t
         <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Pre-Lesson<br><i style="font-weight:normal; font-size:0.85em;">Describe how you will help the learners get ready for the lesson.</i></td><td style="padding:6px;">[Insert Content]</td></tr>
     </table>
 
-    ${flowTable}
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr>
+            <th style="font-weight:bold; width:20%; background:#f9f9f9; padding:6px; color:#000; text-align:left;">Flow<br><i style="font-weight:normal; font-size:0.85em;">Describe the activities that you can implement in 1 or more sessions to meet the learning objectives. Apply the Learning Design Principles...</i></th>
+            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:50%;">Teacher & Learner Activities (ILAW Framework)</th>
+            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:30%;">PPST Annotations (${pos})</th>
+        </tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Introduction</td><td style="padding:6px; vertical-align:top;">[Insert Activities]</td><td style="padding:6px; vertical-align:top; font-size:0.9em;">[Insert PPST Indicator & Annotation]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Let's Analyze</td><td style="padding:6px; vertical-align:top;">[Insert Activities]</td><td style="padding:6px; vertical-align:top; font-size:0.9em;">[Insert PPST Indicator & Annotation]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Abstraction</td><td style="padding:6px; vertical-align:top;">[Insert Activities]</td><td style="padding:6px; vertical-align:top; font-size:0.9em;">[Insert PPST Indicator & Annotation]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">We Apply</td><td style="padding:6px; vertical-align:top;">[Insert Activities]</td><td style="padding:6px; vertical-align:top; font-size:0.9em;">[Insert PPST Indicator & Annotation]</td></tr>
+    </table>
 
     <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
         <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Learning Resources<br><i style="font-weight:normal; font-size:0.85em;">List down the learning resources that will help you reach your objectives. Ensure that they are available and inclusive. Include options and alternatives in case of emergencies.</i></td><td style="padding:6px;">[Insert Content]</td></tr>
@@ -774,7 +733,38 @@ CRITICAL REQUIREMENT: You MUST use the following exact HTML structure and keep t
         <tr><td colspan="2" style="padding:6px; font-style:italic; font-size:0.9em; background:#fefefe;">Meaningful learning can also happen beyond the classroom – for both the learners and the teacher. Pause and reflect on what happened today.</td></tr>
         <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Extended learning opportunities<br><i style="font-weight:normal; font-size:0.85em;">Suggest other learning experiences outside the classroom/class hours that learners may want to access to reinforce what they have learned...</i></td><td style="padding:6px;">[Insert Content]</td></tr>
         <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Reflections<br><i style="font-weight:normal; font-size:0.85em;">Think about what you need to change for the next session based on what happened today... Are there some things you would like to share with your co-teachers...</i></td><td style="padding:6px;">[Insert Content]</td></tr>
+    </table>`;
+
+            promptText = `You are an expert instructional designer. Generate a lesson plan based strictly on the templates.
+Subject: ${subject} | Grade Level: ${gradeText} | Time Allotment: ${timeMins} minutes | Teaching Position: ${pos}
+Format requested: ${docType}
+Competency: ${comp}
+Objectives: ${obj}
+Learner Context: ${context}
+
+When generating the "Flow" activities, you MUST explicitly apply these 8 Learning Design Principles: 1. Clear Goals and Teaching, 2. Scaffolding, 3. Checks for Understanding, 4. Active Retrieval and Spacing, 5. Self-awareness and Metacognition, 6. Social Learning, 7. Values and Purpose Integration, 8. Inclusion. 
+
+CRITICAL REQUIREMENT: 
+- You MUST use the exact HTML structure provided below. Fill in the specific content for the lesson.
+- DO NOT use markdown asterisks (** or *) for bolding or italics. Use standard HTML <b> and <i> tags.
+- Use <br> for line breaks inside table cells to prevent walls of text. Do NOT use markdown \`\`\`html tags. Output ONLY the raw HTML.
+
+<div style="font-family: Arial, sans-serif;">
+    <div style="text-align: center; font-weight: bold; margin-bottom: 25px; line-height: 1.2;">
+        Republic of the Philippines<br>Department of Education<br>[Insert School Name or "YOUR SCHOOL NAME"]
+    </div>
+
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Lesson Title</td><td style="padding:6px;">[Insert Title]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Area/s</td><td style="padding:6px;">${subject}</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Name of Teacher/s</td><td style="padding:6px;">[Teacher Name]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Grade Level and Section</td><td style="padding:6px;">${gradeText}</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">No. of Sessions</td><td style="padding:6px;">[Insert based on ${docType}]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">References<br><i>(books, websites, toolkits, etc.)</i></td><td style="padding:6px;">[Insert References]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Declaration of AI use<br><i>Cite how AI was used in the formulation of the lesson plan. See DO 3 s.2026 Annex A.</i></td><td style="padding:6px;">[Insert AI Declaration]</td></tr>
     </table>
+
+    ${flowTemplate}
 </div>`;
 
         } else if (mode === 'presentation') {
@@ -791,8 +781,9 @@ REQUIREMENTS:
 3. Image Suggestions: For EVERY slide, suggest a specific image. Describe what the image should be and exactly where to place it.
 4. References: The absolute final slide MUST be titled "References" citing legitimate, accurate sources.
 
-STRICT HTML OUTPUT FORMAT (CRITICAL FOR PPTX EXPORT):
-For each slide, you MUST output exactly this structure:
+CRITICAL HTML OUTPUT FORMAT:
+- DO NOT use markdown asterisks (** or *). Use standard HTML <b> and <i> tags.
+- For each slide, you MUST output exactly this structure:
 <div class="ppt-slide">
     <h3 class="ppt-title">Slide Title Here</h3>
     <div class="ppt-content">
@@ -826,9 +817,10 @@ ${compRows}
 
 CRITICAL RULES FOR TEST ITEMS:
 1. If "HOTS" or "PISA-Aligned" formats are selected, they MUST be strictly OBJECTIVE TYPES (Scenario-based MCQs, analytical matching, etc.). No essay questions for these.
-2. The multiple-choice correct answers MUST be randomly and evenly distributed across A, B, C, and D. DO NOT repeat the same letter consecutively (e.g. 1-10 all 'C').
+2. The multiple-choice correct answers MUST be randomly and evenly distributed across A, B, C, and D. DO NOT repeat the same letter consecutively.
 3. EXPLICITLY label each question with its specific Cognitive Domain in brackets (e.g., [Analyzing], [Applying]) immediately after the question number. 
 ${mode==='tos'?'4. Ensure the number of items per domain matches the numbers in your TOS exactly.':''}
+5. DO NOT use markdown asterisks (** or *). Use HTML <b> and <i> tags. Use <br> for new lines.
 
 ${mode === 'tos' ? `SECTION 1: TABLE OF SPECIFICATIONS (TOS)
 Strictly create an HTML table using standard DepEd TOS format with headers for Cognitive Domains (Remembering, Understanding, Applying, Analyzing, Evaluating, Creating) and properly distribute item placements.` : ''}
@@ -852,7 +844,7 @@ Provide exactly 4 sections in HTML:
 2. SUMMARY: Most and Least Learned Competencies.
 3. INTERPRETATION: Professional baseline data interpretation.
 4. INTERVENTIONS: Remediation plan tailored to the least learned competencies.
-Do not use markdown wrappers.`;
+CRITICAL: DO NOT use markdown asterisks (** or *). Use HTML <b> and <i> tags. Use <br> for new lines. Do not use markdown wrappers.`;
         } 
 
         try {
@@ -868,7 +860,13 @@ Do not use markdown wrappers.`;
             const data = await response.json();
             if (data.error) throw new Error(data.error.message);
             
-            let htmlContent = data.candidates[0].content.parts[0].text.replace(/```html/gi, '').replace(/```/g, '');
+            let htmlContent = data.candidates[0].content.parts[0].text;
+            
+            // Clean up Markdown logic and prevent wall of text
+            htmlContent = htmlContent.replace(/```html/gi, '').replace(/```/g, '');
+            htmlContent = htmlContent.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); // Remove markdown bold
+            htmlContent = htmlContent.replace(/\*(.*?)\*/g, '<i>$1</i>'); // Remove markdown italic
+            
             document.getElementById('word-preview').innerHTML = htmlContent;
             document.getElementById('loading').style.display = 'none';
             document.getElementById('output-section').style.display = "block";
@@ -883,12 +881,19 @@ Do not use markdown wrappers.`;
         const profile = JSON.parse(localStorage.getItem('teachersync_profile_v1')) || {};
         
         let header = `<div style="text-align:center; font-family: 'Times New Roman', serif; margin-bottom: 20px;"><h3 style="margin:0; text-transform: uppercase;">${profile.school || ''}</h3></div>`;
-        let footer = `<br><br><table style="width: 100%; text-align: center; font-family: 'Times New Roman', serif; margin-top: 40px; page-break-inside: avoid;"><tr><td>Prepared by:<br><br><b>${profile.teacher || 'TEACHER NAME'}</b><br>${profile.teacherPos || 'Teacher'}</td><td>Checked by:<br><br><b>${profile.checker || 'CHECKER NAME'}</b><br>${profile.checkerPos || 'Checker'}</td><td>Approved by:<br><br><b>${profile.approver || 'APPROVER NAME'}</b><br>${profile.approverPos || 'Approver'}</td></tr></table>`;
+        let footer = `<br><br><table style="width: 100%; text-align: center; font-family: 'Times New Roman', serif; margin-top: 40px; page-break-inside: avoid; border:none !important;"><tr><td style="border:none !important;">Prepared by:<br><br><b>${profile.teacher || 'TEACHER NAME'}</b><br>${profile.teacherPos || 'Teacher'}</td><td style="border:none !important;">Checked by:<br><br><b>${profile.checker || 'CHECKER NAME'}</b><br>${profile.checkerPos || 'Checker'}</td><td style="border:none !important;">Approved by:<br><br><b>${profile.approver || 'APPROVER NAME'}</b><br>${profile.approverPos || 'Approver'}</td></tr></table>`;
         
-        // Exclude header for lesson plans since the template already includes it
         const isLesson = target !== 'worksheet' && document.getElementById('page-lesson').classList.contains('active');
         
-        const fullHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Exported Document</title><style>body { font-family: "Times New Roman", serif; font-size: 12pt; } table { border-collapse: collapse; width: 100%; margin-bottom: 15px; } table, th, td { border: 1px solid black; padding: 5px; vertical-align: top; }</style></head><body>${isLesson ? '' : header}${contentHtml}${footer}</body></html>`;
+        // Added specific Word wrapping/layout fixes
+        const fullHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>Exported Document</title>
+        <style>
+            @page { size: 8.5in 13in; margin: 0.5in; mso-page-orientation: portrait; }
+            body { font-family: "Times New Roman", serif; font-size: 11pt; line-height: 1.5; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; table-layout: fixed; }
+            th, td { border: 1pt solid black; padding: 6px; vertical-align: top; word-wrap: break-word; }
+        </style></head><body>${isLesson ? '' : header}${contentHtml}${footer}</body></html>`;
         
         const blob = new Blob(['\ufeff', fullHtml], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
@@ -902,7 +907,6 @@ Do not use markdown wrappers.`;
             let pptx = new PptxGenJS();
             const profile = JSON.parse(localStorage.getItem('teachersync_profile_v1')) || {};
             
-            // Title Slide
             let slide = pptx.addSlide();
             slide.addText(document.getElementById('global-subject')?.value || "Presentation", { x:1, y:1.5, w:'80%', fontSize:36, bold:true, color:'0A2540', align:'center' });
             slide.addText(profile.teacher || "TeacherSync AI", { x:1, y:2.5, w:'80%', fontSize:18, color:'666666', align:'center' });
@@ -927,7 +931,7 @@ Do not use markdown wrappers.`;
 
     function toggleAnswerKey() { const ak = document.getElementById('ws-answer-key'); if(ak) ak.style.display = (ak.style.display === 'none' || ak.style.display === '') ? 'block' : 'none'; }
 
-    // --- RULE-BASED WORKSHEET (PUZZLES ADDED) ---
+    // --- RULE-BASED WORKSHEET ---
     function updateTypes() {
         const cat = document.getElementById('ws-category').value;
         const typeSelect = document.getElementById('ws-type');
