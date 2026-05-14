@@ -230,19 +230,26 @@
 
     <div id="page-lesson" class="page">
         <div class="card">
-            <h3 style="margin-top:0; color: var(--primary-blue);">Smart Lesson Planner (ILAW Framework)</h3>
+            <h3 style="margin-top:0; color: var(--primary-blue);">Smart Lesson Planner (Orientation Template)</h3>
             <div class="grid-3" style="margin-bottom: 15px;">
-                <div><label>Document Format</label><select id="doc-type" onchange="togglePPST()"><option value="DLL">4-Day DLL</option><option value="SDLP" selected>Semi-Detailed LP</option></select></div>
+                <div>
+                    <label>Document Format</label>
+                    <select id="doc-type" onchange="togglePPST()">
+                        <option value="SDLP" selected>Semi-Detailed LP</option>
+                        <option value="4-Day DLL">4-Day DLL</option>
+                        <option value="5-Day DLL">5-Day DLL</option>
+                    </select>
+                </div>
                 <div><label>Time per Session (Mins)</label><input type="number" id="time-allotment" value="60"></div>
                 <div id="ppst-box"><label>Teaching Position</label><select id="position"><option value="Teacher I-III">Teacher I - III</option><option value="Teacher IV-VII">Teacher IV - VII</option><option value="Master Teacher I-IV">MT I - MT IV</option></select></div>
             </div>
             <div style="background: var(--bg-white); padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
                 <h4 style="margin-top: 0; color: var(--primary-blue); margin-bottom: 15px;">INTENTIONS ENCODER</h4>
-                <label>Learning Competency</label><textarea id="comp-input" rows="2" placeholder="Write the targeted competency..."></textarea>
+                <label>Learning Competency & Curriculum Standards</label><textarea id="comp-input" rows="2" placeholder="Write the targeted competency..."></textarea>
                 <label>Learning Objectives</label><textarea id="obj-input" rows="2" placeholder="Write the smaller knowledge, skills, or tasks..."></textarea>
                 <label>Learner Context</label><textarea id="context-input" rows="2" placeholder="Observations of learners..."></textarea>
             </div>
-            <button class="btn" onclick="generateAI('lesson')">✨ Generate ILAW Lesson Plan</button>
+            <button class="btn" onclick="generateAI('lesson')">✨ Generate Structured Lesson Plan</button>
         </div>
     </div>
 
@@ -260,6 +267,7 @@
     <div id="page-worksheet" class="page">
         <div class="card">
             <h3 style="margin-top:0; color: var(--primary-blue);">🧩 Worksheet Generator <span style="font-size:0.7rem; background:#38a169; color:white; padding:3px 6px; border-radius:4px; vertical-align:middle;">Offline / Non-AI</span></h3>
+            <p style="font-size: 0.9rem; color: #666;">Instantly generate randomized, ready-to-print worksheets using predefined logic.</p>
             <div class="grid-2" style="margin-top: 20px;">
                 <div>
                     <label>Category</label>
@@ -433,21 +441,32 @@
 <script>
     // --- ROUTING / SPA LOGIC ---
     function showPage(pageId) {
+        // Hide all pages
         document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+        
+        // Show target page
         document.getElementById('page-' + pageId).classList.add('active');
+        
+        // Hide outputs on navigation change
         document.getElementById('output-section').style.display = 'none';
         document.getElementById('loading').style.display = 'none';
         
+        // Toggle Global Settings Bar
         const globalSettings = document.getElementById('global-settings-bar');
-        if (globalSettings) globalSettings.style.display = (pageId === 'dashboard' || pageId === 'profile' || pageId === 'references') ? 'none' : 'block';
+        if (globalSettings) {
+            globalSettings.style.display = (pageId === 'dashboard' || pageId === 'profile' || pageId === 'references') ? 'none' : 'block';
+        }
         
+        // Toggle Back Button visibility
         const backBtn = document.getElementById('back-btn');
-        if (backBtn) backBtn.style.display = (pageId === 'dashboard') ? 'none' : 'inline-block';
+        if (backBtn) {
+            backBtn.style.display = (pageId === 'dashboard') ? 'none' : 'inline-block';
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         loadProfile();
-        updateTypes();
+        updateTypes(); // Initialize the Worksheet categories
     });
 
     function toggleTOSQty(cb) {
@@ -458,10 +477,11 @@
     function togglePPST() {
         const type = document.getElementById('doc-type')?.value;
         const box = document.getElementById('ppst-box');
-        if(box) box.style.display = (type === "SDLP") ? "block" : "none";
+        // Let PPST box show for all types right now so it's always accessible if needed
+        if(box) box.style.display = "block";
     }
 
-    // --- PROFILE & API ---
+    // --- PROFILE & SETTINGS ---
     function saveProfile() {
         const data = {
             school: document.getElementById('prof-school')?.value,
@@ -490,79 +510,133 @@
     }
 
     function resetApiKey() {
-        if(confirm("Remove API Key?")) { localStorage.removeItem("gamai_key"); alert("API Key Cleared."); }
+        if(confirm("Remove API Key?")) {
+            localStorage.removeItem("gamai_key");
+            alert("API Key Cleared.");
+        }
     }
 
     async function fetchLiveModels(btn) {
         let apiKey = localStorage.getItem("gamai_key");
         if (!apiKey) {
             apiKey = prompt("Enter your Gemini API Key:");
-            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim()); else return;
+            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim());
+            else return;
         }
+        
         const originalText = btn.innerHTML;
-        btn.innerHTML = "⏳ Fetching..."; btn.style.pointerEvents = "none";
+        btn.innerHTML = "⏳ Fetching...";
+        btn.style.pointerEvents = "none";
+        
         try {
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
             const data = await response.json();
             if (data.error) throw new Error(data.error.message);
+            
             const select = document.getElementById('ai-model');
             if(select) {
                 select.innerHTML = '';
                 data.models.forEach(m => {
                     if (m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent") && !m.name.includes("embedding")) {
-                        select.innerHTML += `<option value="${m.name.replace('models/', '')}">${m.displayName} (${m.name.replace('models/', '')})</option>`;
+                        const option = document.createElement('option');
+                        option.value = m.name.replace('models/', '');
+                        option.textContent = `${m.displayName} (${option.value})`;
+                        select.appendChild(option);
                     }
                 });
             }
             alert(`Success! Loaded models.`);
-        } catch (e) { alert("Error fetching models: " + e.message); } finally { btn.innerHTML = originalText; btn.style.pointerEvents = "auto"; }
+        } catch (e) {
+            alert("Error fetching models: " + e.message);
+        } finally {
+            btn.innerHTML = originalText;
+            btn.style.pointerEvents = "auto";
+        }
     }
 
+    // --- FILE UPLOAD (REFERENCE LIBRARY) ---
     let uploadedContext = "";
+
     async function handleFileUpload() {
-        const files = document.getElementById('file-upload').files;
+        const fileInput = document.getElementById('file-upload');
+        const files = fileInput.files;
         const statusDiv = document.getElementById('file-status');
+        
         if (files.length === 0) return;
-        statusDiv.innerHTML = "⏳ Reading files..."; statusDiv.style.color = "var(--accent-orange)"; uploadedContext = "";
+        
+        statusDiv.innerHTML = "⏳ Reading files... please wait.";
+        statusDiv.style.color = "var(--accent-orange)";
+        uploadedContext = "";
+        
         try {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const ext = file.name.split('.').pop().toLowerCase();
                 let extractedText = "";
+                
                 if (ext === 'txt') {
-                    extractedText = await new Promise((resolve) => { const reader = new FileReader(); reader.onload = (e) => resolve(e.target.result); reader.readAsText(file); });
+                    extractedText = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsText(file);
+                    });
                 } else if (ext === 'docx') {
                     const arrayBuffer = await file.arrayBuffer();
                     const result = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
                     extractedText = result.value;
+                } else if (ext === 'pdf') {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                    for (let j = 1; j <= pdf.numPages; j++) {
+                        const page = await pdf.getPage(j);
+                        const content = await page.getTextContent();
+                        extractedText += content.items.map(item => item.str).join(' ') + '\n';
+                    }
                 }
                 uploadedContext += `\n--- Context from: ${file.name} ---\n${extractedText}\n`;
             }
-            statusDiv.innerHTML = `✅ <b>${files.length} file(s)</b> loaded!`; statusDiv.style.color = "green";
-        } catch (err) { statusDiv.innerHTML = "❌ Error reading files."; statusDiv.style.color = "red"; }
+            statusDiv.innerHTML = `✅ <b>${files.length} file(s)</b> loaded successfully!`;
+            statusDiv.style.color = "green";
+        } catch (err) {
+            statusDiv.innerHTML = "❌ Error reading files.";
+            statusDiv.style.color = "red";
+            console.error(err);
+        }
     }
 
+    // --- DYNAMIC ROWS FOR TOS & TEST MAKER ---
     function addTOSRow() {
         const container = document.getElementById('tos-competencies-container');
-        const row = document.createElement('div'); row.className = 'tos-row'; row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
+        const row = document.createElement('div');
+        row.className = 'tos-row';
+        row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
         row.innerHTML = `<input type="text" class="tos-comp-title" placeholder="Content title..." style="flex:2; margin-bottom:0;"><input type="text" class="tos-comp-desc" placeholder="Learning competency..." style="flex:3; margin-bottom:0;"><input type="text" class="tos-comp-code" placeholder="Code" style="flex:1; margin-bottom:0;"><input type="number" class="tos-comp-days" placeholder="Days" style="flex:1; margin-bottom:0;" value="1"><button class="btn" style="width:45px; padding:10px; margin:0; background:#e53e3e;" onclick="this.parentElement.remove()">-</button>`;
         container.appendChild(row);
     }
     
     function addTMRow() {
         const container = document.getElementById('tm-competencies-container');
-        const row = document.createElement('div'); row.className = 'tm-row'; row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
-        row.innerHTML = `<input type="text" class="tm-comp-title" placeholder="Topic title..." style="flex:2; margin-bottom:0;"><input type="text" class="tm-comp-desc" placeholder="Details or competency..." style="flex:3; margin-bottom:0;"><button class="btn" style="width:45px; padding:10px; margin:0; background:#e53e3e;" onclick="this.parentElement.remove()">-</button>`;
+        const row = document.createElement('div');
+        row.className = 'tm-row';
+        row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
+        row.innerHTML = `<input type="text" class="tm-comp-title" placeholder="Topic title..." style="flex:2; margin-bottom:0;"><input type="text" class="tm-comp-desc" placeholder="Details or Learning competency..." style="flex:3; margin-bottom:0;"><button class="btn" style="width:45px; padding:10px; margin:0; background:#e53e3e;" onclick="this.parentElement.remove()">-</button>`;
         container.appendChild(row);
     }
 
     // --- GEMINI AI GENERATION ---
     async function generateAI(mode) {
         const subject = document.getElementById('global-subject')?.value.trim();
-        if (!subject && mode !== 'presentation') { alert("Please enter a Subject/Learning Area at the top."); return; }
+        if (!subject && mode !== 'presentation') {
+            alert("Please enter a Subject/Learning Area at the top.");
+            return;
+        }
 
         let apiKey = localStorage.getItem("gamai_key");
-        if (!apiKey) { apiKey = prompt("Enter your Gemini API Key:"); if (apiKey) localStorage.setItem("gamai_key", apiKey.trim()); else return; }
+        if (!apiKey) {
+            apiKey = prompt("Enter your Gemini API Key:");
+            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim());
+            else return;
+        }
 
         document.getElementById('loading').style.display = "block";
         document.getElementById('output-section').style.display = "none";
@@ -581,7 +655,7 @@
         let promptText = "";
 
         if (mode === 'lesson') {
-            document.getElementById('loading-text').innerText = "AI is writing ILAW Lesson Plan...";
+            document.getElementById('loading-text').innerText = "AI is writing Lesson Plan based on the template...";
             const comp = document.getElementById('comp-input').value.trim() || "[Insert Learning Competency/Standards]";
             const obj = document.getElementById('obj-input').value.trim() || "[Insert Learning Objectives]";
             const context = document.getElementById('context-input').value.trim() || "[Insert Learner Context]";
@@ -589,19 +663,65 @@
             const timeMins = document.getElementById('time-allotment').value;
             const pos = document.getElementById('position').value;
 
-            promptText = `You are an expert instructional designer. Generate a strict DepEd DO 42 s.2016 compliant lesson plan structured strictly using the ILAW Framework.
-Format: ${docType} | Subject: ${subject} | Grade Level: ${gradeText} | Time Allotment: ${timeMins} minutes | Teaching Position: ${pos} (Include PPST annotations).
+            let flowInstruction = docType.includes("DLL") ?
+                `For the 'Flow' section, provide a table or breakdown for exactly ${docType.includes("5") ? "5" : "4"} days of sessions, distributing the activities appropriately.` :
+                `For the 'Flow' section, provide the sequence of activities for a single session.`;
+
+            promptText = `You are an expert instructional designer. Generate a lesson plan based strictly on the uploaded "LP Template for Orientations".
+Subject: ${subject} | Grade Level: ${gradeText} | Time Allotment: ${timeMins} minutes | Teaching Position: ${pos}
+Format requested: ${docType}
 Competency: ${comp}
 Objectives: ${obj}
 Learner Context: ${context}
 
-CRITICAL REQUIREMENT: The Lesson Plan MUST be formatted precisely with the ILAW Framework headers:
-I. Introduction
-II. Let's Analyze
-III. Abstraction
-IV. We Apply
+${flowInstruction}
 
-Format the output strictly in professional, clean HTML using <h2>, <h3>, <p>, and <table> where appropriate. DO NOT use markdown \`\`\`html tags.`;
+CRITICAL REQUIREMENT: You MUST use the following exact HTML structure and keep the italicized descriptions per part exactly as written below. Fill in the specific content for the lesson corresponding to each section.
+
+<div style="font-family: Arial, sans-serif;">
+    <h2 style="text-align:center;">LESSON PLAN</h2>
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr><td><b>Lesson Title</b></td><td>[Insert Title]</td></tr>
+        <tr><td><b>Learning Area/s</b></td><td>${subject}</td></tr>
+        <tr><td><b>Name of Teacher/s</b></td><td>[Teacher Name]</td></tr>
+        <tr><td><b>Grade Level and Section</b></td><td>${gradeText}</td></tr>
+        <tr><td><b>No. of Sessions</b></td><td>[Insert based on ${docType}]</td></tr>
+        <tr><td><b>References (books, websites, toolkits, etc.)</b></td><td>[Insert References]</td></tr>
+        <tr><td><b>Declaration of AI use</b></td><td>Cite how AI was used in the formulation of the lesson plan. See DO 3 s.2026 Annex A.<br><br><i>[AI Declaration Content]</i></td></tr>
+    </table>
+
+    <h3>Intentions</h3>
+    <p><i>Meaningful learning experiences are anchored in how we frame them. Start by deciding what you want learners to master by the end of the lesson – keep it clear and simple. Remember: Understanding your learners’ evolving context and designing around it ensure that your lessons connect with and are relevant to them.</i></p>
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr><td style="width:30%;"><b>Learning Competency and Curriculum Standards:</b><br><i>Write the competency/ies from the curriculum that we are targeting, and the content or performance standards applicable to the sessions.</i></td><td>[Insert Competency Content]</td></tr>
+        <tr><td><b>Learning Objectives:</b><br><i>Write the smaller knowledge, skills, or tasks from the competency that the learners will work on and be able to show by the end of the sessions.</i></td><td>[Insert Objectives Content]</td></tr>
+        <tr><td><b>Learner Context:</b><br><i>Write your observations of your learners, and how they have been performing or responding to learning experiences recently. Include strengths, interests, and possible barriers to learning.</i></td><td>[Insert Learner Context Content]</td></tr>
+    </table>
+
+    <h3>Learning Experience</h3>
+    <p><i>A learning experience is like a thoughtfully designed journey. Each activity and interaction builds towards meaningful understanding and growth. Identify activities and interactions to help learners gain knowledge, skills, or understanding in a purposeful way.</i></p>
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr><td style="width:30%;"><b>Pre-Lesson:</b><br><i>Describe how you will help the learners get ready for the lesson.</i></td><td>[Insert Pre-Lesson Content]</td></tr>
+        <tr><td><b>Flow:</b><br><i>Describe the activities that you can implement in 1 or more sessions to meet the learning objectives. Apply the Learning Design Principles...</i></td><td>[Insert Flow Content - ${flowInstruction}]</td></tr>
+        <tr><td><b>Learning Resources:</b><br><i>List down the learning resources that will help you reach your objectives. Ensure that they are available and inclusive. Include options and alternatives in case of emergencies.</i></td><td>[Insert Learning Resources]</td></tr>
+        <tr><td><b>Opportunities for integration:</b><br><i>Write down any possibilities to meaningfully another learning area, special topic, or technology. Write N/A if none.</i></td><td>[Insert Integration Content]</td></tr>
+    </table>
+
+    <h3>Assessment</h3>
+    <p><i>Assessments reveal what learners have gained and what they still need help with. These are helpful in providing you with information to guide your future instruction throughout the entire session.</i></p>
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr><td style="width:30%;"><b>Formative Assessment:</b><br><i>Create a task, activity or questions to evaluate learning and provide feedback every now and then. Include ways for learners to ask for guidance or support throughout each session. Remember to provide appropriate accommodations...</i></td><td>[Insert Assessment Content]</td></tr>
+    </table>
+
+    <h3>Ways Forward</h3>
+    <p><i>Meaningful learning can also happen beyond the classroom – for both the learners and the teacher. Pause and reflect on what happened today.</i></p>
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr><td style="width:30%;"><b>Extended learning opportunities:</b><br><i>Suggest other learning experiences outside the classroom/class hours that learners may want to access to reinforce what they have learned...</i></td><td>[Insert Extended Learning Content]</td></tr>
+        <tr><td><b>Reflections:</b><br><i>Think about what you need to change for the next session based on what happened today... Are there some things you would like to share with your co-teachers...</i></td><td>[Insert Reflections Content]</td></tr>
+    </table>
+</div>
+
+Format the output strictly using the HTML structure provided above. DO NOT use markdown \`\`\`html tags.`;
 
         } else if (mode === 'presentation') {
             document.getElementById('loading-text').innerText = "AI is designing Creative ILAW Presentation...";
