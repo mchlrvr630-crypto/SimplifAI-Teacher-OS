@@ -23,822 +23,1236 @@
             --border-color: #ced4da;
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg-white); color: var(--text-main); overflow: hidden; }
-
-        /* Sidebar Navigation */
-        .sidebar { width: 280px; background: var(--primary-blue); color: white; display: flex; flex-direction: column; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
-        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
-        .sidebar-header h2 { margin: 0; color: var(--accent-orange); font-weight: 800; letter-spacing: 1px; }
-        .sidebar-menu { flex: 1; padding: 20px 15px; overflow-y: auto; }
-        .menu-item {
-            padding: 12px 20px; margin-bottom: 6px; border-radius: 8px; cursor: pointer; text-decoration: none;
-            transition: all 0.3s ease; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 0.90rem; color: white;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column; /* Changed to column for Dashboard-first layout */
+            height: 100vh;
+            background: var(--bg-white);
+            color: var(--text-main);
+            overflow: hidden;
         }
-        .menu-item:hover { background: rgba(255, 107, 0, 0.1); color: var(--accent-orange); }
-        .menu-item.active { background: var(--accent-orange); color: white; box-shadow: 0 4px 10px rgba(255, 107, 0, 0.3); }
 
-        .api-settings { margin-top: auto; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .api-settings label { color: rgba(255,255,255,0.7); font-size: 0.75rem; margin-bottom: 4px; display: block; }
-        .api-settings select { padding: 8px; font-size: 0.85rem; border: none; border-radius: 6px; width: 100%; margin-bottom: 10px; background: rgba(255,255,255,0.9); color: var(--primary-blue); }
+        /* Top Header Navigation */
+        .top-header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .top-header h2 {
+            margin: 0;
+            color: var(--accent-orange);
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-select {
+            padding: 8px;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.9);
+            color: var(--primary-blue);
+            outline: none;
+        }
+
+        .header-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 107, 0, 0.1);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        .back-btn {
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            display: none; /* Hidden by default on dashboard */
+        }
+
+        .back-btn:hover {
+            background: #e65c00;
+            color: white;
+            border-color: transparent;
+            transform: translateY(-1px);
+        }
 
         /* Main Workspace */
-        .main-content { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; }
-        .card { background: var(--card-white); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border-top: 4px solid var(--accent-orange); }
-        .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.4s ease; }
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card {
+            background: var(--card-white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
+            border-top: 4px solid var(--accent-orange);
+        }
+
+        .page { display: none; }
+        .page.active { 
+            display: block; 
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         /* Layout Grids */
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         /* Forms & Inputs */
-        label { font-weight: 700; display: block; margin-bottom: 6px; color: var(--primary-blue); font-size: 0.85rem; text-transform: uppercase; }
-        select, input[type="text"], input[type="number"], textarea {
-            width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
-            margin-bottom: 15px; box-sizing: border-box; font-family: inherit; font-size: 0.95rem; transition: 0.3s;
+        label {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--primary-blue);
+            font-size: 0.85rem;
+            text-transform: uppercase;
         }
-        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1); }
 
-        .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 15px; }
-        .checkbox-group label { text-transform: none; font-weight: 500; font-size: 0.90rem; color: var(--text-main); display: flex; align-items: center; gap: 5px; cursor: pointer; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .format-qty { width: 60px !important; padding: 4px 8px !important; margin: 0 0 0 5px !important; display: none; }
+        select, input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: 0.3s;
+        }
 
-        .perc-box { background: var(--bg-white); padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
-        .perc-box input { width: 80px; text-align: center; margin-bottom: 0; font-weight: bold; font-size: 1.1rem; color: var(--primary-blue); }
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group label {
+            text-transform: none;
+            font-weight: 500;
+            font-size: 0.90rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .format-qty {
+            width: 60px !important;
+            padding: 4px 8px !important;
+            margin: 0 0 0 5px !important;
+            display: none;
+        }
+
+        .perc-box {
+            background: var(--bg-white);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .perc-box input {
+            width: 80px;
+            text-align: center;
+            margin-bottom: 0;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+        }
 
         /* Buttons */
         .btn {
-            padding: 14px 28px; border: none; border-radius: 8px; cursor: pointer;
-            font-weight: bold; transition: all 0.3s; background: var(--accent-orange); color: white; font-size: 1rem; width: 100%; display: inline-block; text-align: center; text-decoration: none; box-sizing: border-box;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: var(--accent-orange);
+            color: white;
+            font-size: 1rem;
+            width: 100%;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
         }
-        .btn:hover { background: #e65c00; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 107, 0, 0.3); }
+
+        .btn:hover {
+            background: #e65c00;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 0, 0.3);
+        }
+
         .btn-blue { background: var(--primary-blue); }
         .btn-blue:hover { background: #071a2e; }
         .btn-green { background: #38a169; }
         .btn-green:hover { background: #2f855a; }
 
         /* Dashboard Cards */
-        .dash-card { cursor: pointer; text-align: center; transition: transform 0.2s; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-decoration: none; color: inherit; }
-        .dash-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .dash-badge { margin-top: 15px; padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .dash-card {
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .dash-badge {
+            margin-top: 15px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
         .badge-ai { background: #e2e8f0; color: var(--accent-orange); }
         .badge-js { background: #c6f6d5; color: #276749; }
 
         /* Loading & Output */
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-orange); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        #word-preview, #worksheet-preview {
-            background: white; border: 1px solid #ddd; padding: 50px; margin-top: 20px;
-            min-height: 500px; font-family: "Times New Roman", serif; overflow-x: auto; line-height: 1.5; color: black;
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-orange);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
         }
 
-        .file-drop { border: 2px dashed var(--primary-blue); padding: 30px; text-align: center; border-radius: 12px; background: rgba(10, 37, 64, 0.03); margin-bottom: 10px; }
-        .file-status-box { padding: 15px; border-radius: 8px; background: #e2e8f0; font-weight: bold; text-align: center; font-size: 0.95rem; }
-        .answer-key-section { margin-top: 40px; border-top: 1px dashed #ccc; padding-top: 20px; color: #d32f2f; display: none; }
-        
-        /* Crossword Specifics */
-        .cw-cell { width: 30px; height: 30px; border: 1px solid black; position: relative; text-align: center; vertical-align: middle; font-weight: bold; }
-        .cw-empty { background: black; border: 1px solid black; }
-        .cw-num { position: absolute; top: 1px; left: 2px; font-size: 9px; line-height:1; color: black;}
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #word-preview, #worksheet-preview {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 50px;
+            margin-top: 20px;
+            min-height: 500px;
+            font-family: "Times New Roman", serif;
+            overflow-x: auto;
+            line-height: 1.5;
+            color: black;
+        }
+
+        .file-drop {
+            border: 2px dashed var(--primary-blue);
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px;
+            background: rgba(10, 37, 64, 0.03);
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .file-status-box {
+            padding: 15px;
+            border-radius: 8px;
+            background: #e2e8f0;
+            font-weight: bold;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .answer-key-section {
+            margin-top: 40px;
+            border-top: 1px dashed #ccc;
+            padding-top: 20px;
+            color: #d32f2f;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="sidebar-header" onclick="showPage('dashboard')">
-            <h2 style="font-size: 1.5rem; margin-bottom: 5px;">TeacherSync AI</h2>
-            <div style="font-size: 0.85rem; opacity: 0.9; font-weight: 500;">Your Teacher Assistant</div>
-        </div>
-        <div class="sidebar-menu">
-            <a onclick="showPage('dashboard')" class="menu-item nav-dashboard active">🏠 Dashboard</a>
-            <a onclick="showPage('lesson')" class="menu-item nav-lesson">📝 ILAW Lesson Planner</a>
-            <a onclick="showPage('presentation')" class="menu-item nav-presentation">🖥️ Presentation Maker</a>
-            <a onclick="showPage('worksheet')" class="menu-item nav-worksheet">🧩 Worksheet Generator</a>
-            <a onclick="showPage('tos')" class="menu-item nav-tos">📊 TOS & Quiz Maker</a>
-            <a onclick="showPage('analysis')" class="menu-item nav-analysis">📈 Item Analysis</a>
-            <a onclick="showPage('references')" class="menu-item nav-references">📂 Reference Library</a>
-            <a onclick="showPage('profile')" class="menu-item nav-profile">🏫 School Profile</a>
-        </div>
-        <div class="api-settings">
-            <label>AI Model Engine</label>
-            <select id="ai-model">
-                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast)</option>
-                <option value="gemini-2.0-flash">Gemini 2.0 Flash (Advanced)</option>
-                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Heavy Context)</option>
-            </select>
-            <div class="menu-item" onclick="fetchLiveModels(this)" style="background: rgba(255,255,255,0.1); justify-content: center; margin-bottom: 8px;">🔄 Auto-Fetch Models</div>
-            <div class="menu-item" onclick="resetApiKey()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); justify-content: center;">⚙️ Reset API Key</div>
+<header class="top-header">
+    <div class="header-left">
+        <h2 onclick="showPage('dashboard')">TeacherSync AI</h2>
+        <button id="back-btn" class="header-btn back-btn" onclick="showPage('dashboard')">⬅️ Back to Dashboard</button>
+    </div>
+    
+    <div class="header-right">
+        <select id="ai-model" class="header-select">
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast)</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Advanced)</option>
+            <option value="gemini-1.5-pro">Gemini 1.5 Pro (Heavy Context)</option>
+        </select>
+        <button class="header-btn" onclick="fetchLiveModels(this)">🔄 Auto-Fetch Models</button>
+        <button class="header-btn" onclick="resetApiKey()">⚙️ Reset API Key</button>
+    </div>
+</header>
+
+<div class="main-content">
+    
+    <div id="global-settings-bar" class="card" style="border-top-color: var(--primary-blue); display: none;">
+        <div class="grid-3">
+            <div>
+                <label>Grade Level</label>
+                <select id="global-grade">
+                    <option value="Key Stage 1">Grade 1</option><option value="Key Stage 1">Grade 2</option><option value="Key Stage 1">Grade 3</option>
+                    <option value="Key Stage 2">Grade 4</option><option value="Key Stage 2">Grade 5</option><option value="Key Stage 2">Grade 6</option>
+                    <option value="Key Stage 3">Grade 7</option><option value="Key Stage 3">Grade 8</option><option value="Key Stage 3">Grade 9</option><option value="Key Stage 3">Grade 10</option>
+                    <option value="Key Stage 4">Grade 11 (SHS)</option><option value="Key Stage 4">Grade 12 (SHS)</option>
+                </select>
+            </div>
+            <div><label>Term</label><select id="global-term"><option>1st Term</option><option>2nd Term</option><option>3rd Term</option><option>4th Term</option></select></div>
+            <div><label>Subject / Learning Area</label><input type="text" id="global-subject" placeholder="e.g. Science"></div>
         </div>
     </div>
 
-    <div class="main-content">
+    <div id="page-dashboard" class="page active">
+        <div style="text-align: center; margin-bottom: 40px; margin-top: 20px;">
+            <h1 style="color: var(--primary-blue); font-size: 2.5rem; margin-bottom: 10px;">Welcome to TeacherSync AI</h1>
+            <p style="color: #666; font-size: 1.1rem;">Select a module below to begin your instructional design.</p>
+        </div>
         
-        <div id="global-settings-bar" class="card" style="border-top-color: var(--primary-blue); display: none;">
-            <div class="grid-3">
-                <div>
-                    <label>Grade Level</label>
-                    <select id="global-grade">
-                        <option value="Key Stage 1">Grade 1</option><option value="Key Stage 1">Grade 2</option><option value="Key Stage 1">Grade 3</option>
-                        <option value="Key Stage 2">Grade 4</option><option value="Key Stage 2">Grade 5</option><option value="Key Stage 2">Grade 6</option>
-                        <option value="Key Stage 3">Grade 7</option><option value="Key Stage 3">Grade 8</option><option value="Key Stage 3">Grade 9</option><option value="Key Stage 3">Grade 10</option>
-                        <option value="Key Stage 4">Grade 11 (SHS)</option><option value="Key Stage 4">Grade 12 (SHS)</option>
+        <div class="grid-4">
+            <div onclick="showPage('worksheet')" class="card dash-card" style="border-top-color: #38a169;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">🧩</div>
+                <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Worksheet Generator</h3>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Non-AI rule-based system. Instantly generate printable worksheets.</p>
+                <div class="dash-badge badge-js">Pure JS (No API)</div>
+            </div>
+            <div onclick="showPage('lesson')" class="card dash-card" style="border-top-color: var(--accent-orange);">
+                <div style="font-size: 3rem; margin-bottom: 15px;">📝</div>
+                <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">ILAW Lesson Planner</h3>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate strict DO 3 s.2026 compliant lesson plans automatically.</p>
+                <div class="dash-badge badge-ai">Gemini AI Powered</div>
+            </div>
+            <div onclick="showPage('presentation')" class="card dash-card" style="border-top-color: var(--accent-orange);">
+                <div style="font-size: 3rem; margin-bottom: 15px;">🖥️</div>
+                <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Presentation Maker</h3>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate creative slide outlines aligned with the ILAW Framework.</p>
+                <div class="dash-badge badge-ai">Gemini AI Powered</div>
+            </div>
+            <div onclick="showPage('testmaker')" class="card dash-card" style="border-top-color: var(--accent-orange);">
+                <div style="font-size: 3rem; margin-bottom: 15px;">📝</div>
+                <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Test Maker</h3>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate Test Questionnaires instantly (Non-TOS logic).</p>
+                <div class="dash-badge badge-ai">Gemini AI Powered</div>
+            </div>
+            <div onclick="showPage('tos')" class="card dash-card" style="border-top-color: var(--accent-orange);">
+                <div style="font-size: 3rem; margin-bottom: 15px;">📊</div>
+                <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">TOS & Quiz Maker</h3>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Automated Table of Specifications and Assessment generator.</p>
+                <div class="dash-badge badge-ai">Gemini AI Powered</div>
+            </div>
+            <div onclick="showPage('analysis')" class="card dash-card" style="border-top-color: var(--accent-orange);">
+                <div style="font-size: 3rem; margin-bottom: 15px;">📈</div>
+                <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Item Analysis</h3>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Calculate MPL and generate structured remediation reports.</p>
+                <div class="dash-badge badge-ai">Gemini AI Powered</div>
+            </div>
+            <div onclick="showPage('references')" class="card dash-card" style="border-top-color: var(--primary-blue);">
+                <div style="font-size: 3rem; margin-bottom: 15px;">📂</div>
+                <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Reference Library</h3>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Upload Context PDFs/Docs for the AI to base its outputs on.</p>
+                <div class="dash-badge" style="background:#e2e8f0; color:#333;">System Tool</div>
+            </div>
+            <div onclick="showPage('profile')" class="card dash-card" style="border-top-color: var(--primary-blue);">
+                <div style="font-size: 3rem; margin-bottom: 15px;">🏫</div>
+                <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">School Profile</h3>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Set headers and signatories for document exports.</p>
+                <div class="dash-badge" style="background:#e2e8f0; color:#333;">System Tool</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-lesson" class="page">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">Smart Lesson Planner (ILAW Framework)</h3>
+            <div class="grid-3" style="margin-bottom: 15px;">
+                <div><label>Document Format</label><select id="doc-type" onchange="togglePPST()"><option value="DLL">4-Day DLL</option><option value="SDLP" selected>Semi-Detailed LP</option></select></div>
+                <div><label>Time per Session (Mins)</label><input type="number" id="time-allotment" value="60"></div>
+                <div id="ppst-box"><label>Teaching Position</label><select id="position"><option value="Teacher I-III">Teacher I - III</option><option value="Teacher IV-VII">Teacher IV - VII</option><option value="Master Teacher I-IV">MT I - MT IV</option></select></div>
+            </div>
+            <div style="background: var(--bg-white); padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                <h4 style="margin-top: 0; color: var(--primary-blue); margin-bottom: 15px;">INTENTIONS ENCODER</h4>
+                <label>Learning Competency</label><textarea id="comp-input" rows="2" placeholder="Write the targeted competency..."></textarea>
+                <label>Learning Objectives</label><textarea id="obj-input" rows="2" placeholder="Write the smaller knowledge, skills, or tasks..."></textarea>
+                <label>Learner Context</label><textarea id="context-input" rows="2" placeholder="Observations of learners..."></textarea>
+            </div>
+            <button class="btn" onclick="generateAI('lesson')">✨ Generate ILAW Lesson Plan</button>
+        </div>
+    </div>
+
+    <div id="page-presentation" class="page">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">AI Presentation Maker</h3>
+            <div class="grid-2">
+                <div><label>Number of Slides</label><input type="number" id="slide-count" value="10"></div>
+                <div><label>Visual Theme Export</label>
+                    <select id="slide-theme">
+                        <option value="light">Modern Light</option>
+                        <option value="dark">Professional Dark</option>
+                        <option value="deped">DepEd Standard (Blue/White)</option>
                     </select>
                 </div>
-                <div><label>Term</label><select id="global-term"><option>1st Term</option><option>2nd Term</option><option>3rd Term</option><option>4th Term</option></select></div>
-                <div><label>Subject / Learning Area</label><input type="text" id="global-subject" placeholder="e.g. Science"></div>
             </div>
+            <label>Topic / Presentation Content</label>
+            <textarea id="slide-content" rows="4" placeholder="Provide the topic, key points, or paste an article here to summarize into slides..."></textarea>
+            <button class="btn" onclick="generateAI('presentation')">🖥️ Generate Presentation Outline</button>
         </div>
-
-        <div id="page-dashboard" class="page active">
-            <h1 style="color: var(--primary-blue); margin-top: 0;">Welcome to TeacherSync AI</h1>
-            <p style="color: #666; margin-bottom: 30px;">Select a module to begin your instructional design.</p>
-            <div class="grid-3">
-                <div onclick="showPage('worksheet')" class="card dash-card" style="border-top-color: #38a169;">
-                    <div style="font-size: 3rem; margin-bottom: 15px;">🧩</div>
-                    <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Worksheet Generator</h3>
-                    <p style="color: #666; font-size: 0.85rem; margin: 0;">Non-AI rule-based system. Instantly generate printable Crosswords, Math, Language, and Logic worksheets.</p>
-                    <div class="dash-badge badge-js">Pure JS (No API)</div>
-                </div>
-                <div onclick="showPage('lesson')" class="card dash-card" style="border-top-color: var(--accent-orange);">
-                    <div style="font-size: 3rem; margin-bottom: 15px;">📝</div>
-                    <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">ILAW Lesson Planner</h3>
-                    <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate strict DO 3 s.2026 compliant lesson plans automatically.</p>
-                    <div class="dash-badge badge-ai">Gemini AI Powered</div>
-                </div>
-                <div onclick="showPage('presentation')" class="card dash-card" style="border-top-color: var(--accent-orange);">
-                    <div style="font-size: 3rem; margin-bottom: 15px;">🖥️</div>
-                    <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Presentation Maker</h3>
-                    <p style="color: #666; font-size: 0.85rem; margin: 0;">Convert topics into ready-to-use PowerPoint slide outlines.</p>
-                    <div class="dash-badge badge-ai">Gemini AI Powered</div>
-                </div>
-                <div onclick="showPage('tos')" class="card dash-card" style="border-top-color: var(--accent-orange);">
-                    <div style="font-size: 3rem; margin-bottom: 15px;">📊</div>
-                    <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">TOS & Quiz Maker</h3>
-                    <p style="color: #666; font-size: 0.85rem; margin: 0;">Automated Table of Specifications and Assessment generator.</p>
-                    <div class="dash-badge badge-ai">Gemini AI Powered</div>
-                </div>
-                <div onclick="showPage('analysis')" class="card dash-card" style="border-top-color: var(--accent-orange);">
-                    <div style="font-size: 3rem; margin-bottom: 15px;">📈</div>
-                    <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Item Analysis</h3>
-                    <p style="color: #666; font-size: 0.85rem; margin: 0;">Calculate MPL and generate structured remediation reports.</p>
-                    <div class="dash-badge badge-ai">Gemini AI Powered</div>
-                </div>
-                <div onclick="showPage('references')" class="card dash-card" style="border-top-color: var(--primary-blue);">
-                    <div style="font-size: 3rem; margin-bottom: 15px;">📂</div>
-                    <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Reference Library</h3>
-                    <p style="color: #666; font-size: 0.85rem; margin: 0;">Upload Context PDFs/Docs for the AI to base its outputs on.</p>
-                    <div class="dash-badge" style="background:#e2e8f0; color:#333;">System Tool</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-lesson" class="page">
-            <div class="card">
-                <h3 style="margin-top:0; color: var(--primary-blue);">Smart Lesson Planner (ILAW Framework)</h3>
-                <div class="grid-3" style="margin-bottom: 15px;">
-                    <div><label>Document Format</label><select id="doc-type" onchange="togglePPST()"><option value="DLL">4-Day DLL</option><option value="SDLP" selected>Semi-Detailed LP</option></select></div>
-                    <div><label>Time per Session (Mins)</label><input type="number" id="time-allotment" value="60"></div>
-                    <div id="ppst-box"><label>Teaching Position</label><select id="position"><option value="Teacher I-III">Teacher I - III</option><option value="Teacher IV-VII">Teacher IV - VII</option><option value="Master Teacher I-IV">MT I - MT IV</option></select></div>
-                </div>
-                <div style="background: var(--bg-white); padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                    <h4 style="margin-top: 0; color: var(--primary-blue); margin-bottom: 15px;">INTENTIONS ENCODER</h4>
-                    <label>Learning Competency</label><textarea id="comp-input" rows="2" placeholder="Write the targeted competency..."></textarea>
-                    <label>Learning Objectives</label><textarea id="obj-input" rows="2" placeholder="Write the smaller knowledge, skills, or tasks..."></textarea>
-                    <label>Learner Context</label><textarea id="context-input" rows="2" placeholder="Observations of learners..."></textarea>
-                </div>
-                <button class="btn" onclick="generateAI('lesson')">✨ Generate ILAW Lesson Plan</button>
-            </div>
-        </div>
-
-        <div id="page-presentation" class="page">
-            <div class="card">
-                <h3 style="margin-top:0; color: var(--primary-blue);">AI Presentation Maker</h3>
-                <div class="grid-2">
-                    <div><label>Number of Slides</label><input type="number" id="slide-count" value="10"></div>
-                    <div><label>Visual Theme Export</label>
-                        <select id="slide-theme">
-                            <option value="light">Modern Light</option>
-                            <option value="dark">Professional Dark</option>
-                            <option value="deped">DepEd Standard (Blue/White)</option>
-                        </select>
-                    </div>
-                </div>
-                <label>Topic / Presentation Content</label>
-                <textarea id="slide-content" rows="4" placeholder="Provide the topic, key points, or paste an article here to summarize into slides..."></textarea>
-                <button class="btn" onclick="generateAI('presentation')">🖥️ Generate Presentation Outline</button>
-            </div>
-        </div>
-
-        <div id="page-worksheet" class="page">
-            <div class="card">
-                <h3 style="margin-top:0; color: var(--primary-blue);">🧩 Worksheet Generator <span style="font-size:0.7rem; background:#38a169; color:white; padding:3px 6px; border-radius:4px; vertical-align:middle;">Offline / Non-AI</span></h3>
-                <p style="font-size: 0.9rem; color: #666;">Instantly generate randomized, ready-to-print worksheets using predefined logic.</p>
-                <div class="grid-2" style="margin-top: 20px;">
-                    <div>
-                        <label>Category</label>
-                        <select id="ws-category" onchange="updateTypes()">
-                            <option value="wordgames" selected>Word Games & Puzzles</option>
-                            <option value="math">Mathematics</option>
-                            <option value="language">Language</option>
-                            <option value="science">Science</option>
-                            <option value="logic">Logic</option>
-                        </select>
-                    </div>
-                    <div><label>Type</label><select id="ws-type"></select></div>
-                    <div id="ws-count-box"><label>Number of Items</label><input type="number" id="ws-count" value="10"></div>
-                </div>
-                <label>Enter Words and Clues (Overrides defaults)</label>
-                <p style="font-size: 0.8rem; color: var(--primary-blue); margin-top: 0;">Format: Word | Clue (one per line).</p>
-                <textarea id="puzzle-data" rows="5" placeholder="Photosynthesis | The process by which plants make food.&#10;Gravity | The force that attracts a body toward the center of the earth."></textarea>
-                <button class="btn btn-green" onclick="generateRuleBasedWorksheet()">⚙️ Generate Randomized Worksheet</button>
-            </div>
-        </div>
-
-        <div id="page-tos" class="page">
-            <div class="card">
-                <h3 style="margin-top:0; color: var(--primary-blue);">TOS & Quiz Maker</h3>
-                <div class="grid-3">
-                    <div style="grid-column: span 3;">
-                        <label>Distribution of Difficulty (%) - Must total 100%</label>
-                        <div class="grid-3">
-                            <div class="perc-box">Easy<br><input type="number" id="perc-easy" value="60">%</div>
-                            <div class="perc-box">Average<br><input type="number" id="perc-avg" value="30">%</div>
-                            <div class="perc-box">Difficult<br><input type="number" id="perc-diff" value="10">%</div>
-                        </div>
-                    </div>
-                </div>
-                <label style="margin-top:15px;">Test Formats & Item Counts</label>
-                <p style="font-size: 0.8rem; color: #666; margin-top:0;">Check the formats you want and set the number of items for each.</p>
-                <div class="checkbox-group" id="tos-formats-container">
-                    <label><input type="checkbox" class="quiz-format" value="Multiple Choice" onchange="toggleTOSQty(this)" checked> Multiple Choice <input type="number" class="format-qty" value="10" min="1" style="display:inline-block;"></label>
-                    <label><input type="checkbox" class="quiz-format" value="True or False" onchange="toggleTOSQty(this)"> True/False <input type="number" class="format-qty" value="5" min="1"></label>
-                    <label><input type="checkbox" class="quiz-format" value="Modified True/False" onchange="toggleTOSQty(this)"> Modified T/F <input type="number" class="format-qty" value="5" min="1"></label>
-                    <label><input type="checkbox" class="quiz-format" value="Identification" onchange="toggleTOSQty(this)"> Identification <input type="number" class="format-qty" value="10" min="1"></label>
-                    <label><input type="checkbox" class="quiz-format" value="Fill in the Blanks" onchange="toggleTOSQty(this)"> Fill in the Blanks <input type="number" class="format-qty" value="5" min="1"></label>
-                    <label><input type="checkbox" class="quiz-format" value="Matching Type" onchange="toggleTOSQty(this)"> Matching Type <input type="number" class="format-qty" value="10" min="1"></label>
-                    <label><input type="checkbox" class="quiz-format" value="Enumeration" onchange="toggleTOSQty(this)"> Enumeration <input type="number" class="format-qty" value="5" min="1"></label>
-                    <label><input type="checkbox" class="quiz-format" value="Short Answer" onchange="toggleTOSQty(this)"> Short Answer <input type="number" class="format-qty" value="5" min="1"></label>
-                    <label><input type="checkbox" class="quiz-format" value="Essay" onchange="toggleTOSQty(this)"> Essay <input type="number" class="format-qty" value="2" min="1"></label>
-                </div>
-                <div style="background: var(--bg-white); padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; margin-top: 15px;">
-                    <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 10px;">
-                        <h4 style="margin:0; color: var(--primary-blue);">Competencies to Assess</h4>
-                        <button class="btn btn-green" style="padding: 6px 12px; width:auto; font-size: 0.8rem;" onclick="addTOSRow()">+ Add Row</button>
-                    </div>
-                    <div id="tos-competencies-container">
-                        <div class="tos-row" style="display:flex; gap:10px; margin-bottom:10px;">
-                            <input type="text" class="tos-comp-title" placeholder="Content title..." style="flex:2; margin-bottom:0;">
-                            <input type="text" class="tos-comp-desc" placeholder="Learning competency..." style="flex:3; margin-bottom:0;">
-                            <input type="text" class="tos-comp-code" placeholder="Code" style="flex:1; margin-bottom:0;">
-                            <input type="number" class="tos-comp-days" placeholder="Days Taught" style="flex:1; margin-bottom:0;" value="5">
-                        </div>
-                    </div>
-                </div>
-                <button class="btn" onclick="generateAI('tos')">📊 Generate TOS & Assessment</button>
-            </div>
-        </div>
-
-        <div id="page-analysis" class="page">
-            <div class="card">
-                <h3 style="margin-top:0; color: var(--primary-blue);">Item Analysis & Remediation Planner</h3>
-                <div><label>Total Number of Learners</label><input type="number" id="total-learners" placeholder="e.g. 45"></div>
-                <label>Raw Item Data</label>
-                <p style="font-size: 0.8rem; color: #666; margin-top:0;">Format: Item Number | Competency | Number of Correct Responses.</p>
-                <textarea id="item-analysis-data" rows="8" placeholder="1 | Identifies parts of speech | 35&#10;2 | Uses correct punctuation | 15"></textarea>
-                <button class="btn" onclick="generateAI('analysis')">📈 Calculate MPL & Generate Report</button>
-            </div>
-        </div>
-
-        <div id="page-references" class="page">
-            <div class="card">
-                <h3 style="margin-top:0; color: var(--primary-blue);">📂 AI Reference Context Library</h3>
-                <p style="color:#666; font-size:0.9rem;">Upload modules, curriculum guides, or readings. The AI will use these documents as the knowledge base.</p>
-                <div class="file-drop" onclick="document.getElementById('file-upload').click()">
-                    <div style="font-size: 3rem; margin-bottom: 10px;">📄</div>
-                    <h4 style="margin:0; color:var(--primary-blue);">Click to Upload Context Documents</h4>
-                    <p style="margin:5px 0 0 0; font-size:0.85rem; color:#666;">Supports .TXT, .DOCX, .PDF</p>
-                    <input type="file" id="file-upload" accept=".txt,.pdf,.docx" multiple style="display: none;" onchange="handleFileUpload()">
-                </div>
-                <div id="file-status" class="file-status-box">No files loaded yet. AI will use general knowledge.</div>
-            </div>
-        </div>
-
-        <div id="page-profile" class="page">
-            <div class="card">
-                <h3 style="margin-top:0; color: var(--primary-blue);">🏫 School Profile Settings</h3>
-                <p style="color:#666; font-size:0.9rem;">Used as headers and signatories for exported Word Documents.</p>
-                <label>School Name / Header Text</label>
-                <input type="text" id="prof-school" placeholder="e.g. SAN JOSE DEL MONTE NATIONAL HIGH SCHOOL">
-                
-                <div class="grid-2">
-                    <div><label>Teacher Name (Prepared By)</label><input type="text" id="prof-teacher" placeholder="e.g. JUAN DELA CRUZ"></div>
-                    <div><label>Teacher Position</label><input type="text" id="prof-teacher-pos" placeholder="e.g. Teacher I"></div>
-                    
-                    <div><label>Checker Name (Checked By)</label><input type="text" id="prof-checker" placeholder="e.g. MARIA CLARA"></div>
-                    <div><label>Checker Position</label><input type="text" id="prof-checker-pos" placeholder="e.g. Master Teacher I"></div>
-                    
-                    <div><label>Approver Name (Approved By)</label><input type="text" id="prof-approver" placeholder="e.g. DR. JOSE RIZAL"></div>
-                    <div><label>Approver Position</label><input type="text" id="prof-approver-pos" placeholder="e.g. School Principal IV"></div>
-                </div>
-                <button class="btn btn-blue" onclick="saveProfile()">💾 Save Signatories Profile</button>
-            </div>
-        </div>
-
-        <div id="loading" style="display:none; text-align:center; padding: 40px;">
-            <div class="loader"></div>
-            <h3 id="loading-text">AI is processing...</h3>
-        </div>
-
-        <div id="output-section" style="display:none;">
-            <div class="card" style="border-top-color: #38a169;">
-                <h3 style="margin-top:0; color: #38a169;">✅ Document Ready</h3>
-                
-                <div id="word-preview-container">
-                    <div id="word-preview"></div>
-                    <div style="margin-top: 20px; display: flex; gap: 10px;">
-                        <button id="dl-word-btn" class="btn btn-blue" onclick="exportToWord('main')" style="width:auto; margin-top:0;">💾 Download as MS Word</button>
-                        <button id="dl-ppt-btn" class="btn btn-blue" onclick="exportToPPT()" style="width:auto; margin-top:0; display:none; background:#d35400;">📊 Export to PowerPoint</button>
-                    </div>
-                </div>
-
-                <div id="worksheet-preview-container" style="display:none;">
-                    <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <div>
-                            <button class="btn" style="background:#e2e8f0; color:var(--text-main); width:auto; padding:10px 15px;" onclick="toggleAnswerKey()">👁️ Toggle Answer Key</button>
-                            <button class="btn btn-blue" style="width:auto; margin-top:0; padding:10px 15px;" onclick="exportToWord('worksheet')">💾 Download as MS Word</button>
-                        </div>
-                    </div>
-                    <div id="worksheet-preview"></div>
-                </div>
-
-            </div>
-        </div>
-
     </div>
 
-    <script>
-        // --- ROUTING / SPA LOGIC ---
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-            document.getElementById('page-' + pageId).classList.add('active');
-            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-            document.querySelector('.nav-' + pageId).classList.add('active');
-            document.getElementById('output-section').style.display = 'none';
-            document.getElementById('loading').style.display = 'none';
+    <div id="page-worksheet" class="page">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">🧩 Worksheet Generator <span style="font-size:0.7rem; background:#38a169; color:white; padding:3px 6px; border-radius:4px; vertical-align:middle;">Offline / Non-AI</span></h3>
+            <p style="font-size: 0.9rem; color: #666;">Instantly generate randomized, ready-to-print worksheets using predefined logic.</p>
+            <div class="grid-2" style="margin-top: 20px;">
+                <div>
+                    <label>Category</label>
+                    <select id="ws-category" onchange="updateTypes()">
+                        <option value="wordgames" selected>Word Games & Puzzles</option>
+                        <option value="math">Mathematics</option>
+                        <option value="language">Language</option>
+                        <option value="science">Science</option>
+                        <option value="logic">Logic</option>
+                    </select>
+                </div>
+                <div><label>Type</label><select id="ws-type"></select></div>
+                <div id="ws-count-box"><label>Number of Items (For Math/Auto gen)</label><input type="number" id="ws-count" value="10"></div>
+            </div>
+            <label>Enter Words and Clues</label>
+            <p style="font-size: 0.8rem; color: var(--primary-blue); margin-top: 0;">Format: Word | Clue (one per line). Overrides default examples. Ignored for Math.</p>
+            <textarea id="puzzle-data" rows="5" placeholder="Photosynthesis | The process by which plants make food.&#10;Gravity | The force that attracts a body toward the center of the earth."></textarea>
+            <button class="btn btn-green" onclick="generateRuleBasedWorksheet()">⚙️ Generate Randomized Worksheet</button>
+        </div>
+    </div>
+    
+    <div id="page-testmaker" class="page">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">📝 Test Maker (Non-TOS)</h3>
+            <p style="font-size: 0.9rem; color: #666;">Generates only the Questionnaire and Answer Key directly.</p>
+            <div class="grid-3">
+                <div style="grid-column: span 3;">
+                    <label>Distribution of Difficulty (%) - Must total 100%</label>
+                    <div class="grid-3">
+                        <div class="perc-box">Easy<br><input type="number" id="tm-perc-easy" value="60">%</div>
+                        <div class="perc-box">Average<br><input type="number" id="tm-perc-avg" value="30">%</div>
+                        <div class="perc-box">Difficult<br><input type="number" id="tm-perc-diff" value="10">%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <label style="margin-top:15px;">Test Formats & Item Counts</label>
+            <p style="font-size: 0.8rem; color: #666; margin-top:0;">Check the formats you want and set the number of items for each.</p>
+            <div class="checkbox-group" id="tm-formats-container">
+                <label><input type="checkbox" class="tm-quiz-format" value="Multiple Choice" onchange="toggleTOSQty(this)" checked> Multiple Choice <input type="number" class="format-qty" value="10" min="1" style="display:inline-block;"></label>
+                <label><input type="checkbox" class="tm-quiz-format" value="True or False" onchange="toggleTOSQty(this)"> True/False <input type="number" class="format-qty" value="5" min="1"></label>
+                <label><input type="checkbox" class="tm-quiz-format" value="Identification" onchange="toggleTOSQty(this)"> Identification <input type="number" class="format-qty" value="10" min="1"></label>
+                <label><input type="checkbox" class="tm-quiz-format" value="Matching Type" onchange="toggleTOSQty(this)"> Matching Type <input type="number" class="format-qty" value="10" min="1"></label>
+                <label><input type="checkbox" class="tm-quiz-format" value="HOTS Objective Questions" onchange="toggleTOSQty(this)"> HOTS Objective <input type="number" class="format-qty" value="5" min="1"></label>
+                <label><input type="checkbox" class="tm-quiz-format" value="PISA-Aligned Objective" onchange="toggleTOSQty(this)"> PISA-Aligned Objective <input type="number" class="format-qty" value="5" min="1"></label>
+            </div>
 
-            const globalSettings = document.getElementById('global-settings-bar');
+            <div style="background: var(--bg-white); padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; margin-top: 15px;">
+                <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 10px;">
+                    <h4 style="margin:0; color: var(--primary-blue);">Topics / Competencies Covered</h4>
+                    <button class="btn btn-green" style="padding: 6px 12px; width:auto; font-size: 0.8rem;" onclick="addTMRow()">+ Add Row</button>
+                </div>
+                <div id="tm-competencies-container">
+                    <div class="tm-row" style="display:flex; gap:10px; margin-bottom:10px;">
+                        <input type="text" class="tm-comp-title" placeholder="Topic title..." style="flex:2; margin-bottom:0;">
+                        <input type="text" class="tm-comp-desc" placeholder="Details or Learning competency..." style="flex:3; margin-bottom:0;">
+                    </div>
+                </div>
+            </div>
+            <button class="btn" onclick="generateAI('testmaker')">📝 Generate Test Questionnaire</button>
+        </div>
+    </div>
+
+    <div id="page-tos" class="page">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">TOS & Quiz Maker</h3>
+            <div class="grid-3">
+                <div style="grid-column: span 3;">
+                    <label>Distribution of Difficulty (%) - Must total 100%</label>
+                    <div class="grid-3">
+                        <div class="perc-box">Easy<br><input type="number" id="perc-easy" value="60">%</div>
+                        <div class="perc-box">Average<br><input type="number" id="perc-avg" value="30">%</div>
+                        <div class="perc-box">Difficult<br><input type="number" id="perc-diff" value="10">%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <label style="margin-top:15px;">Test Formats & Item Counts</label>
+            <div class="checkbox-group" id="tos-formats-container">
+                <label><input type="checkbox" class="quiz-format" value="Multiple Choice" onchange="toggleTOSQty(this)" checked> Multiple Choice <input type="number" class="format-qty" value="10" min="1" style="display:inline-block;"></label>
+                <label><input type="checkbox" class="quiz-format" value="True or False" onchange="toggleTOSQty(this)"> True/False <input type="number" class="format-qty" value="5" min="1"></label>
+                <label><input type="checkbox" class="quiz-format" value="Matching Type" onchange="toggleTOSQty(this)"> Matching Type <input type="number" class="format-qty" value="10" min="1"></label>
+                <label><input type="checkbox" class="quiz-format" value="HOTS Objective Questions" onchange="toggleTOSQty(this)"> HOTS Objective <input type="number" class="format-qty" value="5" min="1"></label>
+                <label><input type="checkbox" class="quiz-format" value="PISA-Aligned Objective" onchange="toggleTOSQty(this)"> PISA-Aligned Objective <input type="number" class="format-qty" value="5" min="1"></label>
+            </div>
+
+            <div style="background: var(--bg-white); padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; margin-top: 15px;">
+                <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 10px;">
+                    <h4 style="margin:0; color: var(--primary-blue);">Competencies to Assess</h4>
+                    <button class="btn btn-green" style="padding: 6px 12px; width:auto; font-size: 0.8rem;" onclick="addTOSRow()">+ Add Row</button>
+                </div>
+                <div id="tos-competencies-container">
+                    <div class="tos-row" style="display:flex; gap:10px; margin-bottom:10px;">
+                        <input type="text" class="tos-comp-title" placeholder="Content title..." style="flex:2; margin-bottom:0;">
+                        <input type="text" class="tos-comp-desc" placeholder="Learning competency..." style="flex:3; margin-bottom:0;">
+                        <input type="text" class="tos-comp-code" placeholder="Code" style="flex:1; margin-bottom:0;">
+                        <input type="number" class="tos-comp-days" placeholder="Days Taught" style="flex:1; margin-bottom:0;" value="5">
+                    </div>
+                </div>
+            </div>
+            <button class="btn" onclick="generateAI('tos')">📊 Generate Complete TOS & Assessment</button>
+        </div>
+    </div>
+
+    <div id="page-analysis" class="page">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">Item Analysis & Remediation Planner</h3>
+            <div><label>Total Number of Learners</label><input type="number" id="total-learners" placeholder="e.g. 45"></div>
+            <label>Raw Item Data</label>
+            <p style="font-size: 0.8rem; color: #666; margin-top:0;">Format: Item Number | Competency | Number of Correct Responses.</p>
+            <textarea id="item-analysis-data" rows="8" placeholder="1 | Identifies parts of speech | 35&#10;2 | Uses correct punctuation | 15"></textarea>
+            <button class="btn" onclick="generateAI('analysis')">📈 Calculate MPL & Generate Detailed Report</button>
+        </div>
+    </div>
+
+    <div id="page-references" class="page">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">📂 AI Reference Context Library</h3>
+            <p style="color:#666; font-size:0.9rem;">Upload modules, curriculum guides, or readings. The AI will use these documents as the knowledge base.</p>
+            <div class="file-drop" onclick="document.getElementById('file-upload').click()">
+                <div style="font-size: 3rem; margin-bottom: 10px;">📄</div>
+                <h4 style="margin:0; color:var(--primary-blue);">Click to Upload Context Documents</h4>
+                <p style="margin:5px 0 0 0; font-size:0.85rem; color:#666;">Supports .TXT, .DOCX, .PDF</p>
+                <input type="file" id="file-upload" accept=".txt,.pdf,.docx" multiple style="display: none;" onchange="handleFileUpload()">
+            </div>
+            <div id="file-status" class="file-status-box">No files loaded yet. AI will use general knowledge.</div>
+        </div>
+    </div>
+
+    <div id="page-profile" class="page">
+        <div class="card">
+            <h3 style="margin-top:0; color: var(--primary-blue);">🏫 School Profile Settings</h3>
+            <p style="color:#666; font-size:0.9rem;">Used as headers and signatories for exported Word Documents.</p>
+            <label>School Name / Header Text</label>
+            <input type="text" id="prof-school" placeholder="e.g. SAN JOSE DEL MONTE NATIONAL HIGH SCHOOL">
+            <div class="grid-2">
+                <div><label>Teacher Name (Prepared By)</label><input type="text" id="prof-teacher" placeholder="e.g. JUAN DELA CRUZ"></div>
+                <div><label>Teacher Position</label><input type="text" id="prof-teacher-pos" placeholder="e.g. Teacher I"></div>
+                <div><label>Checker Name (Checked By)</label><input type="text" id="prof-checker" placeholder="e.g. MARIA CLARA"></div>
+                <div><label>Checker Position</label><input type="text" id="prof-checker-pos" placeholder="e.g. Master Teacher I"></div>
+                <div><label>Approver Name (Approved By)</label><input type="text" id="prof-approver" placeholder="e.g. DR. JOSE RIZAL"></div>
+                <div><label>Approver Position</label><input type="text" id="prof-approver-pos" placeholder="e.g. School Principal IV"></div>
+            </div>
+            <button class="btn btn-blue" onclick="saveProfile()">💾 Save Signatories Profile</button>
+        </div>
+    </div>
+
+    <div id="loading" style="display:none; text-align:center; padding: 40px;">
+        <div class="loader"></div>
+        <h3 id="loading-text">AI is processing...</h3>
+    </div>
+
+    <div id="output-section" style="display:none;">
+        <div class="card" style="border-top-color: #38a169;">
+            <h3 style="margin-top:0; color: #38a169;">✅ Document Ready</h3>
+            <div id="word-preview-container">
+                <div id="word-preview"></div>
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button id="dl-word-btn" class="btn btn-blue" onclick="exportToWord('main')" style="width:auto; margin-top:0;">💾 Download as MS Word</button>
+                </div>
+            </div>
+            
+            <div id="worksheet-preview-container" style="display:none;">
+                <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <button class="btn" style="background:#e2e8f0; color:var(--text-main); width:auto; padding:10px 15px;" onclick="toggleAnswerKey()">👁️ Toggle Answer Key</button>
+                        <button class="btn btn-blue" style="width:auto; margin-top:0; padding:10px 15px;" onclick="exportToWord('worksheet')">💾 Download as MS Word</button>
+                    </div>
+                </div>
+                <div id="worksheet-preview"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- ROUTING / SPA LOGIC ---
+    function showPage(pageId) {
+        // Hide all pages
+        document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+        
+        // Show target page
+        document.getElementById('page-' + pageId).classList.add('active');
+        
+        // Hide outputs on navigation change
+        document.getElementById('output-section').style.display = 'none';
+        document.getElementById('loading').style.display = 'none';
+        
+        // Toggle Global Settings Bar
+        const globalSettings = document.getElementById('global-settings-bar');
+        if (globalSettings) {
             globalSettings.style.display = (pageId === 'dashboard' || pageId === 'profile' || pageId === 'references') ? 'none' : 'block';
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadProfile(); updateTypes(); togglePPST();
-        });
-
-        function toggleTOSQty(cb) {
-            const qtyInput = cb.parentElement.querySelector('.format-qty');
-            if(qtyInput) qtyInput.style.display = cb.checked ? "inline-block" : "none";
+        
+        // Toggle Back Button visibility
+        const backBtn = document.getElementById('back-btn');
+        if (backBtn) {
+            backBtn.style.display = (pageId === 'dashboard') ? 'none' : 'inline-block';
         }
+    }
 
-        // --- PROFILE & SETTINGS ---
-        function saveProfile() {
-            const data = {
-                school: document.getElementById('prof-school')?.value, teacher: document.getElementById('prof-teacher')?.value,
-                teacherPos: document.getElementById('prof-teacher-pos')?.value, checker: document.getElementById('prof-checker')?.value,
-                checkerPos: document.getElementById('prof-checker-pos')?.value, approver: document.getElementById('prof-approver')?.value,
-                approverPos: document.getElementById('prof-approver-pos')?.value
-            };
-            localStorage.setItem('teachersync_profile_v1', JSON.stringify(data)); alert("Profile Saved!");
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProfile();
+        updateTypes(); // Initialize the Worksheet categories
+    });
 
-        function loadProfile() {
-            const data = JSON.parse(localStorage.getItem('teachersync_profile_v1'));
-            if(data) {
-                if(document.getElementById('prof-school')) document.getElementById('prof-school').value = data.school || '';
-                if(document.getElementById('prof-teacher')) document.getElementById('prof-teacher').value = data.teacher || '';
-                if(document.getElementById('prof-teacher-pos')) document.getElementById('prof-teacher-pos').value = data.teacherPos || '';
-                if(document.getElementById('prof-checker')) document.getElementById('prof-checker').value = data.checker || '';
-                if(document.getElementById('prof-checker-pos')) document.getElementById('prof-checker-pos').value = data.checkerPos || '';
-                if(document.getElementById('prof-approver')) document.getElementById('prof-approver').value = data.approver || '';
-                if(document.getElementById('prof-approver-pos')) document.getElementById('prof-approver-pos').value = data.approverPos || '';
-            }
-        }
+    function toggleTOSQty(cb) {
+        const qtyInput = cb.parentElement.querySelector('.format-qty');
+        if(qtyInput) qtyInput.style.display = cb.checked ? "inline-block" : "none";
+    }
 
-        function resetApiKey() { if(confirm("Remove API Key?")) { localStorage.removeItem("gamai_key"); alert("API Key Cleared."); } }
+    function togglePPST() {
+        const type = document.getElementById('doc-type')?.value;
+        const box = document.getElementById('ppst-box');
+        if(box) box.style.display = (type === "SDLP") ? "block" : "none";
+    }
 
-        async function fetchLiveModels(btn) {
-            let apiKey = localStorage.getItem("gamai_key");
-            if (!apiKey) { apiKey = prompt("Enter your Gemini API Key:"); if (apiKey) localStorage.setItem("gamai_key", apiKey.trim()); else return; }
-            const originalText = btn.innerHTML; btn.innerHTML = "⏳ Fetching..."; btn.style.pointerEvents = "none";
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-                const data = await response.json();
-                if (data.error) throw new Error(data.error.message);
-                const select = document.getElementById('ai-model');
-                if(select) { select.innerHTML = ''; data.models.forEach(m => { if (m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent") && !m.name.includes("embedding")) { const option = document.createElement('option'); option.value = m.name.replace('models/', ''); option.textContent = `${m.displayName} (${option.value})`; select.appendChild(option); } }); }
-                alert(`Success! Loaded models.`);
-            } catch (e) { alert("Error fetching models: " + e.message); } finally { btn.innerHTML = originalText; btn.style.pointerEvents = "auto"; }
-        }
-
-        // --- FILE UPLOAD (REFERENCE LIBRARY) ---
-        let uploadedContext = "";
-        async function handleFileUpload() {
-            const fileInput = document.getElementById('file-upload'); const files = fileInput.files; const statusDiv = document.getElementById('file-status');
-            if (files.length === 0) return;
-            statusDiv.innerHTML = "⏳ Reading files... please wait."; statusDiv.style.color = "var(--accent-orange)";
-            uploadedContext = "";
-            try {
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i]; const ext = file.name.split('.').pop().toLowerCase(); let extractedText = "";
-                    if (ext === 'txt') { extractedText = await new Promise((resolve) => { const reader = new FileReader(); reader.onload = (e) => resolve(e.target.result); reader.readAsText(file); }); } 
-                    else if (ext === 'docx') { const arrayBuffer = await file.arrayBuffer(); const result = await mammoth.extractRawText({arrayBuffer: arrayBuffer}); extractedText = result.value; } 
-                    else if (ext === 'pdf') { const arrayBuffer = await file.arrayBuffer(); const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise; for (let j = 1; j <= pdf.numPages; j++) { const page = await pdf.getPage(j); const content = await page.getTextContent(); extractedText += content.items.map(item => item.str).join(' ') + '\n'; } }
-                    uploadedContext += `\n--- Context from: ${file.name} ---\n${extractedText}\n`;
-                }
-                statusDiv.innerHTML = `✅ <b>${files.length} file(s)</b> loaded successfully!`; statusDiv.style.color = "green";
-            } catch (err) { statusDiv.innerHTML = "❌ Error reading files."; statusDiv.style.color = "red"; console.error(err); }
-        }
-
-        // --- GEMINI AI GENERATION ---
-        let globalPptxData = null;
-
-        function togglePPST() { const type = document.getElementById('doc-type')?.value; const box = document.getElementById('ppst-box'); if(box) box.style.display = (type === "SDLP") ? "block" : "none"; }
-
-        function addTOSRow() {
-            const container = document.getElementById('tos-competencies-container'); const row = document.createElement('div'); row.className = 'tos-row'; row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
-            row.innerHTML = `<input type="text" class="tos-comp-title" placeholder="Content title..." style="flex:2; margin-bottom:0;"><input type="text" class="tos-comp-desc" placeholder="Learning competency..." style="flex:3; margin-bottom:0;"><input type="text" class="tos-comp-code" placeholder="Code" style="flex:1; margin-bottom:0;"><input type="number" class="tos-comp-days" placeholder="Days" style="flex:1; margin-bottom:0;" value="1"><button class="btn" style="width:45px; padding:10px; margin:0; background:#e53e3e;" onclick="this.parentElement.remove()">-</button>`;
-            container.appendChild(row);
-        }
-
-        async function generateAI(mode) {
-            const subject = document.getElementById('global-subject')?.value.trim();
-            if (!subject && mode !== 'presentation') { alert("Please enter a Subject/Learning Area at the top."); return; }
-            let apiKey = localStorage.getItem("gamai_key"); if (!apiKey) { apiKey = prompt("Enter your Gemini API Key:"); if (apiKey) localStorage.setItem("gamai_key", apiKey.trim()); else return; }
-
-            document.getElementById('loading').style.display = "block"; document.getElementById('output-section').style.display = "none";
-            document.getElementById('word-preview-container').style.display = "block"; document.getElementById('worksheet-preview-container').style.display = "none";
-            document.getElementById('dl-word-btn').style.display = (mode === 'presentation') ? "none" : "inline-block"; document.getElementById('dl-ppt-btn').style.display = (mode === 'presentation') ? "inline-block" : "none";
-
-            const gradeSelect = document.getElementById('global-grade'); const gradeText = gradeSelect?.options[gradeSelect.selectedIndex].text; 
-            const term = document.getElementById('global-term')?.value; const teacher = document.getElementById('prof-teacher')?.value || "[Teacher Name]";
-            const selectedModel = document.getElementById('ai-model')?.value || 'gemini-1.5-flash'; let promptText = "";
-
-            if (mode === 'lesson') {
-                document.getElementById('loading-text').innerText = "AI is writing ILAW Lesson Plan...";
-                const comp = document.getElementById('comp-input').value.trim() || "[Insert Learning Competency/Standards]";
-                const obj = document.getElementById('obj-input').value.trim() || "[Insert Learning Objectives]";
-                const context = document.getElementById('context-input').value.trim() || "[Insert Learner Context]";
-                const docType = document.getElementById('doc-type').value; const timeMins = document.getElementById('time-allotment').value; const pos = document.getElementById('position').value;
-
-                let flowTableHTML = ""; 
-                if (docType === "SDLP") {
-                    flowTableHTML = `<table border="1" style="width:100%; border-collapse: collapse; margin-top:5px; margin-bottom:5px;"><tr><th style="padding: 6px; background:#e2e8f0; width:20%;">Time Allotment (Total: ${timeMins} Mins)</th><th style="padding: 6px; background:#e2e8f0; width:50%;">Teacher & Learner Activity (Integrate LDPs)</th><th style="padding: 6px; background:#e2e8f0; width:30%;">PPST Annotations (${pos})</th></tr><tr><td style="padding: 6px;">[e.g., Activity - X mins]</td><td style="padding: 6px;">[Detail activity]</td><td style="padding: 6px;">[PPST explanation]</td></tr></table>`;
-                } else {
-                    flowTableHTML = `<table border="1" style="width:100%; border-collapse: collapse; margin-top:5px; margin-bottom:5px;"><tr><th style="padding: 6px; background:#e2e8f0; width:25%;">Day 1</th><th style="padding: 6px; background:#e2e8f0; width:25%;">Day 2</th><th style="padding: 6px; background:#e2e8f0; width:25%;">Day 3</th><th style="padding: 6px; background:#e2e8f0; width:25%;">Day 4</th></tr><tr><td style="vertical-align:top; padding:6px;">[Flow Day 1]</td><td style="vertical-align:top; padding:6px;">[Flow Day 2]</td><td style="vertical-align:top; padding:6px;">[Flow Day 3]</td><td style="vertical-align:top; padding:6px;">[Flow Day 4]</td></tr></table>`;
-                }
-
-                let objHTML = docType === "SDLP" ? `${obj}` : `<table border="1" style="width:100%; border-collapse: collapse; border-style: hidden;"><tr><th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:1px solid black; border-bottom:1px solid black;">Day 1</th><th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:1px solid black; border-bottom:1px solid black;">Day 2</th><th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:1px solid black; border-bottom:1px solid black;">Day 3</th><th style="padding:6px; background:#e2e8f0; width:25%; border-top:none; border-left:none; border-right:none; border-bottom:1px solid black;">Day 4</th></tr><tr><td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:1px solid black; border-bottom:none;">[Obj Day 1]</td><td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:1px solid black; border-bottom:none;">[Obj Day 2]</td><td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:1px solid black; border-bottom:none;">[Obj Day 3]</td><td style="padding:6px; vertical-align:top; border-top:none; border-left:none; border-right:none; border-bottom:none;">[Obj Day 4]</td></tr></table>`;
-
-                promptText = `Act as an expert Teacher. Generate a detailed Lesson Plan for ${subject}, ${gradeText}. 
-                
-                CRITICAL INSTRUCTION: You MUST strictly follow the ILAW Framework as the core structure of the learning procedure:
-                I - Intentions
-                L - Learning Experience
-                A - Assessment
-                W - Ways Forward
-                
-                Competency: ${comp}. 
-                Objectives: ${obj}. 
-                Learner Context: ${context}. 
-                Format: ${docType}. 
-                Time Allotment: ${timeMins} mins. 
-                PPST Position: ${pos}. 
-                
-                CRITICAL: YOU MUST RETURN THE FOLLOWING HTML EXACTLY AS FORMATTED BELOW, ONLY FILLING IN THE BRACKETED [ ] AREAS WITH YOUR GENERATED CONTENT. DO NOT OMIT THE DESCRIPTIONS/GUIDES IN ITALICS.
-                
-                <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-                    <tr><td colspan="4" style="font-weight:bold; background:#f2f2f2; padding:6px; text-align:center;">LESSON PLAN</td></tr>
-                    <tr><td style="font-weight:bold; width:25%; background:#f2f2f2; padding:6px;">Lesson Title</td><td style="width:25%; padding:6px;">[Title]</td><td style="font-weight:bold; width:25%; background:#f2f2f2; padding:6px;">Learning Area/s</td><td style="width:25%; padding:6px;">${subject}</td></tr>
-                    <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Name of Teacher/s</td><td style="padding:6px;">${teacher}</td><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Grade Level and Section</td><td style="padding:6px;">${gradeText}</td></tr>
-                    <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">No. of Sessions / Time</td><td style="padding:6px;">${docType === 'SDLP' ? timeMins + ' Mins' : '4 Days'}</td><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Term</td><td style="padding:6px;">${term}</td></tr>
-                    <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">References</td><td colspan="3" style="padding:6px;">[List references]</td></tr>
-                    <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Declaration of AI use</td><td colspan="3" style="padding:6px;">AI was utilized to draft the structured flow and pedagogical strategies of this lesson plan in alignment with DO 3 s.2026 Annex A. All AI-generated content was reviewed and modified by the educator.</td></tr>
-                </table>
-
-                <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-                    <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">Intentions</th></tr>
-                    <tr><td colspan="2" style="padding:8px; font-style:italic; font-size:0.9em; background:#f0f4f8;">Meaningful learning experiences are anchored in how we frame them. Start by deciding what you want learners to master by the end of the lesson – keep it clear and simple. Remember: Understanding your learners’ evolving context and designing around it ensure that your lessons connect with and are relevant to them.</td></tr>
-                    <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Learning Competency and Curriculum Standards<br><span style="font-weight:normal; font-size:0.8em; font-style:italic;">Write the competency/ies from the curriculum that we are targeting, and the content or performance standards applicable to the sessions.</span></td><td style="padding:6px;">[Competency details]</td></tr>
-                    <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Objectives<br><span style="font-weight:normal; font-size:0.8em; font-style:italic;">Write the smaller knowledge, skills, or tasks from the competency that the learners will work on and be able to show by the end of the sessions.</span></td><td style="padding:0;">${objHTML}</td></tr>
-                    <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learner Context<br><span style="font-weight:normal; font-size:0.8em; font-style:italic;">Write your observations of your learners, and how they have been performing or responding to learning experiences recently. Include strengths, interests, and possible barriers to learning.</span></td><td style="padding:6px;">[Context details]</td></tr>
-                </table>
-
-                <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-                    <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">Learning Experience</th></tr>
-                    <tr><td colspan="2" style="padding:8px; font-style:italic; font-size:0.9em; background:#f0f4f8;">A learning experience is like a thoughtfully designed journey. Each activity and interaction builds towards meaningful understanding and growth. Identify activities and interactions to help learners gain knowledge, skills, or understanding in a purposeful way.</td></tr>
-                    <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Pre-Lesson<br><span style="font-weight:normal; font-size:0.8em; font-style:italic;">Describe how you will help the learners get ready for the lesson.</span></td><td style="padding:6px;">[Pre-Lesson details]</td></tr>
-                    <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px; vertical-align:middle;">Flow<br><span style="font-weight:normal; font-size:0.8em; font-style:italic;">Describe the activities that you can implement in 1 or more sessions to meet the learning objectives. Apply the Learning Design Principles.</span></td><td style="padding:0;">${flowTableHTML}</td></tr>
-                    <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Resources<br><span style="font-weight:normal; font-size:0.8em; font-style:italic;">List down the learning resources that will help you reach your objectives. Ensure that they are available and inclusive. Include options and alternatives in case of emergencies.</span></td><td style="padding:6px;">[List resources]</td></tr>
-                    <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Opportunities for integration<br><span style="font-weight:normal; font-size:0.8em; font-style:italic;">Write down any possibilities to meaningfully another learning area, special topic, or technology. Write N/A if none.</span></td><td style="padding:6px;">[List integrations]</td></tr>
-                </table>
-
-                <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-                    <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">Assessment</th></tr>
-                    <tr><td colspan="2" style="padding:8px; font-style:italic; font-size:0.9em; background:#f0f4f8;">Assessments reveal what learners have gained and what they still need help with. These are helpful in providing you with information to guide your future instruction throughout the entire session.</td></tr>
-                    <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Formative Assessment<br><span style="font-weight:normal; font-size:0.8em; font-style:italic;">Create a task, activity or questions to evaluate learning and provide feedback every now and then. Include ways for learners to ask for guidance or support throughout each session. Remember to provide appropriate accommodations so all learners can demonstrate their understanding...</span></td><td style="padding:6px;">[Assessment details]</td></tr>
-                </table>
-
-                <table border="1" style="width:100%; border-collapse: collapse;">
-                    <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">Ways Forward</th></tr>
-                    <tr><td colspan="2" style="padding:8px; font-style:italic; font-size:0.9em; background:#f0f4f8;">Meaningful learning can also happen beyond the classroom – for both the learners and the teacher. Pause and reflect on what happened today.</td></tr>
-                    <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Extended learning opportunities<br><span style="font-weight:normal; font-size:0.8em; font-style:italic;">Suggest other learning experiences outside the classroom/class hours that learners may want to access to reinforce what they have learned, to spark their curiosities further, or that may provide them support in their areas of difficulty.</span></td><td style="padding:6px;">[Extended learning details]</td></tr>
-                    <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Reflections<br><span style="font-weight:normal; font-size:0.8em; font-style:italic;">Think about what you need to change for the next session based on what happened today. Is there something the learners are interested in exploring? Are there some things you would like to share with your co-teachers, parents, or school leaders about your classroom experience? What would you like your instructional coach to help you with?</span></td><td style="padding:6px;">[Leave blank for teacher]</td></tr>
-                </table>
-                
-                Context reference: ${uploadedContext}`;
-
-            } else if (mode === 'presentation') {
-                document.getElementById('loading-text').innerText = "AI is structuring PowerPoint Slides...";
-                const slides = document.getElementById('slide-count').value; const content = document.getElementById('slide-content').value;
-                promptText = `Act as an expert Presentation Designer. Based on topic: "${content}" and context: ${uploadedContext}, generate a ${slides}-slide PowerPoint outline. OUTPUt ONLY a valid JSON Array: [ {"slide": 1, "title": "Main Title", "bullets": ["Subtitle"], "imageKeyword": "education"} ]. Generate exactly ${slides} slides.`;
-                
-            } else if (mode === 'tos') {
-                document.getElementById('loading-text').innerText = "AI is calculating TOS & Quiz...";
-                const e = document.getElementById('perc-easy').value; const a = document.getElementById('perc-avg').value; const d = document.getElementById('perc-diff').value;
-                
-                const formatCheckboxes = document.querySelectorAll('.quiz-format:checked'); let selectedFormats = []; let totalCalculatedItems = 0;
-                formatCheckboxes.forEach(cb => {
-                    const qty = parseInt(cb.parentElement.querySelector('.format-qty').value) || 0;
-                    selectedFormats.push(`${cb.value} (${qty} items)`);
-                    totalCalculatedItems += qty;
-                });
-                let formatsString = selectedFormats.join(", ") || "Multiple Choice (10 items)";
-                
-                const tosRows = document.querySelectorAll('.tos-row'); let tosDataList = []; let totalDays = 0;
-                tosRows.forEach((row, index) => { const title = row.querySelector('.tos-comp-title').value; const desc = row.querySelector('.tos-comp-desc').value; const code = row.querySelector('.tos-comp-code').value; const days = parseInt(row.querySelector('.tos-comp-days').value) || 0; if(desc || title) { tosDataList.push(`${index+1}. Title: ${title} | Comp: ${desc} (Code: ${code}) - ${days} Days`); totalDays += days; } });
-                
-                promptText = `Act as a strict DepEd Philippines Assessment Expert. Generate a Table of Specification (TOS) and a ${totalCalculatedItems}-item assessment for ${subject}, ${gradeText}.
-                Competencies: ${tosDataList.join("\n")}
-                Total Days Taught: ${totalDays}
-
-                Instructions for TOS Table:
-                1. Include EXACTLY these columns in this EXACT order: Content Title, Competency, LC Code, No. of Days Taught, Percentage (%), No. of Items, Item Placement (Remembering, Understanding, Applying, Analyzing, Evaluating, Creating).
-                2. Percentage (%): (Days Taught / Total Days) * 100. Output strictly as a WHOLE NUMBER.
-                3. No. of Items: (Percentage / 100) * ${totalCalculatedItems}. Ensure total sum equals ${totalCalculatedItems}.
-                4. Item Placement: Distribute exact item numbers across the Cognitive Spread (${e}% Easy, ${a}% Average, ${d}% Difficult) under the correct Cognitive Domains. Provide SPECIFIC ITEM NUMBERS (e.g., "1-3", "4", "5-7").
-
-                Instructions for Assessment:
-                1. Format questions plainly. Provide test questions matching exactly the ${totalCalculatedItems} items.
-                2. Formats to use and item counts: ${formatsString}.
-                3. Include Answer Key.
-                
-                Output valid HTML tables (border-collapse: collapse). NO markdown asterisks.`;
-            
-            } else if (mode === 'analysis') {
-                document.getElementById('loading-text').innerText = "AI is computing Master Level...";
-                const totalLearners = document.getElementById('total-learners').value; const itemData = document.getElementById('item-analysis-data').value;
-                if (!totalLearners || !itemData) { alert("Enter Learners and Data"); document.getElementById('loading').style.display = "none"; return; }
-                promptText = `Act as an expert DepEd Master Teacher and Assessment Coordinator. Generate a complete Item Analysis and Remediation Report.
-                Total Learners: ${totalLearners}
-                Data: ${itemData}
-
-                Instructions:
-                1. Calculate MPL per item: (Correct Responses / Total Learners) * 100.
-                2. Output an HTML table with EXACT columns: Item No., Competency, No. of Correct Responses, MPL %, Descriptive Equivalence.
-                3. Below the table, explicitly create an HTML <h3> tag titled "Most Learned Competencies" and list them.
-                4. Explicitly create an HTML <h3> tag titled "Least Learned Competencies" and list them.
-                5. Explicitly create an HTML <h3> tag titled "Suggested Interventions/Remediation" and provide actionable DepEd-compliant strategies for the least learned competencies.
-                
-                Output clean HTML. NO markdown asterisks.`;
-            }
-
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`, {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }], generationConfig: { temperature: 0.1, maxOutputTokens: 8192 } })
-                });
-                const resData = await response.json(); if (resData.error) throw new Error(resData.error.message);
-                let aiResponse = resData.candidates[0].content.parts[0].text;
-                
-                if (mode === 'presentation') {
-                    aiResponse = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim(); globalPptxData = JSON.parse(aiResponse);
-                    let previewHtml = `<h2>${subject || 'Presentation'} - Outline</h2><div style="display:flex; flex-wrap:wrap; gap:20px;">`;
-                    globalPptxData.forEach(s => { previewHtml += `<div style="border:1px solid #ccc; padding:15px; border-radius:8px; width:45%; background:#f9f9f9;"><h4 style="margin-top:0; color:var(--primary-blue);">Slide ${s.slide}: ${s.title}</h4><ul>${s.bullets.map(b => `<li style="font-size:0.9rem;">${b}</li>`).join('')}</ul><div style="font-size:0.75rem; color:#666;">🖼️ Keyword: ${s.imageKeyword}</div></div>`; });
-                    previewHtml += `</div>`; document.getElementById('word-preview').innerHTML = previewHtml;
-                } else {
-                    aiResponse = aiResponse.replace(/```html/g, '').replace(/```/g, '').trim();
-                    aiResponse = aiResponse.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>');
-                    aiResponse = aiResponse.replace(/(?:\r\n|\r|\n)\s*\*\s+(.*)/g, '<br>&bull; $1');
-                    aiResponse = aiResponse.replace(/>([^<]+)</g, function(match, textInsideTags) { if (textInsideTags.trim().length > 0) { return '>' + textInsideTags.replace(/\n/g, '<br>') + '<'; } return match; });
-                    document.getElementById('word-preview').innerHTML = aiResponse;
-                }
-
-                document.getElementById('output-section').style.display = "block"; document.getElementById('output-section').scrollIntoView({behavior: 'smooth'});
-            } catch (e) { alert("Generation Failed: " + e.message); } finally { document.getElementById('loading').style.display = "none"; }
-        }
-
-        function exportToPPT() { /* Same PPT logic */ }
-        function exportToWord(target) { /* Same Word Logic */
-            let contentDiv = target === 'worksheet' ? 'worksheet-preview' : 'word-preview';
-            let isLandscape = (document.getElementById('page-lesson').classList.contains('active') && document.getElementById('doc-type')?.value === 'DLL');
-            const p = JSON.parse(localStorage.getItem('teachersync_profile_v1')) || {}; const content = document.getElementById(contentDiv).innerHTML;
-            const docHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'><style>@page { size: 8.5in 13in; margin: 0.5in; mso-page-orientation: ${isLandscape ? 'landscape' : 'portrait'}; } body { font-family: "Times New Roman", serif; font-size: 11pt; } table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; } th, td { border: 1px solid black; padding: 8px; vertical-align: top; } .sign-table { width: 100%; border: none; margin-top: 40px; } .sign-table td { border: none; padding: 10px; text-align: left; }</style></head><body><div style="text-align: center; font-weight: bold; margin-bottom: 25px; line-height: 1.2;">Republic of the Philippines<br>Department of Education<br>${p.school ? p.school.toUpperCase() : 'NAME OF SCHOOL'}</div>${content}<table class="sign-table"><tr><td style="width: 33%;">Prepared by:<br><br><br><b><u>${p.teacher ? p.teacher.toUpperCase() : 'TEACHER NAME'}</u></b><br>${p.teacherPos || ''}</td><td style="width: 33%;">Checked by:<br><br><br><b><u>${p.checker ? p.checker.toUpperCase() : 'CHECKER NAME'}</u></b><br>${p.checkerPos || ''}</td><td style="width: 33%;">Approved by:<br><br><br><b><u>${p.approver ? p.approver.toUpperCase() : 'PRINCIPAL NAME'}</u></b><br>${p.approverPos || ''}</td></tr></table></body></html>`;
-            const blob = new Blob(['\ufeff', docHtml], { type: 'application/msword' }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = `TeacherSync_Doc.doc`; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        }
-
-        // --- NON-AI WORKSHEET GENERATOR LOGIC ---
-        const worksheetTypes = {
-            wordgames: [ { id: 'wg_crossword', name: '1. Crossword Puzzle' }, { id: 'wg_search', name: '2. Word Search' }, { id: 'wg_scramble', name: '3. Word Scramble' }, { id: 'wg_matching', name: '4. Word Matching' } ],
-            math: [ { id: 'math_arithmetic', name: '5. Basic Arithmetic' }, { id: 'math_missing', name: '6. Missing Number' }, { id: 'math_sequence', name: '7. Number Sequence' } ],
-            language: [ { id: 'lang_missing', name: '8. Missing Letters' }, { id: 'lang_sentence', name: '9. Sentence Correction' } ],
-            science: [ { id: 'sci_match', name: '10. Term Definition Matching' } ],
-            logic: [ { id: 'logic_odd', name: '11. Odd One Out' }, { id: 'logic_tf', name: '12. True or False' } ]
+    // --- PROFILE & SETTINGS ---
+    function saveProfile() {
+        const data = {
+            school: document.getElementById('prof-school')?.value,
+            teacher: document.getElementById('prof-teacher')?.value,
+            teacherPos: document.getElementById('prof-teacher-pos')?.value,
+            checker: document.getElementById('prof-checker')?.value,
+            checkerPos: document.getElementById('prof-checker-pos')?.value,
+            approver: document.getElementById('prof-approver')?.value,
+            approverPos: document.getElementById('prof-approver-pos')?.value
         };
+        localStorage.setItem('teachersync_profile_v1', JSON.stringify(data));
+        alert("Profile Saved!");
+    }
 
-        const defWords = ["PHOTOSYNTHESIS", "REVOLUTION", "ENVIRONMENT", "GOVERNMENT", "TECHNOLOGY", "AGRICULTURE", "DEMOCRACY", "GRAVITY", "FRICTION", "MOMENTUM"];
-        const defClues = ["Process by which plants make food.", "A forcible overthrow of a government.", "The surroundings or conditions in which a person, animal, or plant lives.", "The governing body of a nation.", "Application of scientific knowledge for practical purposes.", "The science or practice of farming.", "A system of government by the whole population.", "The force that attracts a body toward the center of the earth.", "The resistance that one surface or object encounters when moving over another.", "The quantity of motion of a moving body."];
-        const defTF = [ { q: "The earth is flat.", a: "False" }, { q: "Water boils at 100 degrees Celsius.", a: "True" }, { q: "Plants need sunlight to grow.", a: "True" }, { q: "Ice is a liquid.", a: "False" } ];
-        const defOddOut = [ { set: ["Apple", "Banana", "Cherry", "Car"], ans: "Car" }, { set: ["Dog", "Cat", "Lion", "Table"], ans: "Table" }, { set: ["Red", "Blue", "Square", "Green"], ans: "Square" } ];
-        const defSentences = [ { bad: "She don't like apples.", good: "She doesn't like apples." }, { bad: "I seen him yesterday.", good: "I saw him yesterday." }, { bad: "There is many cars.", good: "There are many cars." } ];
-
-        function shuffle(array) { let curr = array.length, rand; while (curr != 0) { rand = Math.floor(Math.random() * curr); curr--; [array[curr], array[rand]] = [array[rand], array[curr]]; } return array; }
-        function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-
-        function updateTypes() {
-            const cat = document.getElementById('ws-category')?.value; const select = document.getElementById('ws-type');
-            if(!select || !cat) return; select.innerHTML = '';
-            worksheetTypes[cat].forEach(t => { let opt = document.createElement('option'); opt.value = t.id; opt.textContent = t.name; select.appendChild(opt); });
+    function loadProfile() {
+        const data = JSON.parse(localStorage.getItem('teachersync_profile_v1'));
+        if(data) {
+            if(document.getElementById('prof-school')) document.getElementById('prof-school').value = data.school || '';
+            if(document.getElementById('prof-teacher')) document.getElementById('prof-teacher').value = data.teacher || '';
+            if(document.getElementById('prof-teacher-pos')) document.getElementById('prof-teacher-pos').value = data.teacherPos || '';
+            if(document.getElementById('prof-checker')) document.getElementById('prof-checker').value = data.checker || '';
+            if(document.getElementById('prof-checker-pos')) document.getElementById('prof-checker-pos').value = data.checkerPos || '';
+            if(document.getElementById('prof-approver')) document.getElementById('prof-approver').value = data.approver || '';
+            if(document.getElementById('prof-approver-pos')) document.getElementById('prof-approver-pos').value = data.approverPos || '';
         }
+    }
 
-        function toggleAnswerKey() {
-            const el = document.getElementById('ws-answer-key'); if (el) el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
-            document.querySelectorAll('.cw-ans').forEach(ans => ans.style.display = (ans.style.display === 'none' || ans.style.display === '') ? 'inline' : 'none');
+    function resetApiKey() {
+        if(confirm("Remove API Key?")) {
+            localStorage.removeItem("gamai_key");
+            alert("API Key Cleared.");
         }
+    }
 
-        function parseCustomData() {
-            const raw = document.getElementById('puzzle-data')?.value.trim(); if(!raw) return null; let items = [];
-            raw.split('\n').forEach(line => {
-                const parts = line.split(/\||:/);
-                if (parts.length >= 2) items.push({ word: parts[0].trim().toUpperCase().replace(/[^A-Z]/g, ''), clue: parts[1].trim() });
-            });
-            return items.length > 0 ? items : null;
+    async function fetchLiveModels(btn) {
+        let apiKey = localStorage.getItem("gamai_key");
+        if (!apiKey) {
+            apiKey = prompt("Enter your Gemini API Key:");
+            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim());
+            else return;
         }
-
-        function buildCrossword(wordsClues) {
-            const size = 25; let grid = Array.from({length: size}, () => Array.from({length: size}, () => ({ char: '', num: 0 })));
-            let placedWords = []; let wordNum = 1; wordsClues.sort((a,b) => b.word.length - a.word.length);
+        
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "⏳ Fetching...";
+        btn.style.pointerEvents = "none";
+        
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+            const data = await response.json();
+            if (data.error) throw new Error(data.error.message);
             
-            for(let item of wordsClues) {
-                let word = item.word; let placed = false;
-                if (placedWords.length === 0) {
-                    let r = Math.floor(size/2); let c = Math.floor((size - word.length)/2);
-                    for(let i=0; i<word.length; i++) grid[r][c+i].char = word[i];
-                    grid[r][c].num = wordNum; placedWords.push({word, r, c, dir: 'A', num: wordNum, clue: item.clue}); wordNum++; continue;
-                }
-                
-                for (let pw of placedWords) {
-                    if (placed) break;
-                    for (let i = 0; i < pw.word.length; i++) {
-                        if (placed) break; let intersectChar = pw.word[i]; let matchIdx = word.indexOf(intersectChar);
-                        if (matchIdx !== -1) {
-                            let startR = pw.dir === 'A' ? pw.r - matchIdx : pw.r + i; let startC = pw.dir === 'A' ? pw.c + i : pw.c - matchIdx; let newDir = pw.dir === 'A' ? 'D' : 'A';
-                            if (startR < 0 || startC < 0 || startR + (newDir==='D'?word.length:0) >= size || startC + (newDir==='A'?word.length:0) >= size) continue;
-                            
-                            let collision = false;
-                            for(let j=0; j<word.length; j++) {
-                                let currR = startR + (newDir==='D'?j:0); let currC = startC + (newDir==='A'?j:0);
-                                if (currR === (pw.dir === 'A' ? pw.r : pw.r + i) && currC === (pw.dir === 'A' ? pw.c + i : pw.c)) { if (grid[currR][currC].char !== word[j]) { collision = true; break; } continue; }
-                                if (grid[currR][currC].char !== '') { collision = true; break; }
-                                if (newDir === 'A') { if (currR>0 && grid[currR-1][currC].char !== '') { collision = true; break; } if (currR<size-1 && grid[currR+1][currC].char !== '') { collision = true; break; } } 
-                                else { if (currC>0 && grid[currR][currC-1].char !== '') { collision = true; break; } if (currC<size-1 && grid[currR][currC+1].char !== '') { collision = true; break; } }
-                            }
-                            if (!collision) {
-                                if (newDir === 'A') { if (startC > 0 && grid[startR][startC-1].char !== '') collision = true; if (startC + word.length < size && grid[startR][startC+word.length].char !== '') collision = true; } 
-                                else { if (startR > 0 && grid[startR-1][startC].char !== '') collision = true; if (startR + word.length < size && grid[startR+word.length][startC].char !== '') collision = true; }
-                            }
-                            if (!collision) {
-                                let numAssigned = false; if(grid[startR][startC].num === 0) { grid[startR][startC].num = wordNum; numAssigned = true; }
-                                for(let j=0; j<word.length; j++) { grid[startR + (newDir==='D'?j:0)][startC + (newDir==='A'?j:0)].char = word[j]; }
-                                placedWords.push({word, r: startR, c: startC, dir: newDir, num: grid[startR][startC].num, clue: item.clue});
-                                if(numAssigned) wordNum++; placed = true;
-                            }
-                        }
+            const select = document.getElementById('ai-model');
+            if(select) {
+                select.innerHTML = '';
+                data.models.forEach(m => {
+                    if (m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent") && !m.name.includes("embedding")) {
+                        const option = document.createElement('option');
+                        option.value = m.name.replace('models/', '');
+                        option.textContent = `${m.displayName} (${option.value})`;
+                        select.appendChild(option);
                     }
-                }
+                });
             }
+            alert(`Success! Loaded models.`);
+        } catch (e) {
+            alert("Error fetching models: " + e.message);
+        } finally {
+            btn.innerHTML = originalText;
+            btn.style.pointerEvents = "auto";
+        }
+    }
+
+    // --- FILE UPLOAD (REFERENCE LIBRARY) ---
+    let uploadedContext = "";
+
+    async function handleFileUpload() {
+        const fileInput = document.getElementById('file-upload');
+        const files = fileInput.files;
+        const statusDiv = document.getElementById('file-status');
+        
+        if (files.length === 0) return;
+        
+        statusDiv.innerHTML = "⏳ Reading files... please wait.";
+        statusDiv.style.color = "var(--accent-orange)";
+        uploadedContext = "";
+        
+        try {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const ext = file.name.split('.').pop().toLowerCase();
+                let extractedText = "";
+                
+                if (ext === 'txt') {
+                    extractedText = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsText(file);
+                    });
+                } else if (ext === 'docx') {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const result = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
+                    extractedText = result.value;
+                } else if (ext === 'pdf') {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                    for (let j = 1; j <= pdf.numPages; j++) {
+                        const page = await pdf.getPage(j);
+                        const content = await page.getTextContent();
+                        extractedText += content.items.map(item => item.str).join(' ') + '\n';
+                    }
+                }
+                uploadedContext += `\n--- Context from: ${file.name} ---\n${extractedText}\n`;
+            }
+            statusDiv.innerHTML = `✅ <b>${files.length} file(s)</b> loaded successfully!`;
+            statusDiv.style.color = "green";
+        } catch (err) {
+            statusDiv.innerHTML = "❌ Error reading files.";
+            statusDiv.style.color = "red";
+            console.error(err);
+        }
+    }
+
+    // --- DYNAMIC ROWS FOR TOS & TEST MAKER ---
+    function addTOSRow() {
+        const container = document.getElementById('tos-competencies-container');
+        const row = document.createElement('div');
+        row.className = 'tos-row';
+        row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
+        row.innerHTML = `<input type="text" class="tos-comp-title" placeholder="Content title..." style="flex:2; margin-bottom:0;"><input type="text" class="tos-comp-desc" placeholder="Learning competency..." style="flex:3; margin-bottom:0;"><input type="text" class="tos-comp-code" placeholder="Code" style="flex:1; margin-bottom:0;"><input type="number" class="tos-comp-days" placeholder="Days" style="flex:1; margin-bottom:0;" value="1"><button class="btn" style="width:45px; padding:10px; margin:0; background:#e53e3e;" onclick="this.parentElement.remove()">-</button>`;
+        container.appendChild(row);
+    }
+    
+    function addTMRow() {
+        const container = document.getElementById('tm-competencies-container');
+        const row = document.createElement('div');
+        row.className = 'tm-row';
+        row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
+        row.innerHTML = `<input type="text" class="tm-comp-title" placeholder="Topic title..." style="flex:2; margin-bottom:0;"><input type="text" class="tm-comp-desc" placeholder="Details or Learning competency..." style="flex:3; margin-bottom:0;"><button class="btn" style="width:45px; padding:10px; margin:0; background:#e53e3e;" onclick="this.parentElement.remove()">-</button>`;
+        container.appendChild(row);
+    }
+
+    // --- GEMINI AI GENERATION ---
+    async function generateAI(mode) {
+        const subject = document.getElementById('global-subject')?.value.trim();
+        if (!subject && mode !== 'presentation') {
+            alert("Please enter a Subject/Learning Area at the top.");
+            return;
+        }
+
+        let apiKey = localStorage.getItem("gamai_key");
+        if (!apiKey) {
+            apiKey = prompt("Enter your Gemini API Key:");
+            if (apiKey) localStorage.setItem("gamai_key", apiKey.trim());
+            else return;
+        }
+
+        document.getElementById('loading').style.display = "block";
+        document.getElementById('output-section').style.display = "none";
+        document.getElementById('word-preview-container').style.display = "block";
+        document.getElementById('worksheet-preview-container').style.display = "none";
+
+        const gradeSelect = document.getElementById('global-grade');
+        const gradeText = gradeSelect?.options[gradeSelect.selectedIndex].text;
+        const term = document.getElementById('global-term')?.value;
+        const selectedModel = document.getElementById('ai-model')?.value || 'gemini-1.5-flash';
+        
+        let promptText = "";
+
+        if (mode === 'presentation') {
+            document.getElementById('loading-text').innerText = "AI is designing Creative ILAW Presentation...";
+            const slideCount = document.getElementById('slide-count').value || 10;
+            const slideContent = document.getElementById('slide-content').value || "[Provide Topic]";
+
+            promptText = `You are an expert instructional designer. Generate a creative, engaging Presentation Outline for approximately ${slideCount} slides based on the following:
+Subject: ${subject}
+Grade Level: ${gradeText}
+Topic/Content: ${slideContent}
+
+REQUIREMENTS:
+1. ILAW Framework Alignment: Structure the presentation sequence using the strict ILAW framework (Introduction, Let's Analyze, Abstraction, We Apply).
+2. HOTS Integration: Actively inject Higher-Order Thinking Skills (HOTS) questions into the slides to stimulate critical thinking and discussion.
+3. Creative & Engaging: Provide concise bullet points, interactive prompts, and specific visual design/image suggestions for each slide.
+4. Reliable Sources & References: Ensure all factual information generated is based on legitimate, accurate, and verifiable sources. 
+5. Final Reference Slide: The absolute final slide of the presentation MUST be titled "References" and list the credible sources, websites, or materials where the information was derived.
+
+OUTPUT FORMAT:
+Format the outline entirely in clean HTML. Do not use markdown \`\`\`html tags. 
+Use clear headings for each slide (e.g., <h3>Slide 1: Title</h3>). 
+Clearly highlight which ILAW Phase the slide belongs to, and prominently display any HOTS questions.`;
+
+        } else if (mode === 'tos') {
+            document.getElementById('loading-text').innerText = "AI is generating TOS, Test Items, and Answer Key...";
+            const easy = document.getElementById('perc-easy').value;
+            const avg = document.getElementById('perc-avg').value;
+            const diff = document.getElementById('perc-diff').value;
             
-            let minR=size, maxR=0, minC=size, maxC=0;
-            for(let r=0; r<size; r++) { for(let c=0; c<size; c++) { if (grid[r][c].char !== '') { if (r < minR) minR = r; if (r > maxR) maxR = r; if (c < minC) minC = c; if (c > maxC) maxC = c; } } }
-            let finalGrid = []; for(let r=minR; r<=maxR; r++) { finalGrid.push(grid[r].slice(minC, maxC+1)); }
-            return { grid: finalGrid, words: placedWords };
+            const formats = Array.from(document.querySelectorAll('.quiz-format:checked')).map(cb => {
+                const qty = cb.parentElement.querySelector('.format-qty').value;
+                return `${cb.value} (${qty} items)`;
+            }).join(', ');
+            
+            const compRows = Array.from(document.querySelectorAll('.tos-row')).map(row => {
+                return `Title: ${row.querySelector('.tos-comp-title').value}, Desc: ${row.querySelector('.tos-comp-desc').value}, Code: ${row.querySelector('.tos-comp-code').value}, Days Taught: ${row.querySelector('.tos-comp-days').value}`;
+            }).join('\n');
+
+            promptText = `You are a strict curriculum developer. Generate a comprehensive Assessment package based on the following:
+Subject: ${subject}
+Grade Level: ${gradeText}
+Term: ${term}
+Difficulty Distribution: ${easy}% Easy, ${avg}% Average, ${diff}% Difficult.
+Test Formats and Items: ${formats}
+Competencies Covered:
+${compRows}
+
+CRITICAL RULE FOR TEST FORMATS:
+If "HOTS Objective Questions" or "PISA-Aligned Objective" are included in the formats, these items MUST be strictly OBJECTIVE TYPES (e.g., Scenario-based multiple choice, complex true/false, analytical matching). DO NOT generate essay questions for these formats.
+
+YOU MUST PROVIDE ALL 3 SECTIONS BELOW, FORMATTED IN HTML:
+
+SECTION 1: TABLE OF SPECIFICATIONS (TOS)
+Strictly create an HTML table using the exact structure and headers below. Distribute the item placement numbers accurately based on the difficulty percentages and cognitive domains (Remembering, Understanding, Applying, Analyzing, Evaluating, Creating).
+
+<table border="1" style="width:100%; border-collapse: collapse; text-align: center;">
+    <thead>
+        <tr>
+            <th rowspan="3">Learning Competencies</th>
+            <th rowspan="3">No. of Days Taught</th>
+            <th rowspan="3">% of Total Items</th>
+            <th rowspan="3">No. of Items</th>
+            <th colspan="6">Item Placement</th>
+        </tr>
+        <tr>
+            <th colspan="2">Easy</th>
+            <th colspan="2">Average</th>
+            <th colspan="2">Difficult</th>
+        </tr>
+        <tr>
+            <th>Remembering</th>
+            <th>Understanding</th>
+            <th>Applying</th>
+            <th>Analyzing</th>
+            <th>Evaluating</th>
+            <th>Creating</th>
+        </tr>
+    </thead>
+    <tbody>
+        </tbody>
+</table>
+
+SECTION 2: TEST ITEMS
+Generate the actual test questions immediately after the TOS.
+Strictly adhere to the selected test formats and the exact number of items requested for each format: ${formats}. 
+Do not skip any items. Number them continuously. Provide clear instructions for each test section.
+
+SECTION 3: KEY TO CORRECTIONS
+Provide a complete, clearly formatted answer key for all generated test items at the very end of the document. Include the item number and the correct answer.
+
+Use standard HTML styling (<h2>, <h3>, <table>, <ol>, <li>). Do not wrap in markdown \`\`\`html tags.`;
+
+        } else if (mode === 'testmaker') {
+            document.getElementById('loading-text').innerText = "AI is generating Test Items and Answer Key...";
+            const easy = document.getElementById('tm-perc-easy').value;
+            const avg = document.getElementById('tm-perc-avg').value;
+            const diff = document.getElementById('tm-perc-diff').value;
+            
+            const formats = Array.from(document.querySelectorAll('.tm-quiz-format:checked')).map(cb => {
+                const qty = cb.parentElement.querySelector('.format-qty').value;
+                return `${cb.value} (${qty} items)`;
+            }).join(', ');
+            
+            const compRows = Array.from(document.querySelectorAll('.tm-row')).map(row => {
+                return `Topic: ${row.querySelector('.tm-comp-title').value}, Details: ${row.querySelector('.tm-comp-desc').value}`;
+            }).join('\n');
+
+            promptText = `You are a strict curriculum developer. Generate a comprehensive Test Questionnaire (WITHOUT a Table of Specifications) based on the following:
+Subject: ${subject}
+Grade Level: ${gradeText}
+Term: ${term}
+Difficulty Distribution: ${easy}% Easy, ${avg}% Average, ${diff}% Difficult.
+Test Formats and Items: ${formats}
+Topics/Competencies Covered:
+${compRows}
+
+CRITICAL RULE FOR TEST FORMATS:
+If "HOTS Objective Questions" or "PISA-Aligned Objective" are included in the formats, these items MUST be strictly OBJECTIVE TYPES (e.g., Scenario-based multiple choice, complex true/false, analytical matching). DO NOT generate essay questions for these formats.
+
+YOU MUST PROVIDE ALL 2 SECTIONS BELOW, FORMATTED IN HTML:
+
+SECTION 1: TEST ITEMS
+Generate the actual test questions.
+Strictly adhere to the selected test formats and the exact number of items requested for each format (${formats}). Do not skip any items. Number them continuously. Include clear instructions for each part. Make sure the difficulty aligns with the requested distribution.
+
+SECTION 2: KEY TO CORRECTIONS
+Provide a complete, clearly formatted answer key for all generated test items at the very end of the document.
+
+Use standard HTML styling (<h2>, <h3>, <ol>, <li>). Do not wrap in markdown \`\`\`html tags.`;
+
+        } else if (mode === 'analysis') {
+            document.getElementById('loading-text').innerText = "AI is generating Item Analysis Report...";
+            const totalLearners = document.getElementById('total-learners').value || 45;
+            const rawData = document.getElementById('item-analysis-data').value;
+
+            promptText = `You are an educational data analyst. Perform a detailed Item Analysis based on the following data.
+Subject: ${subject}
+Grade: ${gradeText}
+Total Number of Learners: ${totalLearners}
+Raw Item Data (Item # | Competency | Correct Responses):
+${rawData}
+
+YOU MUST PROVIDE ALL 4 SECTIONS BELOW, FORMATTED IN HTML:
+
+SECTION 1: ITEM ANALYSIS COMPUTATION
+Create a table showing: | Item No. | Competency | Correct Responses | Mean Percentage Score (MPS) / Mastery Level | Decision (Retain/Revise/Discard) |. Calculate the percentages accurately.
+
+SECTION 2: SUMMARY OF COMPETENCIES
+Provide a clear summary listing the "Most Learned Competencies" (those with high MPS) and the "Least Learned Competencies" (those with low MPS). Enumerate them clearly.
+
+SECTION 3: INTERPRETATION AS BASELINE DATA
+Provide a professional interpretation of this data. Explain what this means for the learners' mastery levels and how it serves as a baseline for future instruction.
+
+SECTION 4: PROPOSED INTERVENTIONS
+Provide a structured Remediation Plan / Proposed Interventions tailored specifically to address the Least Learned Competencies identified in Section 2. Suggest actionable strategies, activities, or alternative teaching methods.
+
+Format the output entirely in clean HTML. Do not wrap in markdown \`\`\`html tags.`;
+        } 
+        else {
+             promptText = "Generate content for " + mode;
         }
 
-        function generateRuleBasedWorksheet() {
-            document.getElementById('loading').style.display = 'block'; document.getElementById('output-section').style.display = 'none';
-            setTimeout(() => {
-                const type = document.getElementById('ws-type').value; const count = parseInt(document.getElementById('ws-count').value);
-                const title = document.getElementById('ws-type').options[document.getElementById('ws-type').selectedIndex].text;
-                const customData = parseCustomData(); let content = ""; let answers = ""; let inst = "";
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: (uploadedContext ? `Context Documents:\n${uploadedContext}\n\n` : "") + promptText }
+                        ]
+                    }],
+                    generationConfig: { temperature: 0.7 }
+                })
+            });
 
-                try {
-                    // MATH Logic
-                    if(type.startsWith('math_')) {
-                        content = "<ol>"; answers = "<ol>";
-                        for(let i=0; i<count; i++) {
-                            let q, a;
-                            if(type === 'math_arithmetic') { inst = "Solve the following arithmetic problems."; let ops = ['+', '-', 'x', '÷']; let op = ops[randInt(0,3)]; let n1 = randInt(1, 20); let n2 = randInt(1, 10); if(op === '÷') n1 = n1 * n2; if(op === '-' && n2 > n1) [n1, n2] = [n2, n1]; q = `${n1} ${op} ${n2} = _______`; a = op==='+' ? n1+n2 : op==='-' ? n1-n2 : op==='x' ? n1*n2 : n1/n2; } 
-                            else if (type === 'math_missing') { inst = "Find the missing number."; let n1 = randInt(5, 50); let n2 = randInt(5, 50); if (Math.random() > 0.5) { q = `____ + ${n2} = ${n1+n2}`; a = n1; } else { q = `${n1} + ____ = ${n1+n2}`; a = n2; } } 
-                            else if (type === 'math_sequence') { inst = "Complete the pattern."; let step = randInt(2, 6); let start = randInt(1, 10); let seq = [start, start+step, start+step*2, start+step*3, start+step*4]; let hideIdx = randInt(1,3); a = seq[hideIdx]; seq[hideIdx] = "_____"; q = seq.join(", "); } 
-                            content += `<li style="margin-bottom:10px;">${q}</li>`; answers += `<li>${a}</li>`;
-                        }
-                        content += "</ol>"; answers += "</ol>";
-                    } 
-                    // CROSSWORD Logic
-                    else if (type === 'wg_crossword') {
-                        inst = "Use the clues to fill in the words across and down.";
-                        let wordsToUse = customData || defWords.map((w,i)=>({word:w, clue:defClues[i]})).slice(0, Math.min(count, 15));
-                        let cw = buildCrossword(wordsToUse);
-                        
-                        let cwHtml = `<table style="border-collapse: collapse; margin: 0 auto; background: black;">`;
-                        for(let r=0; r<cw.grid.length; r++) {
-                            cwHtml += `<tr>`;
-                            for(let c=0; c<cw.grid[r].length; c++) {
-                                let cell = cw.grid[r][c];
-                                if(cell.char === '') { cwHtml += `<td class="cw-cell cw-empty"></td>`; } 
-                                else {
-                                    cwHtml += `<td class="cw-cell" style="background: white;"><span class="cw-num">${cell.num>0?cell.num:''}</span><span class="cw-ans" style="display:none; color: red;">${cell.char}</span></td>`;
-                                }
-                            }
-                            cwHtml += `</tr>`;
-                        }
-                        cwHtml += `</table>`;
-                        let across = cw.words.filter(w => w.dir === 'A').sort((a,b)=>a.num-b.num); let down = cw.words.filter(w => w.dir === 'D').sort((a,b)=>a.num-b.num);
-                        cwHtml += `<div style="display:flex; justify-content:space-around; margin-top:20px;"><div><b>Across</b><br>${across.map(w=>`${w.num}. ${w.clue}`).join('<br><br>')}</div><div style="margin-left: 20px;"><b>Down</b><br>${down.map(w=>`${w.num}. ${w.clue}`).join('<br><br>')}</div></div>`;
-                        content = cwHtml; answers = "<p>See red letters in the grid above. Toggle Answer Key to view.</p>";
-                    }
-                    // OTHER Logic (Logic, Language, Sciences)
-                    else {
-                        let itemsData = customData || defWords.map((w,i)=>({word:w, clue:defClues[i]}));
-                        if(type === 'lang_missing') {
-                            inst = "Fill in the missing letters."; content = "<ol>"; answers = "<ol>";
-                            itemsData.slice(0, count).forEach(w => { let mw = w.word.split('').map((c, i) => (i % 2 === 0 ? c : '_')).join(' '); content += `<li style="margin-bottom:10px;"><b>${mw}</b> &nbsp;&nbsp;&nbsp; <i>(${w.clue})</i></li>`; answers += `<li>${w.word}</li>`; });
-                        } else if(type === 'logic_tf') {
-                            inst = "Write TRUE if the statement is correct, FALSE if incorrect."; content = "<ol>"; answers = "<ol>";
-                            shuffle([...defTF]).slice(0, count).forEach(i => { content += `<li style="margin-bottom:10px;">__________ ${i.q}</li>`; answers += `<li>${i.a}</li>`; });
-                        } else if(type === 'logic_odd') {
-                            inst = "Encircle the odd one out in each group."; content = "<ol>"; answers = "<ol>";
-                            shuffle([...defOddOut]).slice(0, count).forEach(i => { content += `<li style="margin-bottom:10px;">${i.set.join(", ")}</li>`; answers += `<li>${i.ans}</li>`; });
-                        } else if(type === 'lang_sentence') {
-                            inst = "Correct the grammatical errors."; content = "<ol>"; answers = "<ol>";
-                            shuffle([...defSentences]).slice(0, count).forEach(i => { content += `<li style="margin-bottom:15px;">${i.bad}<br>______________________________________________________________</li>`; answers += `<li>${i.good}</li>`; });
-                        } else if(type === 'wg_scramble') {
-                            inst = "Unscramble the letters."; content = "<ol>"; answers = "<ol>";
-                            itemsData.slice(0, count).forEach(w => { let sc = shuffle(w.word.split('')).join(''); content += `<li style="margin-bottom:10px;"><b>${sc}</b> : _____________________ <br><i>${w.clue}</i></li>`; answers += `<li>${w.word}</li>`; });
-                        } else if (type === 'wg_search') {
-                            inst = "Find and encircle the hidden words.";
-                            let wordsToUse = itemsData.map(c=>c.word).slice(0, Math.min(count, 10)); let size = 12; let grid = Array(size).fill(null).map(() => Array(size).fill('.'));
-                            wordsToUse.forEach(word => {
-                                let placed = false; let attempts = 0;
-                                while(!placed && attempts < 100) {
-                                    let dir = Math.random() > 0.5 ? 1 : 0; let row = randInt(0, size - (dir===0 ? word.length : 1)); let col = randInt(0, size - (dir===1 ? word.length : 1)); let canPlace = true;
-                                    for(let i=0; i<word.length; i++) { if(grid[row + (dir===0 ? i : 0)][col + (dir===1 ? i : 0)] !== '.' && grid[row + (dir===0 ? i : 0)][col + (dir===1 ? i : 0)] !== word[i]) { canPlace = false; break; } }
-                                    if(canPlace) { for(let i=0; i<word.length; i++) { grid[row + (dir===0 ? i : 0)][col + (dir===1 ? i : 0)] = word[i]; } placed = true; } attempts++;
-                                }
-                            });
-                            let qHtml = "<div style='text-align:center;'><pre style='line-height:1.5; font-family:monospace; font-size:1.5rem; letter-spacing:8px;'>"; let aHtml = "<pre style='line-height:1.5; font-family:monospace; font-size:1.2rem; letter-spacing:4px;'>";
-                            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                            for(let r=0; r<size; r++) { let qRow = "", aRow = ""; for(let c=0; c<size; c++) { if(grid[r][c] === '.') { qRow += letters[randInt(0,25)]; aRow += "."; } else { qRow += grid[r][c]; aRow += grid[r][c]; } } qHtml += qRow + "\n"; aHtml += aRow + "\n"; }
-                            content = qHtml + "</pre></div><br><b>Words to Find:</b><br>" + wordsToUse.join(', '); answers = aHtml + "</pre>";
-                        } else if (type === 'wg_matching' || type === 'sci_match') {
-                            inst = "Match the items in Column A with the correct terms in Column B.";
-                            let pairs = customData ? customData.map(c=>[c.clue, c.word]) : (type === 'sci_match' ? shuffle([...defSciTerms]) : shuffle([...defClues.map((c,i)=>[c,defWords[i]])])).slice(0, count);
-                            let colA = pairs.map((p,i) => ({id:i, text:p[0]})); let colB = pairs.map((p,i) => ({id:i, text:p[1]})); colB = shuffle(colB);
-                            
-                            content = `<table style="width:100%; border-collapse:collapse;"><tr><td style="width:50%; vertical-align:top; padding:10px;"><b>Column A</b><br><br>`;
-                            colA.forEach((x,i) => content += `${i+1}. ${x.text}<br><br>`);
-                            content += `</td><td style="width:50%; vertical-align:top; padding:10px;"><b>Column B</b><br><br>`;
-                            colB.forEach((x,i) => content += `${String.fromCharCode(65+i)}. ${x.text}<br><br>`);
-                            content += `</td></tr></table><br><b>Answers:</b><br>`;
-                            for(let i=0; i<colA.length; i++) content += `${i+1}. _____ &nbsp;&nbsp;&nbsp;`;
-                            
-                            answers = "<ol>";
-                            colA.forEach((a, i) => { let matchIdx = colB.findIndex(b => b.id === a.id); answers += `<li>${i+1} -> ${String.fromCharCode(65+matchIdx)}</li>`; });
-                            answers += "</ol>";
-                        } else {
-                            content = "<p>Standard layout for this type is active.</p>"; answers = "<p>Answers provided where applicable.</p>";
-                        }
-                        if(content.startsWith("<ol>")) { content += "</ol>"; answers += "</ol>"; }
-                    }
+            const data = await response.json();
+            if (data.error) throw new Error(data.error.message);
+            
+            let htmlContent = data.candidates[0].content.parts[0].text;
+            htmlContent = htmlContent.replace(/```html/gi, '').replace(/```/g, '');
+            
+            document.getElementById('word-preview').innerHTML = htmlContent;
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('output-section').style.display = "block";
+            document.getElementById('output-section').scrollIntoView({behavior: 'smooth'});
 
-                    let html = `<div style="text-align: center; border-bottom: 2px solid black; padding-bottom: 15px; margin-bottom: 20px;"><h2 style="font-size: 1.5rem; font-weight: bold; margin: 0; text-transform: uppercase;">Worksheet Activity</h2><div style="font-size: 1.2rem; font-weight: bold; margin-top: 5px;">${title.substring(title.indexOf('.')+2)}</div><div style="display: flex; justify-content: space-between; margin-top: 15px; font-weight: bold; font-size: 1rem;"><span>Name: ________________________________</span><span>Score: _______</span></div></div><div style="margin-bottom: 20px;"><b>Instructions:</b> ${inst}</div><div style="font-size: 1.1rem; line-height: 1.8;">${content}</div><div id="ws-answer-key" class="answer-key-section"><h3 style="margin-top:0;">Answer Key</h3><div style="line-height: 1.5;">${answers}</div></div>`;
-
-                    document.getElementById('worksheet-preview').innerHTML = html; document.getElementById('loading').style.display = 'none'; document.getElementById('output-section').style.display = "block"; document.getElementById('worksheet-preview-container').style.display = "block"; document.getElementById('output-section').scrollIntoView({behavior: 'smooth'});
-
-                } catch(e) { alert("Error generating worksheet: " + e.message); document.getElementById('loading').style.display = 'none'; }
-            }, 500);
+        } catch (e) {
+            alert("Error: " + e.message);
+            document.getElementById('loading').style.display = 'none';
         }
-    </script>
+    }
+
+    // --- HTML TO WORD EXPORT ---
+    function exportToWord(target) {
+        let contentHtml = target === 'worksheet' 
+            ? document.getElementById('worksheet-preview').innerHTML 
+            : document.getElementById('word-preview').innerHTML;
+            
+        const profile = JSON.parse(localStorage.getItem('teachersync_profile_v1')) || {};
+        
+        let header = `<div style="text-align:center; font-family: 'Times New Roman', serif; margin-bottom: 20px;">
+            <h3 style="margin:0; text-transform: uppercase;">${profile.school || 'SCHOOL NAME'}</h3>
+            <p style="margin:0;">Department of Education</p>
+        </div>`;
+        
+        let footer = `<br><br><table style="width: 100%; text-align: center; font-family: 'Times New Roman', serif; margin-top: 40px; page-break-inside: avoid;">
+            <tr>
+                <td>Prepared by:<br><br><b>${profile.teacher || 'TEACHER NAME'}</b><br>${profile.teacherPos || 'Teacher Position'}</td>
+                <td>Checked by:<br><br><b>${profile.checker || 'CHECKER NAME'}</b><br>${profile.checkerPos || 'Checker Position'}</td>
+                <td>Approved by:<br><br><b>${profile.approver || 'APPROVER NAME'}</b><br>${profile.approverPos || 'Approver Position'}</td>
+            </tr>
+        </table>`;
+
+        const fullHtml = `
+            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+            <head><meta charset='utf-8'><title>Exported Document</title>
+            <style>
+                body { font-family: "Times New Roman", serif; font-size: 12pt; }
+                table { border-collapse: collapse; width: 100%; margin-bottom: 15px; }
+                table, th, td { border: 1px solid black; padding: 5px; }
+            </style>
+            </head><body>
+            ${header}
+            ${contentHtml}
+            ${footer}
+            </body></html>
+        `;
+
+        const blob = new Blob(['\ufeff', fullHtml], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `TeacherSync_Export_${new Date().getTime()}.doc`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // --- WORKSHEET UI TOGGLE ---
+    function toggleAnswerKey() {
+        const ak = document.getElementById('ws-answer-key');
+        if(ak) ak.style.display = (ak.style.display === 'none' || ak.style.display === '') ? 'block' : 'none';
+    }
+
+    // --- RULE-BASED WORKSHEET (FIXED & FULLY FUNCTIONAL) ---
+    function updateTypes() {
+        const cat = document.getElementById('ws-category').value;
+        const typeSelect = document.getElementById('ws-type');
+        typeSelect.innerHTML = '';
+        let options = [];
+        
+        if(cat === 'wordgames') {
+            options = [['matching', 'Matching Type'], ['jumbled', 'Jumbled Letters']];
+        } else if(cat === 'math') {
+            options = [['basic_math', 'Basic Math Operations']];
+        } else if(cat === 'language' || cat === 'science') {
+            options = [['identification', 'Identification']];
+        } else if(cat === 'logic') {
+            options = [['true_false', 'True or False']];
+        }
+        
+        options.forEach(opt => {
+            typeSelect.innerHTML += `<option value="${opt[0]}">${opt[1]}</option>`;
+        });
+    }
+
+    function generateRuleBasedWorksheet() {
+        const type = document.getElementById('ws-type').value;
+        const cat = document.getElementById('ws-category').value;
+        const rawData = document.getElementById('puzzle-data').value.trim();
+        const count = parseInt(document.getElementById('ws-count').value) || 10;
+
+        document.getElementById('loading').style.display = "block";
+        document.getElementById('output-section').style.display = "none";
+
+        setTimeout(() => {
+            let content = "";
+            let answers = "<ol>";
+            let inst = "";
+            let terms = [];
+            let clues = [];
+
+            // Default Fallbacks
+            let defaultTerms = ["Photosynthesis", "Gravity", "Friction", "Evaporation", "Condensation"];
+            let defaultClues = ["Process by which plants make food.", "Force that attracts a body to the earth's center.", "Resistance when one surface moves over another.", "Process of liquid turning into vapor.", "Conversion of vapor or gas to a liquid."];
+
+            // Parse User Input
+            if(rawData && cat !== 'math') {
+                const lines = rawData.split('\n');
+                lines.forEach(line => {
+                    const parts = line.split('|');
+                    if(parts.length >= 2) {
+                        terms.push(parts[0].trim());
+                        clues.push(parts[1].trim());
+                    }
+                });
+            } else if (cat !== 'math') {
+                terms = defaultTerms;
+                clues = defaultClues;
+            }
+
+            // Math Logic
+            if (cat === 'math') {
+                 inst = "Solve the following mathematical equations.";
+                 content = "<ol>";
+                 for(let i=0; i<count; i++) {
+                     let num1 = Math.floor(Math.random() * 50) + 1;
+                     let num2 = Math.floor(Math.random() * 50) + 1;
+                     let ops = ['+', '-', '*'];
+                     let op = ops[Math.floor(Math.random()*ops.length)];
+                     let ans = eval(`${num1} ${op} ${num2}`);
+                     content += `<li style="margin-bottom:15px;">${num1} ${op} ${num2} = ________</li>`;
+                     answers += `<li>${ans}</li>`;
+                 }
+                 content += "</ol>";
+                 answers += "</ol>";
+            } 
+            // Matching Logic
+            else if (type === 'matching') {
+                inst = "Match Column A with Column B. Write the letter of the correct answer on the blank.";
+                let shuffledTerms = [...terms].sort(() => Math.random() - 0.5);
+                let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+                content = "<table style='width:100%; border:none;'><tr><td style='width:60%; vertical-align:top;'><ol>";
+                clues.forEach(c => { content += `<li style="margin-bottom:10px;">____ ${c}</li>`; });
+                content += "</ol></td><td style='width:40%; vertical-align:top;'><ul style='list-style-type:none;'>";
+                shuffledTerms.forEach((t, i) => { content += `<li style="margin-bottom:10px;"><b>${letters[i]}.</b> ${t}</li>`; });
+                content += "</ul></td></tr></table>";
+                
+                clues.forEach((c, i) => {
+                    let correctTerm = terms[i];
+                    let correctLetterIndex = shuffledTerms.indexOf(correctTerm);
+                    answers += `<li>${letters[correctLetterIndex]}</li>`;
+                });
+                answers += "</ol>";
+            }
+            // Identification Logic
+            else if (type === 'identification') {
+                inst = "Identify the term being described in each item. Write your answer on the space provided.";
+                content = "<ol>";
+                clues.forEach((c, i) => {
+                    content += `<li style="margin-bottom:15px;">________________________ : ${c}</li>`;
+                    answers += `<li>${terms[i]}</li>`;
+                });
+                content += "</ol>";
+                answers += "</ol>";
+            }
+            // Jumbled Words Logic
+            else if (type === 'jumbled') {
+                inst = "Unscramble the letters to find the correct word matching the clue.";
+                content = "<ol>";
+                terms.forEach((t, i) => {
+                    let jumbled = t.split('').sort(() => Math.random() - 0.5).join('').toUpperCase();
+                    content += `<li style="margin-bottom:15px;"><b>${jumbled}</b> - ${clues[i]} <br> Answer: ________________________</li>`;
+                    answers += `<li>${t}</li>`;
+                });
+                content += "</ol>";
+                answers += "</ol>";
+            }
+            // True or False Logic
+            else if (type === 'true_false') {
+                inst = "Write TRUE if the statement is correct, and FALSE if it is wrong.";
+                content = "<ol>";
+                clues.forEach((c, i) => {
+                    let isTrue = Math.random() > 0.5;
+                    let statementTerm = isTrue ? terms[i] : terms[(i + 1) % terms.length];
+                    content += `<li style="margin-bottom:15px;">________ <b>${statementTerm}</b> is defined as: ${c}</li>`;
+                    answers += `<li>${isTrue ? 'TRUE' : 'FALSE'}</li>`;
+                });
+                content += "</ol>";
+                answers += "</ol>";
+            }
+
+            let title = document.getElementById('ws-type').options[document.getElementById('ws-type').selectedIndex].text;
+
+            let html = `
+                <div style="text-align: center; border-bottom: 2px solid black; padding-bottom: 15px; margin-bottom: 20px;">
+                    <h2 style="font-size: 1.5rem; font-weight: bold; margin: 0; text-transform: uppercase;">Worksheet Activity</h2>
+                    <div style="font-size: 1.2rem; font-weight: bold; margin-top: 5px;">${title}</div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 15px; font-weight: bold; font-size: 1rem;">
+                        <span>Name: ________________________________</span><span>Score: _______</span>
+                    </div>
+                </div>
+                <div style="margin-bottom: 20px;"><b>Instructions:</b> ${inst}</div>
+                <div style="font-size: 1.1rem; line-height: 1.8;">${content}</div>
+                <div id="ws-answer-key" class="answer-key-section" style="display:none;">
+                    <h3 style="margin-top:0;">Answer Key</h3>
+                    <div style="line-height: 1.5;">${answers}</div>
+                </div>
+            `;
+
+            document.getElementById('word-preview-container').style.display = "none";
+            document.getElementById('worksheet-preview-container').style.display = "block";
+            document.getElementById('worksheet-preview').innerHTML = html; 
+            document.getElementById('loading').style.display = 'none'; 
+            document.getElementById('output-section').style.display = "block"; 
+            document.getElementById('output-section').scrollIntoView({behavior: 'smooth'});
+
+        }, 500);
+    }
+</script>
 </body>
 </html>
