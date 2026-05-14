@@ -180,7 +180,7 @@
             <div onclick="showPage('worksheet')" class="card dash-card" style="border-top-color: #38a169;">
                 <div style="font-size: 3rem; margin-bottom: 15px;">🧩</div>
                 <h3 style="color: var(--primary-blue); margin: 0 0 10px 0;">Worksheet Generator</h3>
-                <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate Word Scrambles, Missing Letters & Cryptograms offline.</p>
+                <p style="color: #666; font-size: 0.85rem; margin: 0;">Generate Crosswords, Word Hunts, Word Scrambles & more offline.</p>
                 <div class="dash-badge badge-js">Pure JS (No API)</div>
             </div>
             <div onclick="showPage('lesson')" class="card dash-card" style="border-top-color: var(--accent-orange);">
@@ -722,6 +722,9 @@ Competency: ${comp}
 Objectives: ${obj}
 Learner Context: ${context}
 
+When generating the "Flow" activities, you MUST apply the 8 Learning Design Principles: 1. Clear Goals and Teaching, 2. Scaffolding, 3. Checks for Understanding, 4. Active Retrieval and Spacing, 5. Self-awareness and Metacognition, 6. Social Learning, 7. Values and Purpose Integration, 8. Inclusion. 
+Specifically, think about how to: make objectives clear, guide learners before independent tasks, check well-being/mastery, connect new concepts to past lessons, encourage collaboration, invite reflection on relevance, and ensure inclusion for varied abilities/styles.
+
 CRITICAL REQUIREMENT: You MUST use the following exact HTML structure and keep the italicized descriptions per part exactly as written below. Fill in the specific content for the lesson corresponding to each section. Do NOT use markdown \`\`\`html tags. Output ONLY the raw HTML.
 
 <div style="font-family: Arial, sans-serif;">
@@ -924,12 +927,14 @@ Do not use markdown wrappers.`;
 
     function toggleAnswerKey() { const ak = document.getElementById('ws-answer-key'); if(ak) ak.style.display = (ak.style.display === 'none' || ak.style.display === '') ? 'block' : 'none'; }
 
-    // --- RULE-BASED WORKSHEET (PUZZLES FIXED) ---
+    // --- RULE-BASED WORKSHEET (PUZZLES ADDED) ---
     function updateTypes() {
         const cat = document.getElementById('ws-category').value;
         const typeSelect = document.getElementById('ws-type');
         typeSelect.innerHTML = ''; let options = [];
-        if(cat === 'puzzles') { options = [['jumbled', 'Word Scramble'], ['missing_letters', 'Missing Letters'], ['cryptogram', 'Cryptogram (Number Cipher)'], ['matching', 'Matching Type']]; } 
+        if(cat === 'puzzles') { 
+            options = [['wordhunt', 'Word Hunt'], ['crossword', 'Crossword Puzzle'], ['jumbled', 'Word Scramble'], ['missing_letters', 'Missing Letters'], ['cryptogram', 'Cryptogram'], ['matching', 'Matching Type']]; 
+        } 
         else if(cat === 'math') { options = [['basic_math', 'Basic Math Operations']]; } 
         else if(cat === 'language') { options = [['identification', 'Identification'], ['true_false', 'True or False']]; }
         options.forEach(opt => { typeSelect.innerHTML += `<option value="${opt[0]}">${opt[1]}</option>`; });
@@ -945,99 +950,232 @@ Do not use markdown wrappers.`;
         document.getElementById('output-section').style.display = "none";
 
         setTimeout(() => {
-            let content = ""; let answers = "<ol>"; let inst = ""; let terms = []; let clues = [];
-            let defaultTerms = ["PHOTOSYNTHESIS", "GRAVITY", "FRICTION", "EVAPORATION", "CONDENSATION"];
-            let defaultClues = ["Process by which plants make food.", "Force that attracts a body to the earth's center.", "Resistance when one surface moves over another.", "Process of liquid turning into vapor.", "Conversion of vapor or gas to a liquid."];
+            try {
+                let content = ""; let answers = "<ol>"; let inst = ""; let terms = []; let clues = [];
+                let defaultTerms = ["PHOTOSYNTHESIS", "GRAVITY", "FRICTION", "EVAPORATION", "CONDENSATION"];
+                let defaultClues = ["Process by which plants make food.", "Force that attracts a body to the earth's center.", "Resistance when one surface moves over another.", "Process of liquid turning into vapor.", "Conversion of vapor or gas to a liquid."];
 
-            if(rawData && cat !== 'math') {
-                rawData.split('\n').forEach(line => {
-                    const parts = line.split('|');
-                    if(parts.length >= 2) { terms.push(parts[0].trim().toUpperCase()); clues.push(parts[1].trim()); }
-                });
-            } else if (cat !== 'math') { terms = defaultTerms; clues = defaultClues; }
+                if(rawData && cat !== 'math') {
+                    rawData.split('\n').forEach(line => {
+                        const parts = line.split('|');
+                        if(parts.length >= 2) { terms.push(parts[0].trim().toUpperCase()); clues.push(parts[1].trim()); }
+                    });
+                } else if (cat !== 'math') { terms = defaultTerms; clues = defaultClues; }
 
-            if (cat === 'math') {
-                 inst = "Solve the following mathematical equations."; content = "<ol>";
-                 for(let i=0; i<count; i++) {
-                     let num1 = Math.floor(Math.random() * 50) + 1; let num2 = Math.floor(Math.random() * 50) + 1;
-                     let ops = ['+', '-', '*']; let op = ops[Math.floor(Math.random()*ops.length)];
-                     let ans = eval(`${num1} ${op} ${num2}`);
-                     content += `<li style="margin-bottom:15px;">${num1} ${op} ${num2} = ________</li>`;
-                     answers += `<li>${ans}</li>`;
-                 }
-                 content += "</ol>"; answers += "</ol>";
-            } 
-            else if (type === 'missing_letters') {
-                inst = "Fill in the missing letters to complete the word based on the clue."; content = "<ol>";
-                terms.forEach((t, i) => {
-                    let missing = t.split('').map((char, index) => (char === ' ') ? ' ' : (index % 2 === 0 ? char : '_')).join(' ');
-                    content += `<li style="margin-bottom:20px;"><b>${missing}</b><br><span style="color:#555;">Clue: ${clues[i]}</span></li>`;
-                    answers += `<li>${t}</li>`;
-                });
-                content += "</ol>"; answers += "</ol>";
-            }
-            else if (type === 'cryptogram') {
-                inst = "Decode the numbers to reveal the words using the provided Cipher Key."; content = "<ol>";
-                let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
-                let numbers = Array.from({length: 26}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
-                let cipherMap = {}; alphabet.forEach((letter, i) => cipherMap[letter] = numbers[i]);
-                
-                let keyHtml = "<div style='background:#f4f7f9; padding:15px; text-align:center; margin-bottom:20px; border:1px solid #ddd; font-family:monospace;'><b>CIPHER KEY</b><br><br>";
-                alphabet.forEach((letter, i) => { keyHtml += `<b>${letter}</b>=${numbers[i]} &nbsp; `; if((i+1)%9===0) keyHtml+="<br><br>"; });
-                keyHtml += "</div>"; content += keyHtml;
+                if (cat === 'math') {
+                     inst = "Solve the following mathematical equations."; content = "<ol>";
+                     for(let i=0; i<count; i++) {
+                         let num1 = Math.floor(Math.random() * 50) + 1; let num2 = Math.floor(Math.random() * 50) + 1;
+                         let ops = ['+', '-', '*']; let op = ops[Math.floor(Math.random()*ops.length)];
+                         let ans = eval(`${num1} ${op} ${num2}`);
+                         content += `<li style="margin-bottom:15px;">${num1} ${op} ${num2} = ________</li>`;
+                         answers += `<li>${ans}</li>`;
+                     }
+                     content += "</ol>"; answers += "</ol>";
+                } 
+                else if (type === 'wordhunt') {
+                    inst = "Find and circle the hidden words in the grid. They can be horizontal or vertical.";
+                    let maxLen = Math.max(...terms.map(t => t.replace(/\s+/g, '').length));
+                    let size = Math.max(12, maxLen + 2);
+                    let grid = Array(size).fill(null).map(() => Array(size).fill(''));
+                    let placedWords = [];
+                    
+                    terms.forEach(wordRaw => {
+                        let word = wordRaw.replace(/\s+/g, '').toUpperCase();
+                        let placed = false; let attempts = 0;
+                        while (!placed && attempts < 100) {
+                            let dir = Math.random() > 0.5 ? 'H' : 'V';
+                            let row = Math.floor(Math.random() * size);
+                            let col = Math.floor(Math.random() * size);
+                            if (dir === 'H' && col + word.length <= size) {
+                                let canPlace = true;
+                                for (let i = 0; i < word.length; i++) if (grid[row][col + i] !== '' && grid[row][col + i] !== word[i]) { canPlace = false; break; }
+                                if (canPlace) { for (let i = 0; i < word.length; i++) grid[row][col + i] = word[i]; placedWords.push(word); placed = true; }
+                            } else if (dir === 'V' && row + word.length <= size) {
+                                let canPlace = true;
+                                for (let i = 0; i < word.length; i++) if (grid[row + i][col] !== '' && grid[row + i][col] !== word[i]) { canPlace = false; break; }
+                                if (canPlace) { for (let i = 0; i < word.length; i++) grid[row + i][col] = word[i]; placedWords.push(word); placed = true; }
+                            }
+                            attempts++;
+                        }
+                    });
+                    
+                    let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    let htmlGrid = "<table style='border-collapse:collapse; margin: 0 auto; margin-bottom:20px;'>";
+                    let ansGrid = "<table style='border-collapse:collapse; margin: 0 auto; margin-bottom:20px;'>";
+                    for (let r = 0; r < size; r++) {
+                        htmlGrid += "<tr>"; ansGrid += "<tr>";
+                        for (let c = 0; c < size; c++) {
+                            let isWordLetter = grid[r][c] !== '';
+                            let char = isWordLetter ? grid[r][c] : letters[Math.floor(Math.random() * letters.length)];
+                            htmlGrid += `<td style='width:30px;height:30px;border:1px solid #ccc;text-align:center;font-weight:bold;'>${char}</td>`;
+                            ansGrid += `<td style='width:30px;height:30px;border:1px solid #ccc;text-align:center;font-weight:bold;${isWordLetter?'background:yellow;':''}'>${char}</td>`;
+                        }
+                        htmlGrid += "</tr>"; ansGrid += "</tr>";
+                    }
+                    htmlGrid += "</table>"; ansGrid += "</table>";
+                    
+                    content = htmlGrid + "<div><b>Words to find:</b><ul>" + terms.map(t=>`<li>${t}</li>`).join('') + "</ul></div>";
+                    answers = ansGrid;
+                }
+                else if (type === 'crossword') {
+                    inst = "Complete the crossword puzzle by filling in the words that match the clues.";
+                    const grid_size = 15;
+                    let grid = Array(grid_size).fill(null).map(() => Array(grid_size).fill(''));
+                    let words = terms.map((t, i) => ({word: t.replace(/\s+/g, '').toUpperCase(), clue: clues[i]}));
+                    words.sort((a, b) => b.word.length - a.word.length);
+                    
+                    let placed = [];
+                    words.forEach((wObj, index) => {
+                        let word = wObj.word; let isPlaced = false;
+                        if (placed.length === 0) {
+                            let r = Math.floor(grid_size/2); let c = Math.floor((grid_size - word.length)/2);
+                            for(let i=0; i<word.length; i++) grid[r][c+i] = {char: word[i], num: i===0?index+1:null};
+                            placed.push({...wObj, r, c, dir:'H', num: index+1}); isPlaced = true;
+                        } else {
+                            for (let p of placed) {
+                                if (isPlaced) break;
+                                for (let i = 0; i < word.length; i++) {
+                                    if (isPlaced) break;
+                                    for (let j = 0; j < p.word.length; j++) {
+                                        if (word[i] === p.word[j]) {
+                                            let r, c, dir;
+                                            if (p.dir === 'H') { dir = 'V'; r = p.r - i; c = p.c + j; } else { dir = 'H'; r = p.r + j; c = p.c - i; }
+                                            if (r >= 0 && c >= 0 && (dir==='H' ? c+word.length <= grid_size : r+word.length <= grid_size)) {
+                                                let canPlace = true;
+                                                for(let k=0; k<word.length; k++) {
+                                                    let rr = dir==='H' ? r : r+k; let cc = dir==='H' ? c+k : c;
+                                                    if (grid[rr][cc] !== '' && grid[rr][cc].char !== word[k]) { canPlace = false; break; }
+                                                }
+                                                if(canPlace) {
+                                                    for(let k=0; k<word.length; k++) {
+                                                        let rr = dir==='H' ? r : r+k; let cc = dir==='H' ? c+k : c;
+                                                        grid[rr][cc] = {char: word[k], num: k===0?index+1:(grid[rr][cc].num||null)};
+                                                    }
+                                                    placed.push({...wObj, r, c, dir, num: index+1}); isPlaced = true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if(!isPlaced) {
+                            for(let r=0; r<grid_size; r++){
+                                if(isPlaced) break;
+                                for(let c=0; c<grid_size; c++){
+                                    if(c+word.length <= grid_size) {
+                                        let canPlace = true;
+                                        for(let k=0; k<word.length; k++) if(grid[r][c+k] !== '') {canPlace=false; break;}
+                                        if(canPlace) {
+                                            for(let k=0; k<word.length; k++) grid[r][c+k] = {char: word[k], num: k===0?index+1:null};
+                                            placed.push({...wObj, r, c, dir:'H', num: index+1}); isPlaced = true; break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    
+                    let cwHtml = "<table style='border-collapse:collapse; margin: 0 auto; background: black; margin-bottom:20px;'>";
+                    let ansHtml = "<table style='border-collapse:collapse; margin: 0 auto; background: black; margin-bottom:20px;'>";
+                    for (let r = 0; r < grid_size; r++) {
+                        cwHtml += "<tr>"; ansHtml += "<tr>";
+                        for (let c = 0; c < grid_size; c++) {
+                            let cell = grid[r][c];
+                            if (cell === '') {
+                                cwHtml += `<td style='width:30px;height:30px;background:black;border:1px solid #333;'></td>`;
+                                ansHtml += `<td style='width:30px;height:30px;background:black;border:1px solid #333;'></td>`;
+                            } else {
+                                let numLabel = cell.num ? `<span style='position:absolute; top:2px; left:2px; font-size:10px;'>${cell.num}</span>` : '';
+                                cwHtml += `<td style='width:30px;height:30px;background:white;border:1px solid black;position:relative;text-align:center;'>${numLabel}</td>`;
+                                ansHtml += `<td style='width:30px;height:30px;background:white;border:1px solid black;position:relative;text-align:center;font-weight:bold;'>${numLabel}${cell.char}</td>`;
+                            }
+                        }
+                        cwHtml += "</tr>"; ansHtml += "</tr>";
+                    }
+                    cwHtml += "</table><div><b>Across & Down Clues</b><ul>";
+                    placed.forEach(p => { cwHtml += `<li><b>${p.num}.</b> ${p.clue}</li>`; });
+                    cwHtml += "</ul></div>";
+                    
+                    content = cwHtml; answers = ansHtml;
+                }
+                else if (type === 'missing_letters') {
+                    inst = "Fill in the missing letters to complete the word based on the clue."; content = "<ol>";
+                    terms.forEach((t, i) => {
+                        let missing = t.split('').map((char, index) => (char === ' ') ? ' ' : (index % 2 === 0 ? char : '_')).join(' ');
+                        content += `<li style="margin-bottom:20px;"><b>${missing}</b><br><span style="color:#555;">Clue: ${clues[i]}</span></li>`;
+                        answers += `<li>${t}</li>`;
+                    });
+                    content += "</ol>"; answers += "</ol>";
+                }
+                else if (type === 'cryptogram') {
+                    inst = "Decode the numbers to reveal the words using the provided Cipher Key."; content = "<ol>";
+                    let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+                    let numbers = Array.from({length: 26}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+                    let cipherMap = {}; alphabet.forEach((letter, i) => cipherMap[letter] = numbers[i]);
+                    
+                    let keyHtml = "<div style='background:#f4f7f9; padding:15px; text-align:center; margin-bottom:20px; border:1px solid #ddd; font-family:monospace;'><b>CIPHER KEY</b><br><br>";
+                    alphabet.forEach((letter, i) => { keyHtml += `<b>${letter}</b>=${numbers[i]} &nbsp; `; if((i+1)%9===0) keyHtml+="<br><br>"; });
+                    keyHtml += "</div>"; content += keyHtml;
 
-                terms.forEach((t, i) => {
-                    let coded = t.split('').map(char => cipherMap[char] ? cipherMap[char] : char).join(' - ');
-                    content += `<li style="margin-bottom:20px;">Code: <b>${coded}</b><br><span style="color:#555;">Clue: ${clues[i]}</span><br>Answer: ____________________</li>`;
-                    answers += `<li>${t}</li>`;
-                });
-                content += "</ol>"; answers += "</ol>";
-            }
-            else if (type === 'jumbled') {
-                inst = "Unscramble the letters to find the correct word matching the clue."; content = "<ol>";
-                terms.forEach((t, i) => {
-                    let jumbled = t.split('').sort(() => Math.random() - 0.5).join('');
-                    content += `<li style="margin-bottom:20px;"><b>${jumbled}</b><br><span style="color:#555;">Clue: ${clues[i]}</span><br>Answer: ________________________</li>`;
-                    answers += `<li>${t}</li>`;
-                });
-                content += "</ol>"; answers += "</ol>";
-            }
-            else if (type === 'matching') {
-                inst = "Match Column A with Column B. Write the letter on the blank.";
-                let shuffledTerms = [...terms].sort(() => Math.random() - 0.5); let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
-                content = "<table style='width:100%; border:none;'><tr><td style='width:60%; vertical-align:top;'><ol>";
-                clues.forEach(c => { content += `<li style="margin-bottom:10px;">____ ${c}</li>`; });
-                content += "</ol></td><td style='width:40%; vertical-align:top;'><ul style='list-style-type:none;'>";
-                shuffledTerms.forEach((t, i) => { content += `<li style="margin-bottom:10px;"><b>${letters[i]}.</b> ${t}</li>`; });
-                content += "</ul></td></tr></table>";
-                clues.forEach((c, i) => { answers += `<li>${letters[shuffledTerms.indexOf(terms[i])]}</li>`; });
-                answers += "</ol>";
-            }
-            else if (type === 'identification') {
-                inst = "Identify the term being described. Write your answer on the space provided."; content = "<ol>";
-                clues.forEach((c, i) => { content += `<li style="margin-bottom:15px;">________________________ : ${c}</li>`; answers += `<li>${terms[i]}</li>`; });
-                content += "</ol>"; answers += "</ol>";
-            }
-            else if (type === 'true_false') {
-                inst = "Write TRUE if the statement is correct, and FALSE if it is wrong."; content = "<ol>";
-                clues.forEach((c, i) => {
-                    let isTrue = Math.random() > 0.5; let statementTerm = isTrue ? terms[i] : terms[(i + 1) % terms.length];
-                    content += `<li style="margin-bottom:15px;">________ <b>${statementTerm}</b> is defined as: ${c}</li>`;
-                    answers += `<li>${isTrue ? 'TRUE' : 'FALSE'}</li>`;
-                });
-                content += "</ol>"; answers += "</ol>";
-            }
+                    terms.forEach((t, i) => {
+                        let coded = t.split('').map(char => cipherMap[char] ? cipherMap[char] : char).join(' - ');
+                        content += `<li style="margin-bottom:20px;">Code: <b>${coded}</b><br><span style="color:#555;">Clue: ${clues[i]}</span><br>Answer: ____________________</li>`;
+                        answers += `<li>${t}</li>`;
+                    });
+                    content += "</ol>"; answers += "</ol>";
+                }
+                else if (type === 'jumbled') {
+                    inst = "Unscramble the letters to find the correct word matching the clue."; content = "<ol>";
+                    terms.forEach((t, i) => {
+                        let jumbled = t.split('').sort(() => Math.random() - 0.5).join('');
+                        content += `<li style="margin-bottom:20px;"><b>${jumbled}</b><br><span style="color:#555;">Clue: ${clues[i]}</span><br>Answer: ________________________</li>`;
+                        answers += `<li>${t}</li>`;
+                    });
+                    content += "</ol>"; answers += "</ol>";
+                }
+                else if (type === 'matching') {
+                    inst = "Match Column A with Column B. Write the letter on the blank.";
+                    let shuffledTerms = [...terms].sort(() => Math.random() - 0.5); let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+                    content = "<table style='width:100%; border:none;'><tr><td style='width:60%; vertical-align:top;'><ol>";
+                    clues.forEach(c => { content += `<li style="margin-bottom:10px;">____ ${c}</li>`; });
+                    content += "</ol></td><td style='width:40%; vertical-align:top;'><ul style='list-style-type:none;'>";
+                    shuffledTerms.forEach((t, i) => { content += `<li style="margin-bottom:10px;"><b>${letters[i]}.</b> ${t}</li>`; });
+                    content += "</ul></td></tr></table>";
+                    clues.forEach((c, i) => { answers += `<li>${letters[shuffledTerms.indexOf(terms[i])]}</li>`; });
+                    answers += "</ol>";
+                }
+                else if (type === 'identification') {
+                    inst = "Identify the term being described. Write your answer on the space provided."; content = "<ol>";
+                    clues.forEach((c, i) => { content += `<li style="margin-bottom:15px;">________________________ : ${c}</li>`; answers += `<li>${terms[i]}</li>`; });
+                    content += "</ol>"; answers += "</ol>";
+                }
+                else if (type === 'true_false') {
+                    inst = "Write TRUE if the statement is correct, and FALSE if it is wrong."; content = "<ol>";
+                    clues.forEach((c, i) => {
+                        let isTrue = Math.random() > 0.5; let statementTerm = isTrue ? terms[i] : terms[(i + 1) % terms.length];
+                        content += `<li style="margin-bottom:15px;">________ <b>${statementTerm}</b> is defined as: ${c}</li>`;
+                        answers += `<li>${isTrue ? 'TRUE' : 'FALSE'}</li>`;
+                    });
+                    content += "</ol>"; answers += "</ol>";
+                }
 
-            let title = document.getElementById('ws-type').options[document.getElementById('ws-type').selectedIndex].text;
-            let html = `<div style="text-align: center; border-bottom: 2px solid black; padding-bottom: 15px; margin-bottom: 20px;"><h2 style="font-size: 1.5rem; font-weight: bold; margin: 0; text-transform: uppercase;">Worksheet Activity</h2><div style="font-size: 1.2rem; font-weight: bold; margin-top: 5px;">${title}</div><div style="display: flex; justify-content: space-between; margin-top: 15px; font-weight: bold; font-size: 1rem;"><span>Name: ________________________________</span><span>Score: _______</span></div></div><div style="margin-bottom: 20px;"><b>Instructions:</b> ${inst}</div><div style="font-size: 1.1rem; line-height: 1.8;">${content}</div><div id="ws-answer-key" class="answer-key-section" style="display:none;"><h3 style="margin-top:0;">Answer Key</h3><div style="line-height: 1.5;">${answers}</div></div>`;
+                let titleSelect = document.getElementById('ws-type');
+                let title = titleSelect.options[titleSelect.selectedIndex].text;
+                let html = `<div style="text-align: center; border-bottom: 2px solid black; padding-bottom: 15px; margin-bottom: 20px;"><h2 style="font-size: 1.5rem; font-weight: bold; margin: 0; text-transform: uppercase;">Worksheet Activity</h2><div style="font-size: 1.2rem; font-weight: bold; margin-top: 5px;">${title}</div><div style="display: flex; justify-content: space-between; margin-top: 15px; font-weight: bold; font-size: 1rem;"><span>Name: ________________________________</span><span>Score: _______</span></div></div><div style="margin-bottom: 20px;"><b>Instructions:</b> ${inst}</div><div style="font-size: 1.1rem; line-height: 1.8;">${content}</div><div id="ws-answer-key" class="answer-key-section" style="display:none;"><h3 style="margin-top:0;">Answer Key</h3><div style="line-height: 1.5;">${answers}</div></div>`;
 
-            document.getElementById('word-preview-container').style.display = "none";
-            document.getElementById('worksheet-preview-container').style.display = "block";
-            document.getElementById('worksheet-preview').innerHTML = html; 
-            document.getElementById('loading').style.display = 'none'; 
-            document.getElementById('output-section').style.display = "block"; 
-            document.getElementById('output-section').scrollIntoView({behavior: 'smooth'});
+                document.getElementById('worksheet-preview').innerHTML = html; 
+                document.getElementById('loading').style.display = 'none'; 
+                document.getElementById('output-section').style.display = "block"; 
+                document.getElementById('word-preview-container').style.display = "none";
+                document.getElementById('worksheet-preview-container').style.display = "block";
+                document.getElementById('output-section').scrollIntoView({behavior: 'smooth'});
 
+            } catch(e) {
+                alert("Error generating worksheet: " + e);
+                document.getElementById('loading').style.display = 'none';
+            }
         }, 500);
     }
 </script>
