@@ -477,8 +477,7 @@
     function togglePPST() {
         const type = document.getElementById('doc-type')?.value;
         const box = document.getElementById('ppst-box');
-        // Let PPST box show for all types right now so it's always accessible if needed
-        if(box) box.style.display = "block";
+        if(box) box.style.display = "block"; // Always show PPST box
     }
 
     // --- PROFILE & SETTINGS ---
@@ -663,9 +662,34 @@
             const timeMins = document.getElementById('time-allotment').value;
             const pos = document.getElementById('position').value;
 
-            let flowInstruction = docType.includes("DLL") ?
-                `For the 'Flow' section, provide a table or breakdown for exactly ${docType.includes("5") ? "5" : "4"} days of sessions, distributing the activities appropriately.` :
-                `For the 'Flow' section, provide the sequence of activities for a single session.`;
+            const isDLL = docType.includes("DLL");
+            const is5Day = docType.includes("5");
+            const daysCount = is5Day ? 5 : 4;
+            const widthPerDay = 80 / daysCount;
+
+            // DLL uses columns for days under the Flow section, SDLP uses a single block
+            let flowTable = isDLL ? `
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr>
+            <th style="font-weight:bold; width:20%; background:#f9f9f9; padding:6px; color:#000; text-align:left;">Flow<br><i style="font-weight:normal; font-size:0.85em;">Describe the activities that you can implement in 1 or more sessions to meet the learning objectives. Apply the Learning Design Principles...</i></th>
+            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:${widthPerDay}%;">Day 1</th>
+            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:${widthPerDay}%;">Day 2</th>
+            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:${widthPerDay}%;">Day 3</th>
+            <th style="background:#0A2540; color:white; text-align:center; padding:8px; width:${widthPerDay}%;">Day 4</th>
+            ${is5Day ? `<th style="background:#0A2540; color:white; text-align:center; padding:8px; width:${widthPerDay}%;">Day 5</th>` : ''}
+        </tr>
+        <tr>
+            <td style="font-weight:bold; background:#f9f9f9; padding:6px;">Activities</td>
+            <td style="padding:6px; vertical-align:top;">[Day 1 Content]</td>
+            <td style="padding:6px; vertical-align:top;">[Day 2 Content]</td>
+            <td style="padding:6px; vertical-align:top;">[Day 3 Content]</td>
+            <td style="padding:6px; vertical-align:top;">[Day 4 Content]</td>
+            ${is5Day ? '<td style="padding:6px; vertical-align:top;">[Day 5 Content]</td>' : ''}
+        </tr>
+    </table>` : `
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Flow<br><i style="font-weight:normal; font-size:0.85em;">Describe the activities that you can implement in 1 or more sessions to meet the learning objectives. Apply the Learning Design Principles...</i></td><td style="padding:6px;">[Insert Flow Content]</td></tr>
+    </table>`;
 
             promptText = `You are an expert instructional designer. Generate a lesson plan based strictly on the uploaded "LP Template for Orientations".
 Subject: ${subject} | Grade Level: ${gradeText} | Time Allotment: ${timeMins} minutes | Teaching Position: ${pos}
@@ -674,54 +698,53 @@ Competency: ${comp}
 Objectives: ${obj}
 Learner Context: ${context}
 
-${flowInstruction}
-
-CRITICAL REQUIREMENT: You MUST use the following exact HTML structure and keep the italicized descriptions per part exactly as written below. Fill in the specific content for the lesson corresponding to each section.
+CRITICAL REQUIREMENT: You MUST use the following exact HTML structure and keep the italicized descriptions per part exactly as written below. Fill in the specific content for the lesson corresponding to each section. Do NOT use markdown \`\`\`html tags. Output ONLY the raw HTML.
 
 <div style="font-family: Arial, sans-serif;">
-    <h2 style="text-align:center;">LESSON PLAN</h2>
+    <div style="text-align: center; font-weight: bold; margin-bottom: 25px; line-height: 1.2;">
+        Republic of the Philippines<br>Department of Education<br>[Insert School Name or "YOUR SCHOOL NAME"]
+    </div>
+
     <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr><td><b>Lesson Title</b></td><td>[Insert Title]</td></tr>
-        <tr><td><b>Learning Area/s</b></td><td>${subject}</td></tr>
-        <tr><td><b>Name of Teacher/s</b></td><td>[Teacher Name]</td></tr>
-        <tr><td><b>Grade Level and Section</b></td><td>${gradeText}</td></tr>
-        <tr><td><b>No. of Sessions</b></td><td>[Insert based on ${docType}]</td></tr>
-        <tr><td><b>References (books, websites, toolkits, etc.)</b></td><td>[Insert References]</td></tr>
-        <tr><td><b>Declaration of AI use</b></td><td>Cite how AI was used in the formulation of the lesson plan. See DO 3 s.2026 Annex A.<br><br><i>[AI Declaration Content]</i></td></tr>
+        <tr><td style="font-weight:bold; width:25%; background:#f2f2f2; padding:6px;">Lesson Title</td><td style="width:25%; padding:6px;">[Insert Title]</td><td style="font-weight:bold; width:25%; background:#f2f2f2; padding:6px;">Learning Area/s</td><td style="width:25%; padding:6px;">${subject}</td></tr>
+        <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Name of Teacher/s</td><td style="padding:6px;">[Teacher Name]</td><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Grade Level and Section</td><td style="padding:6px;">${gradeText}</td></tr>
+        <tr><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Time Allotment</td><td style="padding:6px;">${timeMins} mins</td><td style="font-weight:bold; background:#f2f2f2; padding:6px;">Teaching Position</td><td style="padding:6px;">${pos}</td></tr>
     </table>
 
-    <h3>Intentions</h3>
-    <p><i>Meaningful learning experiences are anchored in how we frame them. Start by deciding what you want learners to master by the end of the lesson – keep it clear and simple. Remember: Understanding your learners’ evolving context and designing around it ensure that your lessons connect with and are relevant to them.</i></p>
     <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr><td style="width:30%;"><b>Learning Competency and Curriculum Standards:</b><br><i>Write the competency/ies from the curriculum that we are targeting, and the content or performance standards applicable to the sessions.</i></td><td>[Insert Competency Content]</td></tr>
-        <tr><td><b>Learning Objectives:</b><br><i>Write the smaller knowledge, skills, or tasks from the competency that the learners will work on and be able to show by the end of the sessions.</i></td><td>[Insert Objectives Content]</td></tr>
-        <tr><td><b>Learner Context:</b><br><i>Write your observations of your learners, and how they have been performing or responding to learning experiences recently. Include strengths, interests, and possible barriers to learning.</i></td><td>[Insert Learner Context Content]</td></tr>
+        <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">I. INTENTIONS</th></tr>
+        <tr><td colspan="2" style="padding:6px; font-style:italic; font-size:0.9em; background:#fefefe;">Meaningful learning experiences are anchored in how we frame them. Start by deciding what you want learners to master by the end of the lesson – keep it clear and simple. Remember: Understanding your learners’ evolving context and designing around it ensure that your lessons connect with and are relevant to them.</td></tr>
+        <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Learning Competency and Curriculum Standards<br><i style="font-weight:normal; font-size:0.85em;">Write the competency/ies from the curriculum that we are targeting, and the content or performance standards applicable to the sessions.</i></td><td style="padding:6px;">[Insert Content]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learning Objectives<br><i style="font-weight:normal; font-size:0.85em;">Write the smaller knowledge, skills, or tasks from the competency that the learners will work on and be able to show by the end of the sessions.</i></td><td style="padding:6px;">[Insert Content]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Learner Context<br><i style="font-weight:normal; font-size:0.85em;">Write your observations of your learners, and how they have been performing or responding to learning experiences recently. Include strengths, interests, and possible barriers to learning.</i></td><td style="padding:6px;">[Insert Content]</td></tr>
     </table>
 
-    <h3>Learning Experience</h3>
-    <p><i>A learning experience is like a thoughtfully designed journey. Each activity and interaction builds towards meaningful understanding and growth. Identify activities and interactions to help learners gain knowledge, skills, or understanding in a purposeful way.</i></p>
     <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr><td style="width:30%;"><b>Pre-Lesson:</b><br><i>Describe how you will help the learners get ready for the lesson.</i></td><td>[Insert Pre-Lesson Content]</td></tr>
-        <tr><td><b>Flow:</b><br><i>Describe the activities that you can implement in 1 or more sessions to meet the learning objectives. Apply the Learning Design Principles...</i></td><td>[Insert Flow Content - ${flowInstruction}]</td></tr>
-        <tr><td><b>Learning Resources:</b><br><i>List down the learning resources that will help you reach your objectives. Ensure that they are available and inclusive. Include options and alternatives in case of emergencies.</i></td><td>[Insert Learning Resources]</td></tr>
-        <tr><td><b>Opportunities for integration:</b><br><i>Write down any possibilities to meaningfully another learning area, special topic, or technology. Write N/A if none.</i></td><td>[Insert Integration Content]</td></tr>
+        <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">II. LEARNING EXPERIENCE</th></tr>
+        <tr><td colspan="2" style="padding:6px; font-style:italic; font-size:0.9em; background:#fefefe;">A learning experience is like a thoughtfully designed journey. Each activity and interaction builds towards meaningful understanding and growth. Identify activities and interactions to help learners gain knowledge, skills, or understanding in a purposeful way.</td></tr>
+        <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Pre-Lesson<br><i style="font-weight:normal; font-size:0.85em;">Describe how you will help the learners get ready for the lesson.</i></td><td style="padding:6px;">[Insert Content]</td></tr>
     </table>
 
-    <h3>Assessment</h3>
-    <p><i>Assessments reveal what learners have gained and what they still need help with. These are helpful in providing you with information to guide your future instruction throughout the entire session.</i></p>
+    ${flowTable}
+
     <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr><td style="width:30%;"><b>Formative Assessment:</b><br><i>Create a task, activity or questions to evaluate learning and provide feedback every now and then. Include ways for learners to ask for guidance or support throughout each session. Remember to provide appropriate accommodations...</i></td><td>[Insert Assessment Content]</td></tr>
+        <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Learning Resources<br><i style="font-weight:normal; font-size:0.85em;">List down the learning resources that will help you reach your objectives. Ensure that they are available and inclusive. Include options and alternatives in case of emergencies.</i></td><td style="padding:6px;">[Insert Content]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Opportunities for integration<br><i style="font-weight:normal; font-size:0.85em;">Write down any possibilities to meaningfully another learning area, special topic, or technology. Write N/A if none.</i></td><td style="padding:6px;">[Insert Content]</td></tr>
     </table>
 
-    <h3>Ways Forward</h3>
-    <p><i>Meaningful learning can also happen beyond the classroom – for both the learners and the teacher. Pause and reflect on what happened today.</i></p>
     <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr><td style="width:30%;"><b>Extended learning opportunities:</b><br><i>Suggest other learning experiences outside the classroom/class hours that learners may want to access to reinforce what they have learned...</i></td><td>[Insert Extended Learning Content]</td></tr>
-        <tr><td><b>Reflections:</b><br><i>Think about what you need to change for the next session based on what happened today... Are there some things you would like to share with your co-teachers...</i></td><td>[Insert Reflections Content]</td></tr>
+        <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">III. ASSESSMENT</th></tr>
+        <tr><td colspan="2" style="padding:6px; font-style:italic; font-size:0.9em; background:#fefefe;">Assessments reveal what learners have gained and what they still need help with. These are helpful in providing you with information to guide your future instruction throughout the entire session.</td></tr>
+        <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Formative Assessment<br><i style="font-weight:normal; font-size:0.85em;">Create a task, activity or questions to evaluate learning and provide feedback every now and then. Include ways for learners to ask for guidance or support throughout each session. Remember to provide appropriate accommodations...</i></td><td style="padding:6px;">[Insert Content]</td></tr>
     </table>
-</div>
 
-Format the output strictly using the HTML structure provided above. DO NOT use markdown \`\`\`html tags.`;
+    <table border="1" style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr><th colspan="2" style="background:#0A2540; color:white; text-align:left; padding:8px;">IV. WAYS FORWARD</th></tr>
+        <tr><td colspan="2" style="padding:6px; font-style:italic; font-size:0.9em; background:#fefefe;">Meaningful learning can also happen beyond the classroom – for both the learners and the teacher. Pause and reflect on what happened today.</td></tr>
+        <tr><td style="font-weight:bold; width:30%; background:#f9f9f9; padding:6px;">Extended learning opportunities<br><i style="font-weight:normal; font-size:0.85em;">Suggest other learning experiences outside the classroom/class hours that learners may want to access to reinforce what they have learned...</i></td><td style="padding:6px;">[Insert Content]</td></tr>
+        <tr><td style="font-weight:bold; background:#f9f9f9; padding:6px;">Reflections<br><i style="font-weight:normal; font-size:0.85em;">Think about what you need to change for the next session based on what happened today... Are there some things you would like to share with your co-teachers...</i></td><td style="padding:6px;">[Insert Content]</td></tr>
+    </table>
+</div>`;
 
         } else if (mode === 'presentation') {
             document.getElementById('loading-text').innerText = "AI is designing Creative ILAW Presentation...";
@@ -827,9 +850,15 @@ Do not use markdown wrappers.`;
     function exportToWord(target) {
         let contentHtml = target === 'worksheet' ? document.getElementById('worksheet-preview').innerHTML : document.getElementById('word-preview').innerHTML;
         const profile = JSON.parse(localStorage.getItem('teachersync_profile_v1')) || {};
-        let header = `<div style="text-align:center; font-family: 'Times New Roman', serif; margin-bottom: 20px;"><h3 style="margin:0; text-transform: uppercase;">${profile.school || 'SCHOOL NAME'}</h3><p style="margin:0;">Department of Education</p></div>`;
+        
+        let header = `<div style="text-align:center; font-family: 'Times New Roman', serif; margin-bottom: 20px;"><h3 style="margin:0; text-transform: uppercase;">${profile.school || ''}</h3></div>`;
         let footer = `<br><br><table style="width: 100%; text-align: center; font-family: 'Times New Roman', serif; margin-top: 40px; page-break-inside: avoid;"><tr><td>Prepared by:<br><br><b>${profile.teacher || 'TEACHER NAME'}</b><br>${profile.teacherPos || 'Teacher'}</td><td>Checked by:<br><br><b>${profile.checker || 'CHECKER NAME'}</b><br>${profile.checkerPos || 'Checker'}</td><td>Approved by:<br><br><b>${profile.approver || 'APPROVER NAME'}</b><br>${profile.approverPos || 'Approver'}</td></tr></table>`;
-        const fullHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Exported Document</title><style>body { font-family: "Times New Roman", serif; font-size: 12pt; } table { border-collapse: collapse; width: 100%; margin-bottom: 15px; } table, th, td { border: 1px solid black; padding: 5px; }</style></head><body>${header}${contentHtml}${footer}</body></html>`;
+        
+        // Exclude header for lesson plans since the template already includes it
+        const isLesson = target !== 'worksheet' && document.getElementById('page-lesson').classList.contains('active');
+        
+        const fullHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Exported Document</title><style>body { font-family: "Times New Roman", serif; font-size: 12pt; } table { border-collapse: collapse; width: 100%; margin-bottom: 15px; } table, th, td { border: 1px solid black; padding: 5px; vertical-align: top; }</style></head><body>${isLesson ? '' : header}${contentHtml}${footer}</body></html>`;
+        
         const blob = new Blob(['\ufeff', fullHtml], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a'); link.href = url; link.download = `TeacherSync_Export_${new Date().getTime()}.doc`;
